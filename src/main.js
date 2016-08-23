@@ -4,11 +4,12 @@ console.log('Hello World! 3');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Counter from './Counter';
+import SystemsController from './SystemsController';
 
 document.addEventListener('DOMContentLoaded', function() {
+	console.log('DOMContentLoaded');
 	ReactDOM.render(
-		<Counter />,
+		<SystemsController />,
 		document.getElementById('mount')
 	);
 });
