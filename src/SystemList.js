@@ -1,6 +1,7 @@
 import React from 'react';
 import SystemListItem from './SystemListItem';
 import StorageWrap from 'storage-wrap';
+//import depot from 'depot';
 
 /**
  *
@@ -25,7 +26,7 @@ class SystemList extends React.Component {
 			return <SystemListItem key={row.id} data={row} />
 		});
 		return (
-			<table>
+			<table className="table">
 				<thead>
 					<tr>
 						<td>ID</td>
@@ -48,8 +49,32 @@ class SystemList extends React.Component {
 		console.log('SystemList did mount');
 
 		// TODO: make it a nice cache component
-		var systems = StorageWrap.getItem('system.json');
-		if (!systems) {
+		if (false) {
+			var systems = StorageWrap.getItem('system.json');
+
+			// save into depot if already cached
+			if (systems) {
+				var systemDepot = depot('system');
+				systems.map(item => {
+					systemDepot.save(item);
+				});
+			}
+		}
+
+		var systemDepot = depot('system', {
+			idAttribute: 'id',
+		});
+		var systems = systemDepot.all();
+		console.log('systems.length', systems.length);
+		// systems.filter((value, index, self) => {
+		// 	return self.indexOf(value) === index;
+		// });
+
+		// let _ = require('underscore');
+		// systems = _.uniq(systems);
+		// console.log(systems.length);
+
+		if (!systems.length) {
 			fetch('../data/system.json')
 				.then(response => {
 					console.log(response);
@@ -60,7 +85,12 @@ class SystemList extends React.Component {
 					this.setState({
 						systems: systems
 					});
-					StorageWrap.setItem('system.json', systems);
+					// old way
+					//StorageWrap.setItem('system.json', systems);
+
+					systems.map(item => {
+						systemDepot.save(item);
+					});
 				});
 		} else {
 			console.log(systems.length);
