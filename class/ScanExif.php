@@ -85,7 +85,7 @@ class ScanExif {
 		}
 		$meta = $image->exif();
 		$json->$baseName = $meta;
-		file_put_contents($jsonFile, json_encode($json), JSON_PRETTY_PRINT);
+		file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
 	}
 
 	public function saveThumbnail(Image $image, array $file)
