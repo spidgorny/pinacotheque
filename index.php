@@ -2,6 +2,7 @@
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
+use Psr\Container\ContainerInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -31,6 +32,17 @@ function getFlySystem($root = __DIR__.'/data')
 	return $filesystem;
 }
 
+$builder = new DI\ContainerBuilder();
+$builder->addDefinitions([
+	Filesystem::class => function (ContainerInterface $c) {
+		return getFlySystem($_SERVER['argv'][2]);
+	},
+	Cameras::class => function (ContainerInterface $c) {
+		return new Cameras(getFlySystem());
+	},
+]);
+$container = $builder->build();
+
 $c = $_SERVER['argv'][1];
-$o = new $c(getFlySystem($_SERVER['argv'][2]));
+$o = $container->get($c);
 $o();

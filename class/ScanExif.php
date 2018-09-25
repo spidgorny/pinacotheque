@@ -30,7 +30,7 @@ class ScanExif {
 	 */
 	protected $prefixMerged;
 
-	public function __construct(FileSystem $fileSystem)
+	public function __construct(Filesystem $fileSystem)
 	{
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
