@@ -24,13 +24,13 @@ function getContext()
 	return $context;
 }
 
-function getFlySystem()
+function getFlySystem($root = __DIR__.'/data')
 {
-	$adapter = new Local(__DIR__.'/data');
+	$adapter = new Local($root);
 	$filesystem = new Filesystem($adapter);
 	return $filesystem;
 }
 
 $c = $_SERVER['argv'][1];
-$o = new $c(getFlySystem());
+$o = new $c(getFlySystem($_SERVER['argv'][2]));
 $o();

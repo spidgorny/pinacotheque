@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "f27507040e5f35692a367010e5483d43",
+    "content-hash": "94e7ef23c166b98e8fa3589a246784df",
     "packages": [
         {
             "name": "guzzlehttp/psr7",
@@ -274,12 +274,83 @@
                 "response"
             ],
             "time": "2016-08-06T14:39:51+00:00"
+        },
+        {
+            "name": "spidgorny/nadlib",
+            "version": "dev-default",
+            "source": {
+                "type": "hg",
+                "url": "https://bitbucket.org/spidgorny/nadlib",
+                "reference": "628195718c864fd8a94c64ae118d3621a1dfbc06"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/spidgorny/nadlib/get/628195718c864fd8a94c64ae118d3621a1dfbc06.zip",
+                "reference": "628195718c864fd8a94c64ae118d3621a1dfbc06",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5 || >=7"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6"
+            },
+            "suggest": {
+                "HTMLawed/HTMLawed": "dev-master",
+                "components/bootstrap": "dev-master",
+                "components/modernizr": "dev-master",
+                "danielstjules/stringy": ">=1.5.1",
+                "flot/flot": "dev-master",
+                "gnat/nc-cms": "*",
+                "greenlion/PHP-SQL-Parser": "*",
+                "hrmatching/advanced_html_dom": "dev-master",
+                "leafo/lessphp": "0.4.0",
+                "michelf/php-markdown": "~1.4",
+                "mustangostang/spyc": "dev-master",
+                "phpauth/phpauth": "dev-master",
+                "robloach/component-installer": "^0.2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "./",
+                    "Base/",
+                    "Cache/",
+                    "Controller/",
+                    "CSS/",
+                    "Data/",
+                    "DB/",
+                    "Debug/",
+                    "HTML/",
+                    "HTMLForm/",
+                    "HTTP/",
+                    "LocalLang/",
+                    "ORM/",
+                    "SQL/",
+                    "Queue/",
+                    "Runner/",
+                    "SQL/",
+                    "Time/",
+                    "User/"
+                ],
+                "files": [
+                    "init.php"
+                ],
+                "psr-0": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "homepage": "https://bitbucket.org/spidgorny/nadlib",
+            "time": "2018-04-02 09:45:28"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "spidgorny/nadlib": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

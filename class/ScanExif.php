@@ -16,7 +16,7 @@ class ScanExif {
 		'bmp',
 		'png',
 		'tiff',
-		'tif'
+		'tif',
 	];
 
 	public function __construct(FileSystem $fileSystem)
@@ -26,27 +26,35 @@ class ScanExif {
 
 	function __invoke()
 	{
+		/** @var Local $adapter */
+		$adapter = $this->fileSystem->getAdapter();
+		$prefix = $adapter->getPathPrefix();
+		echo 'Scanning ', $prefix, PHP_EOL;
+
 		$manager = new ImageManager();
 		$files = $this->fileSystem->listContents('', true);
+		echo 'Analyzing...', PHP_EOL;
+
+		$percent = new Percent(sizeof($files));
 //		print_r($files);
 		foreach ($files as $file) {
-			/** @var Local $adapter */
-			$adapter = $this->fileSystem->getAdapter();
-			$prefix = $adapter->getPathPrefix();
+			echo $percent->get(), '%', TAB, $prefix, TAB, $file['path'], PHP_EOL;
+			$percent->inc();
 			$ext = pathinfo($prefix.$file['path'], PATHINFO_EXTENSION);
 			if (!in_array($ext, $this->imageTypes)) {
 				continue;
 			}
-			$image = $manager->make($prefix.$file['path'])->resize(256, null, function (Constraint $constraint) {
+			$image = $manager
+				->make($prefix.$file['path'])
+				->resize(256, null, function (Constraint $constraint) {
 				$constraint->aspectRatio();
 			});
 
 			$prefixMerged = strtr($prefix, '/\\:', '___');
 			$destination = __DIR__.'/../data/thumbs/'.$prefixMerged.'/'.$file['path'];
 			if (file_exists($destination)) {
-				//continue;
+				continue;
 			}
-			echo $prefix, TAB, $file['path'], PHP_EOL;
 			@mkdir(dirname($destination), 0777, true);
 			$image->save($destination);
 		}
