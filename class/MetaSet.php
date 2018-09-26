@@ -45,6 +45,9 @@ class MetaSet
 
 			$images = $this->readMeta($file);
 			$dirName = dirname($file['path']);
+			foreach ($images as &$meta) {
+				$meta['_path_'] = $dirName;
+			}
 			$models[$dirName] = $images;
 		}
 
@@ -65,6 +68,16 @@ class MetaSet
 			$sum += sizeof($set);
 		}
 		return $sum;
+	}
+
+	public function get()
+	{
+		return $this->data;
+	}
+
+	public function getLinear()
+	{
+		return call_user_func_array('array_merge', $this->data);
 	}
 
 	/**

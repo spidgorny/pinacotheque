@@ -53,4 +53,8 @@ if (php_sapi_name() == 'cli') {
 	$c = ifsetor($_SERVER['PATH_INFO'], PhotoTimeline::class);
 }
 $o = $container->get($c);
-echo $o();
+$content = $o();
+if (is_array($content)) {
+	$content = implode(PHP_EOL, $content);
+}
+echo $content;

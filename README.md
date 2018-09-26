@@ -44,6 +44,6 @@ ToDo
 [x] Scan folders and build thumbnails
 [x] Scan folders and store metadata
 [ ] Zip thumbnails - I don't like thousands of small files
-[ ] Load all meta information into RAM to do queries
+[x] Load all meta information into RAM to do queries
 [ ] Accept HTTP requests to query different things
 [ ] Make React app to show images and filter by all metadata
