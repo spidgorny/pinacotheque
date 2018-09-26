@@ -26,8 +26,7 @@ class MetaSet
 		$this->fileSystem = $filesystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();
-		$this->prefix = __DIR__ . '/../data/thumbs';
-		$adapter->setPathPrefix($this->prefix);
+		$this->prefix = $adapter->getPathPrefix();
 
 		$this->data = $this->init();
 	}
@@ -47,6 +46,7 @@ class MetaSet
 			$dirName = dirname($file['path']);
 			foreach ($images as &$meta) {
 				$meta['_path_'] = $dirName;
+				$meta = new Meta($meta);
 			}
 			$models[$dirName] = $images;
 		}
@@ -90,12 +90,21 @@ class MetaSet
 		$result = [];
 		foreach ($this->data as $set) {
 			foreach ($set as $image) {
-				$key = ifsetor($image[$field]);
+				$key = ifsetor($image->$field);
 				$result[$key] = ifsetor($result[$key], []);
 				$result[$key][] = $image;
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * @param callable $predicate
+	 * @return Meta[]
+	 */
+	public function filter(callable $predicate)
+	{
+		return array_filter($this->getLinear(), $predicate);
 	}
 
 }

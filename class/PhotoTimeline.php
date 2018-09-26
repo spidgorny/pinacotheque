@@ -1,5 +1,7 @@
 <?php
 
+use League\Flysystem\Filesystem;
+
 /**
  * Class PhotoTimeline
  * @see https://www.soas.ac.uk/centenary/timeline/full97626.jpg
@@ -7,12 +9,16 @@
 class PhotoTimeline extends AppController
 {
 
-	protected $prefix = __DIR__.'/../data/thumbs';
+	protected $fileSystem;
+
+	protected $prefix;
 
 	protected $prefixURL;
 
-	public function __construct()
+	public function __construct(Filesystem $fileSystem)
 	{
+		$this->fileSystem = $fileSystem;
+		$this->prefix = $fileSystem->getAdapter()->getPathPrefix();
 		$this->prefix = realpath($this->prefix);
 		$this->prefixURL = substr(
 			$this->prefix,
@@ -32,7 +38,7 @@ class PhotoTimeline extends AppController
 //		debug($linear->count());
 
 		$byMonth = $linear->reindex(function ($key, $val) {
-			$key = ifsetor($val['FileDateTime']);
+			$key = @$val->FileDateTime;
 			return is_int($key)
 				? date('Y-m', $key)
 				: $key;
@@ -51,7 +57,6 @@ class PhotoTimeline extends AppController
 		$min = new Date(min($dates));
 		$max = new Date(max($dates));
 
-		$html = new HTML();
 		$table = [];
 		$months = range(1, 12);
 		for ($year = $min->getYear(); $year <= $max->getYear(); $year++) {
@@ -63,11 +68,14 @@ class PhotoTimeline extends AppController
 				$images = ifsetor($byMonth[$key], []);
 				if ($images) {
 //					debug(first($images));
-					$meta = new Meta(first($images));
+					$meta = first($images);
+					$browser = MonthBrowser::href($year, $month);
 					$table[$year][$month] =
 						new htmlString([
 							'<figure style="position: relative">',
+							'<a href="'.$browser.'">',
 							$meta->toHTML($this->prefixURL),
+							'</a>',
 							'<div class="" 
 							style="position: absolute;
 							right: 0; bottom: 0">

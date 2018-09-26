@@ -4,6 +4,7 @@
  * Class Meta - represents a single file metadata from meta.json
  * @property string _path_
  * @property string FileName
+ * @property int FileDateTime
  */
 class Meta
 {

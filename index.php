@@ -41,8 +41,15 @@ $builder->addDefinitions([
 	Filesystem::class => function (ContainerInterface $c) {
 		return getFlySystem($_SERVER['argv'][2]);
 	},
+	'FlyThumbs' => getFlySystem(__DIR__.'/data/thumbs'),
 	Cameras::class => function (ContainerInterface $c) {
-		return new Cameras(getFlySystem());
+		return new Cameras($c->get('FlyThumbs'));
+	},
+	PhotoTimeline::class => function (ContainerInterface $c) {
+		return new PhotoTimeline($c->get('FlyThumbs'));
+	},
+	MonthBrowser::class => function (ContainerInterface $c) {
+		return MonthBrowser::route($c);
 	},
 ]);
 $container = $builder->build();
@@ -51,6 +58,7 @@ if (php_sapi_name() == 'cli') {
 	$c = $_SERVER['argv'][1];
 } else {
 	$c = ifsetor($_SERVER['PATH_INFO'], PhotoTimeline::class);
+	$c = first(trimExplode('/', $c));
 }
 $o = $container->get($c);
 $content = $o();

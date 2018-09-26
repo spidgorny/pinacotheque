@@ -24,8 +24,7 @@ class Cameras
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();
-		$this->prefix = __DIR__ . '/../data/thumbs';
-		$adapter->setPathPrefix($this->prefix);
+		$this->prefix = $adapter->getPathPrefix();
 	}
 
 	public function __invoke()
