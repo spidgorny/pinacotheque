@@ -44,8 +44,9 @@ class Cameras
 			echo $this->prefix, TAB, $file['path'], PHP_EOL;
 			$images = $this->readMeta($file);
 			foreach ($images as $meta) {
-				$models[$meta->Model] = ifsetor($models[$meta->Model], 0);
-				$models[$meta->Model]++;
+				$camera = ifsetor($meta->Model, ifsetor($meta->Make));
+				$models[$camera] = ifsetor($models[$camera], 0);
+				$models[$camera]++;
 			}
 		}
 		print_r($models);

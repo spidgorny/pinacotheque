@@ -5,12 +5,12 @@ class FetchImgur
 
 	protected $context;
 
-	function __construct($context)
+	public function __construct($context)
 	{
 		$this->context = $context;
 	}
 
-	function __invoke()
+	public function __invoke()
 	{
 		$set = json_decode(file_get_contents(__DIR__ . '/../data/imgur.json'));
 		foreach ($set->album_images->images as $i) {

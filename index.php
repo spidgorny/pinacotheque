@@ -6,7 +6,11 @@ use Psr\Container\ContainerInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+define('BR', "<br />\n");
 define('TAB', "\t");
+define('DEVELOPMENT', true);
+
+ini_set ('memory_limit', '1G');
 
 function getContext()
 {
@@ -43,6 +47,10 @@ $builder->addDefinitions([
 ]);
 $container = $builder->build();
 
-$c = $_SERVER['argv'][1];
+if (php_sapi_name() == 'cli') {
+	$c = $_SERVER['argv'][1];
+} else {
+	$c = ifsetor($_SERVER['PATH_INFO'], PhotoTimeline::class);
+}
 $o = $container->get($c);
-$o();
+echo $o();
