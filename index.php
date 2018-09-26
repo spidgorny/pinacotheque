@@ -29,6 +29,11 @@ function getContext()
 	return $context;
 }
 
+function __($a)
+{
+	return $a;
+}
+
 function getFlySystem($root = __DIR__.'/data')
 {
 	$adapter = new Local($root);

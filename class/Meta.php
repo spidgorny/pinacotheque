@@ -5,6 +5,7 @@
  * @property string _path_
  * @property string FileName
  * @property int FileDateTime
+ * @property array COMPUTED
  */
 class Meta
 {
@@ -21,12 +22,41 @@ class Meta
 		return ifsetor($this->props[$key]);
 	}
 
-	public function toHTML($prefix = '')
+	public function getThumbnail($prefix = '')
 	{
 		$src = $prefix.'/'.$this->_path_.'/'.$this->props['FileName'];
-		return HTMLTag::img($src, [
+		return $src;
+	}
+
+	public function toHTML($prefix = '')
+	{
+		return HTMLTag::img($this->getThumbnail($prefix), [
 			'width' => 256,
 		]);
+	}
+
+	public function width()
+	{
+		return $this->COMPUTED['Width'];
+	}
+
+	public function height()
+	{
+		return $this->COMPUTED['Height'];
+	}
+
+	public function getOriginal($prefix = '')
+	{
+		$path = str_replace('__', ':/', $this->_path_);
+		$path = trimExplode('_', $path);
+		$path = implode('/', $path);
+		$path = new Path($path);
+		return $prefix.'/'.$path->getURL().''.$this->FileName;
+	}
+
+	public function __debugInfo()
+	{
+		return $this->props;
 	}
 
 }
