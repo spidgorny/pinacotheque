@@ -61,7 +61,14 @@ class ScanExif {
 			}
 
 			$imagePromise = function () use ($manager, $file) {
-				$image = $manager->make($this->prefix . '/' . $file['path']);
+				static $path;
+				static $image;
+				if ($path == $this->prefix . '/' . $file['path'] && $image) {
+					return $image;
+				}
+
+				$path = $this->prefix . '/' . $file['path'];
+				$image = $manager->make($path);
 				return $image;
 			};
 
