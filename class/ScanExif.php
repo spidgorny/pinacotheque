@@ -90,11 +90,15 @@ class ScanExif {
 		if (isset($json->$baseName)) {
 			return;
 		}
-		/** @var Image $image */
-		$image = $imagePromise();
-		$meta = $image->exif();
-		$json->$baseName = $meta;
-		file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
+		try {
+			/** @var Image $image */
+			$image = $imagePromise();
+			$meta = $image->exif();
+			$json->$baseName = $meta;
+			file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
+		} catch (Intervention\Image\Exception\NotReadableException $e) {
+			echo '** Error: '.$e->getMessage(), PHP_EOL;
+		}
 	}
 
 	public function saveThumbnail(callable $imagePromise, array $file)
