@@ -11,12 +11,12 @@
         "intervention/image": "^2.4",
         "league/flysystem": "^1.0",
         "spidgorny/nadlib": "dev-master",
-        "php-di/php-di": "^6.0"
-    },
+        "php-di/php-di": "^6.0",
+		"ext-gd": "*"
+	},
     "autoload": {
         "classmap": [
-            "class",
-            "vendor/spidgorny/nadlib"
+            "class"
         ]
     }
 }

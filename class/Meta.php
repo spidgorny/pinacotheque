@@ -50,8 +50,9 @@ class Meta
 		$path = str_replace('__', ':/', $this->_path_);
 		$path = trimExplode('_', $path);
 		$path = implode('/', $path);
-		$path = new Path($path);
-		return $prefix.'/'.$path->getURL().''.$this->FileName;
+//		$path = new Path($path);
+//		$path = $path->getURL();
+		return $prefix.cap($path).$this->FileName;
 	}
 
 	public function __debugInfo()

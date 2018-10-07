@@ -20,7 +20,7 @@ class MonthBrowser extends AppController
 	 */
 	protected $prefix;
 
-	public static function href($year, $month)
+	public static function href2month($year, $month)
 	{
 		return __CLASS__.'/'.$year.'/'.$month;
 	}
@@ -39,8 +39,10 @@ class MonthBrowser extends AppController
 		$this->filesystem = $filesystem;
 		$this->year = $year;
 		$this->month = $month;
+		/** @var \League\Flysystem\Adapter\Local $adapter */
+		$adapter = $this->filesystem->getAdapter();
 		$this->prefix = new Path(
-			$this->filesystem->getAdapter()->getPathPrefix()
+			$adapter->getPathPrefix()
 		);
 	}
 
@@ -85,7 +87,9 @@ class MonthBrowser extends AppController
 		foreach ($data as $i => $meta) {
 			$items[] = [
 //				'src' => $meta->getThumbnail($this->prefix->getURL()),
-				'src' => $meta->getOriginal(),
+				'src' => $meta->getOriginal(ImgProxy::href([
+					'path' => '',
+				])),
 				'w' => $meta->width(),
 				'h' => $meta->height(),
 			];

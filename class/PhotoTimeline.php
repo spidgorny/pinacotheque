@@ -69,7 +69,7 @@ class PhotoTimeline extends AppController
 				if ($images) {
 //					debug(first($images));
 					$meta = first($images);
-					$browser = MonthBrowser::href($year, $month);
+					$browser = MonthBrowser::href2month($year, $month);
 					$table[$year][$month] =
 						new htmlString([
 							'<figure style="position: relative">',

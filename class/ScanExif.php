@@ -85,12 +85,7 @@ class ScanExif {
 	{
 		$dirName = dirname($file['path']);
 		$jsonFile = $this->getDestinationFor($dirName.'/meta.json');
-		if (file_exists($jsonFile)) {
-			$fileContent = file_get_contents($jsonFile);
-			$json = json_decode($fileContent);
-		} else {
-			$json = (object)[];
-		}
+		$json = $this->getCachedJSONFrom($jsonFile);
 		$baseName = basename($file['path']);
 		if (isset($json->$baseName)) {
 			return;
@@ -109,13 +104,37 @@ class ScanExif {
 			return;
 		}
 
-		/** @var Image $image */
-		$image = $imagePromise();
-		$image->resize(256, null, function (Constraint $constraint) {
-			$constraint->aspectRatio();
-		});
+		try {
+			/** @var Image $image */
+			$image = $imagePromise();
+			$image->resize(256, null, function (Constraint $constraint) {
+				$constraint->aspectRatio();
+			});
 
-		$image->save($destination);
+			$image->save($destination);
+		} catch (Intervention\Image\Exception\NotReadableException $e) {
+			echo '** Error: '.$e->getMessage(), PHP_EOL;
+		}
+	}
+
+	private function getCachedJSONFrom($jsonFile)
+	{
+		static $jsonPath;
+		static $jsonData;
+
+		if ($jsonFile == $jsonPath && $jsonData) {
+			return $jsonData;
+		}
+
+		if (file_exists($jsonFile)) {
+			$fileContent = file_get_contents($jsonFile);
+			$jsonData = json_decode($fileContent);
+		} else {
+			$jsonData = (object)[];
+		}
+
+		$jsonPath = $jsonFile;
+		return $jsonData;
 	}
 
 }
