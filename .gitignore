@@ -8,3 +8,4 @@ www/bundle.js
 /vendor/
 /data/flickr/
 /data/*.sqlite
+/data/*.csv

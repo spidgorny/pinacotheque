@@ -108,4 +108,13 @@ class Meta
 		return array($latitude, $longitude);
 	}
 
+	public function getFlickr()
+	{
+		$farm_id = $this->props['flickr_farm'];
+		$server_id = $this->props['flickr_server'];
+		$id = $this->props['filename'];
+		$secret = $this->props['flickr_secret'];
+		return "https://farm${farm_id}.staticflickr.com/${server_id}/${id}_${secret}.jpg";
+	}
+
 }

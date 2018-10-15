@@ -4,18 +4,12 @@ class StreamFlickr extends AppController
 {
 
 	/**
-	 * @var PDO
-	 */
-	protected $db;
-
-	/**
 	 * @var PhotoGPS
 	 */
 	protected $photo;
 
-	public function __construct(PDO $db, PhotoGPS $photo)
+	public function __construct(PhotoGPS $photo)
 	{
-		$this->db = $db;
 		$this->photo = $photo;
 	}
 
@@ -26,6 +20,7 @@ class StreamFlickr extends AppController
 	{
 		$per = new Percent(14122721);	// lines in that file
 		$csv = new CsvIteratorWithHeader(__DIR__.'/../data/photo_metadata.csv');
+		$csv->escape = chr(0);	// has to be something
 		foreach ($csv as $row) {
 			$p = $this->photo->fetchByFilename($row['id']);
 			if (!$p) {

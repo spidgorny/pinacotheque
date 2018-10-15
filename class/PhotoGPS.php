@@ -90,4 +90,34 @@ class PhotoGPS
 		return $res;
 	}
 
+	public function queryBoundingBox($leftBottom, $rightTop)
+	{
+		$data = [];
+		list($lat0, $lon0) = $leftBottom;
+		list($lat1, $lon1) = $rightTop;
+		$lat_min = min($lat0, $lat1);
+		$lat_max = max($lat0, $lat1);
+		$lon_min = min($lon0, $lon1);
+		$lon_max = max($lon0, $lon1);
+		$query = "SELECT * FROM photo 
+		WHERE lat BETWEEN :lat0 AND :lat1
+		AND lon BETWEEN :lon0 AND :lon1";
+		$params = [
+			':lat0' => $lat_min,
+			':lat1' => $lat_max,
+			':lon0' => $lon_min,
+			':lon1' => $lon_max,
+		];
+//		debug($query, $params);
+		$query = $this->db->query($query);
+		$res = $query->execute($params);
+		if ($res) {
+			$data = $query->fetchAll(PDO::FETCH_ASSOC);
+			foreach ($data as &$row) {
+				$row = new Meta($row);
+			}
+		}
+		return $data;
+	}
+
 }
