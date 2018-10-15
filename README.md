@@ -33,6 +33,11 @@ Compile
 npm run compile
 ```
 
+Download example locations
+---
+from here: https://www.researchgate.net/publication/259802674_World-Wide_Scale_Geotagged_Image_Dataset_for_Automatic_Image_Annotation_and_Reverse_Geotagging
+
+
 Alternatives/Other tools
 ---
 

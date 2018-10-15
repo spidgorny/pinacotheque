@@ -75,6 +75,9 @@ class MetaSet
 		return $this->data;
 	}
 
+	/**
+	 * @return Meta[]
+	 */
 	public function getLinear()
 	{
 		return call_user_func_array('array_merge', $this->data);

@@ -108,6 +108,10 @@ class ScanExif {
 		}
 	}
 
+	/**
+	 * @param callable $imagePromise
+	 * @param array $file
+	 */
 	public function saveThumbnail(callable $imagePromise, array $file)
 	{
 		$destination = $this->getDestinationFor($file['path']);
@@ -131,7 +135,7 @@ class ScanExif {
 	private function getCachedJSONFrom($jsonFile)
 	{
 		static $jsonPath;
-		static $jsonData;
+		static $jsonData = [];
 
 		if ($jsonFile == $jsonPath && $jsonData) {
 			return $jsonData;

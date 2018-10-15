@@ -12,7 +12,8 @@
         "league/flysystem": "^1.0",
         "spidgorny/nadlib": "dev-master",
         "php-di/php-di": "^6.0",
-		"ext-gd": "*"
+		"ext-gd": "*",
+		"ext-pdo": "*"
 	},
     "autoload": {
         "classmap": [

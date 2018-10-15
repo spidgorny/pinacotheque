@@ -68,6 +68,7 @@ class PhotoTimeline extends AppController
 				$images = ifsetor($byMonth[$key], []);
 				if ($images) {
 //					debug(first($images));
+					/** @var Meta $meta */
 					$meta = first($images);
 					$browser = MonthBrowser::href2month($year, $month);
 					$table[$year][$month] =
