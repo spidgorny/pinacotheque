@@ -6,3 +6,5 @@ www/bundle.js
 /data/ThomasGasson
 /data/thumbs
 /vendor/
+/data/flickr/
+/data/*.sqlite

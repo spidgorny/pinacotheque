@@ -56,6 +56,13 @@ $builder->addDefinitions([
 	MonthBrowser::class => function (ContainerInterface $c) {
 		return MonthBrowser::route($c);
 	},
+	PhotoGPS::class => function (ContainerInterface $c) {
+		return new PhotoGPS($c->get('PDO'));
+	},
+	PDO::class => function (ContainerInterface $c) {
+		$db = new PDO('sqlite:'.__DIR__.'/data/geodb.sqlite');
+		return $db;
+	},
 ]);
 $container = $builder->build();
 

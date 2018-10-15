@@ -3,12 +3,21 @@
 class InitDB extends AppController
 {
 
+	/**
+	 * @var PDO
+	 */
+	protected $db;
+
+	public function __construct(PDO $pdo)
+	{
+		$this->db = $pdo;
+	}
+
 	function __invoke()
 	{
-		$db = new PDO('sqlite:'.__DIR__.'/../data/geodb.sqlite');
-		$res = $db->query('SELECT * FROM photo');
+		$res = $this->db->query('SELECT * FROM photo');
 		if (!$res) {
-			throw new Exception($db->errorInfo()[2]);
+			throw new Exception($this->db->errorInfo()[2]);
 		}
 		foreach ($res as $row) {
 			echo $row;
