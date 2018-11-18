@@ -22,5 +22,8 @@
         "classmap": [
             "class"
         ]
+    },
+    "scripts": {
+        "scan": "php index.php ScanExif d:\\Pictures"
     }
 }

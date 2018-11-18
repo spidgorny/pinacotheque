@@ -1,5 +1,6 @@
 <?php
 
+use Graze\ParallelProcess\Display\Lines;
 use Graze\ParallelProcess\Display\Table;
 use Graze\ParallelProcess\PriorityPool;
 use League\Flysystem\Adapter\Local;
@@ -75,10 +76,13 @@ class ScanExif extends BaseController
 		}
 		$this->log('Processing...');
 		$pool->setMaxSimultaneous(4);
+//		$pool->run();
 
-		$existing = new ConsoleOutput(ConsoleOutput::VERBOSITY_VERY_VERBOSE);
-		$table = new Table($existing, $pool);
-		$table->run();
+		$output = new ConsoleOutput(ConsoleOutput::VERBOSITY_VERY_VERBOSE);
+		$lines = new Lines($output, $pool);
+		$lines->run();
+//		$table = new Table($output, $pool);
+//		$table->run();
 
 		$this->log('Done');
 	}
