@@ -63,6 +63,13 @@ $builder->addDefinitions([
 		$db = new PDO('sqlite:'.__DIR__.'/data/geodb.sqlite');
 		return $db;
 	},
+	'-'.ScanOneFile::class => function (ContainerInterface $c) {
+		$file = $_REQUEST['argv'][2];
+		return new ScanOneFile($c->get(Filesystem::class), $file);
+	},
+	'FirstParameter' => function (ContainerInterface $c) {
+		return $_REQUEST['argv'][2];
+	}
 ]);
 $container = $builder->build();
 

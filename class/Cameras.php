@@ -1,5 +1,6 @@
 <?php
 
+use DI\Annotation\Inject;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
