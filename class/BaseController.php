@@ -12,11 +12,11 @@ class BaseController {
 	{
 		static $stamp;
 		if (!$stamp) {
-			$stamp = microtime(true);
+			$stamp = $_SERVER['REQUEST_TIME_FLOAT'];
 		}
 		$now = microtime(true);
 		$since = number_format($now - $stamp, 3);
-		echo $since, TAB, implode(TAB, $messages), PHP_EOL;
+		echo '+', $since, ' ms', TAB, implode(TAB, $messages), PHP_EOL;
 		$stamp = $now;
 	}
 

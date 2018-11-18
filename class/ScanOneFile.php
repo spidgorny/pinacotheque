@@ -32,7 +32,6 @@ class ScanOneFile extends BaseController
 	 * @param Filesystem $fileSystem
 	 * @param $file
 	 * @param $shortened
-	 * @Inject(FirstParameter)
 	 */
 	public function __construct(Filesystem $fileSystem, $file, $shortened)
 	{
@@ -52,6 +51,7 @@ class ScanOneFile extends BaseController
 
 	public function __invoke()
 	{
+		$this->log($this->file);
 //		$this->log('Destination: ', $this->getDestinationFor(''));
 		$manager = new ImageManager();
 		$imagePromise = function () use ($manager) {
@@ -125,7 +125,7 @@ class ScanOneFile extends BaseController
 		}
 	}
 
-	private function getCachedJSONFrom($jsonFile)
+	public function getCachedJSONFrom($jsonFile)
 	{
 		static $jsonPath;
 		static $jsonData = [];
