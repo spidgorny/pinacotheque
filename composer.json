@@ -16,7 +16,8 @@
 		"ext-pdo": "*",
         "symfony/process": "^3.4",
         "graze/parallel-process": "^0.8.1",
-        "graze/console-diff-renderer": "^0.6.2"
+        "graze/console-diff-renderer": "^0.6.2",
+        "vlucas/phpdotenv": "^3.3"
 	},
     "autoload": {
         "classmap": [

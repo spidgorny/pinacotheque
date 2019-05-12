@@ -32,12 +32,13 @@ class ScanExif extends BaseController
 	 */
 	protected $prefix;
 
-	public function __construct(Filesystem $fileSystem)
+	public function __construct(Filesystem $fileSystem, $thumbsPath)
 	{
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();
 		$this->prefix = realpath($adapter->getPathPrefix());
+		$this->thumbsPath = $thumbsPath;
 	}
 
 	function __invoke()
@@ -91,7 +92,7 @@ class ScanExif extends BaseController
 			}
 
 			// ignore files which have thumbnails
-			$scan = new ScanOneFile($this->fileSystem, $pathFile, $file['path']);
+			$scan = new ScanOneFile($this->fileSystem, $pathFile, $file['path'], $this->thumbsPath);
 			$thumbFile = $scan->getDestinationFor($file['path']);
 			if (!is_file($thumbFile)) {
 				$this->log($percent->get() . ' %', $this->prefix, $file['path']);

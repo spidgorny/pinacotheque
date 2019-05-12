@@ -27,13 +27,18 @@ class ScanOneFile extends BaseController
 	protected $shortened;
 
 	/**
+	 * @var string
+	 */
+	protected $thumbsPath;
+
+	/**
 	 * ScanOneFile constructor.
 	 *
 	 * @param Filesystem $fileSystem
 	 * @param $file
 	 * @param $shortened
 	 */
-	public function __construct(Filesystem $fileSystem, $file, $shortened)
+	public function __construct(Filesystem $fileSystem, $file, $shortened, $thumbsPath)
 	{
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
@@ -47,6 +52,7 @@ class ScanOneFile extends BaseController
 		}
 
 		$this->shortened = $shortened;
+		$this->thumbsPath = $thumbsPath;
 	}
 
 	public function __invoke()
@@ -72,7 +78,7 @@ class ScanOneFile extends BaseController
 
 	public function getDestinationFor($suffix)
 	{
-		$destination = __DIR__ . '/../data/thumbs/' .$suffix;
+		$destination = cap($this->thumbsPath) .$suffix;
 		@mkdir(dirname($destination), 0777, true);
 		$real = realpath($destination);	// after mkdir()
 		if ($real) {

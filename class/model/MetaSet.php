@@ -3,6 +3,9 @@
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 
+/**
+ * Represents all meta.json files in a project
+ */
 class MetaSet
 {
 

@@ -1,16 +1,19 @@
 <?php
 
+use Dotenv\Dotenv;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use Psr\Container\ContainerInterface;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+Dotenv::create(__DIR__)->load();
+
 define('BR', "<br />\n");
 define('TAB', "\t");
 define('DEVELOPMENT', true);
 
-ini_set ('memory_limit', '1G');
+ini_set('memory_limit', '1G');
 
 function getContext()
 {
@@ -46,7 +49,15 @@ $builder->addDefinitions([
 	Filesystem::class => function (ContainerInterface $c) {
 		return getFlySystem($_SERVER['argv'][2]);
 	},
-	'FlyThumbs' => getFlySystem(__DIR__.'/data/thumbs'),
+	'PathThumbs' => function (ContainerInterface $c) {
+		if (!getenv('DATA_STORAGE')) {
+			throw new RuntimeException('Make .env with DATA_STORAGE='.getcwd());
+		}
+		return cap(getenv('DATA_STORAGE')).'thumbs';
+	},
+	'FlyThumbs' => function (ContainerInterface $c) {
+		return getFlySystem($c->get('PathThumbs'));
+	},
 	Cameras::class => function (ContainerInterface $c) {
 		return new Cameras($c->get('FlyThumbs'));
 	},
@@ -63,9 +74,12 @@ $builder->addDefinitions([
 		$db = new PDO('sqlite:'.__DIR__.'/data/geodb.sqlite');
 		return $db;
 	},
+	ScanExif::class => function (ContainerInterface $c) {
+		return new ScanExif($c->get(Filesystem::class), $c->get('PathThumbs'));
+	},
 	ScanOneFile::class => function (ContainerInterface $c) {
 		$short = $_SERVER['argv'][4];
-		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $short);
+		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $short, $c->get('PathThumbs'));
 	},
 	'ThirdParameter' => function (ContainerInterface $c) {
 		return $_SERVER['argv'][3];
