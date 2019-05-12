@@ -9,3 +9,5 @@ www/bundle.js
 /data/flickr/
 /data/*.sqlite
 /data/*.csv
+.env
+/cache/

@@ -3,10 +3,18 @@
 class ImgProxy extends AppController
 {
 
+	protected $thumbsPath;
+
+	public function __construct($thumbsPath)
+	{
+		$this->thumbsPath = $thumbsPath;
+	}
+
 	public function __invoke()
 	{
 		$request = Request::getInstance();
 		$path = $request->getTrim('path');
+		$path = $thumbsPath . '/' . $path;
 //		debug($path, file_exists($path));
 		if (file_exists($path)) {
 			$ext = pathinfo($path, PATHINFO_EXTENSION);

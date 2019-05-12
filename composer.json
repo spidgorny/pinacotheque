@@ -26,6 +26,7 @@
     },
     "scripts": {
         "scan1": "php index.php ScanExif /Volumes/photo/BurnCD",
-        "scan2": "php index.php ScanExif /Volumes/photo/Digital\\ Photo/"
+        "scan2": "php index.php ScanExif /Volumes/photo/Digital\\ Photo/",
+        "serve": "php -S 127.0.0.1:8080 router.php"
     }
 }

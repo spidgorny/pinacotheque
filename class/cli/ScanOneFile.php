@@ -35,8 +35,9 @@ class ScanOneFile extends BaseController
 	 * ScanOneFile constructor.
 	 *
 	 * @param Filesystem $fileSystem
-	 * @param $file
-	 * @param $shortened
+	 * @param string $file
+	 * @param string $shortened
+	 * @param string $thumbsPath
 	 */
 	public function __construct(Filesystem $fileSystem, $file, $shortened, $thumbsPath)
 	{
@@ -48,7 +49,7 @@ class ScanOneFile extends BaseController
 
 		$this->file = $file;
 		if (!is_file($this->file)) {
-			throw new InvalidArgumentException($this->file.' not found');
+			throw new InvalidArgumentException($this->file . ' not found');
 		}
 
 		$this->shortened = $shortened;
@@ -76,11 +77,16 @@ class ScanOneFile extends BaseController
 		$this->saveThumbnail($imagePromise, $this->shortened);
 	}
 
+	/**
+	 * /data/thumbs/PrefixMerged/folder/path/file.jpg
+	 * @param string $suffix
+	 * @return bool|string
+	 */
 	public function getDestinationFor($suffix)
 	{
-		$destination = cap($this->thumbsPath) .$suffix;
+		$destination = cap($this->thumbsPath) . $this->prefixMerged . '/' . $suffix;
 		@mkdir(dirname($destination), 0777, true);
-		$real = realpath($destination);	// after mkdir()
+		$real = realpath($destination);    // after mkdir()
 		if ($real) {
 			$destination = $real;
 		}
@@ -90,7 +96,7 @@ class ScanOneFile extends BaseController
 	public function saveMeta(callable $imagePromise, $file)
 	{
 		$dirName = dirname($file);
-		$jsonFile = $this->getDestinationFor($dirName.'/meta.json');
+		$jsonFile = $this->getDestinationFor($dirName . '/meta.json');
 		echo $jsonFile, PHP_EOL;
 		$json = $this->getCachedJSONFrom($jsonFile);
 		$baseName = basename($file);
@@ -105,7 +111,7 @@ class ScanOneFile extends BaseController
 			$json->$baseName = $meta;
 			file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
-			echo '** Error: '.$e->getMessage(), PHP_EOL;
+			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		}
 	}
 
@@ -129,7 +135,7 @@ class ScanOneFile extends BaseController
 
 			$image->save($destination);
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
-			echo '** Error: '.$e->getMessage(), PHP_EOL;
+			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		}
 	}
 

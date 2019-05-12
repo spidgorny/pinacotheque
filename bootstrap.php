@@ -83,6 +83,9 @@ $builder->addDefinitions([
 	},
 	'ThirdParameter' => function (ContainerInterface $c) {
 		return $_SERVER['argv'][3];
+	},
+	ImgProxy::class => function (ContainerInterface $c) {
+		return new ImgProxy($c->get('PathThumbs'));
 	}
 ]);
 $container = $builder->build();

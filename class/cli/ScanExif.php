@@ -32,6 +32,11 @@ class ScanExif extends BaseController
 	 */
 	protected $prefix;
 
+	/**
+	 * @var string
+	 */
+	protected $thumbsPath;
+
 	public function __construct(Filesystem $fileSystem, $thumbsPath)
 	{
 		$this->fileSystem = $fileSystem;

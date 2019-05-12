@@ -39,7 +39,8 @@ class MetaSet
 		$files = $this->fileSystem->listContents('', true);
 		$models = [];
 
-		foreach ($files as $file) {
+		foreach ($files as &$file) {
+//			$file = new File($file);
 			$baseName = basename($file['path']);
 			if ($baseName != 'meta.json') {
 				continue;
@@ -59,8 +60,14 @@ class MetaSet
 
 	public function readMeta(array $file)
 	{
+		$json = [];
 		$fileContent = file_get_contents($this->prefix.'/'.$file['path']);
-		$json = json_decode($fileContent, true);
+		if ($fileContent) {
+			$json = json_decode($fileContent, true);
+		}
+		if (!$json) {
+			//debug($file);
+		}
 		return $json;
 	}
 

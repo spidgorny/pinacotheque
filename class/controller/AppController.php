@@ -15,7 +15,10 @@ class AppController
 	function template($body, array $params = [])
 	{
 		$view = View::getInstance(__DIR__ . '/../../template/template.phtml', $this);
-		$view->baseHref = (new Path(getcwd()))->getURL();
+		$base = new Path(getcwd());	// CWD != __DIR__
+//		$base = $base->up()->up();
+		$view->baseHref = cap($base->getURL());
+//		debug($base.'', $base->getURL().'');
 		return $view->render($params + [
 			'head' => '',
 			'body' => $body,
