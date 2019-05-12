@@ -96,8 +96,8 @@ class MonthBrowser extends AppController
 		}
 
 		return $this->template($content, [
-			'head' => file_get_contents(__DIR__.'/photoswipe.head.phtml'),
-			'foot' => file_get_contents(__DIR__.'/photoswipe.foot.phtml'),
+			'head' => file_get_contents(__DIR__ . '/photoswipe.head.phtml'),
+			'foot' => file_get_contents(__DIR__ . '/photoswipe.foot.phtml'),
 			'scripts' => "<script>
 var pswpElement = document.querySelector('.pswp');
 

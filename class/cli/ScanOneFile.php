@@ -72,7 +72,7 @@ class ScanOneFile extends BaseController
 
 	public function getDestinationFor($suffix)
 	{
-		$destination = __DIR__.'/../data/thumbs/'.$this->prefixMerged.'/'.$suffix;
+		$destination = __DIR__ . '/../data/thumbs/' .$suffix;
 		@mkdir(dirname($destination), 0777, true);
 		$real = realpath($destination);	// after mkdir()
 		if ($real) {
@@ -85,6 +85,7 @@ class ScanOneFile extends BaseController
 	{
 		$dirName = dirname($file);
 		$jsonFile = $this->getDestinationFor($dirName.'/meta.json');
+		echo $jsonFile, PHP_EOL;
 		$json = $this->getCachedJSONFrom($jsonFile);
 		$baseName = basename($file);
 		if (isset($json->$baseName)) {
@@ -94,6 +95,7 @@ class ScanOneFile extends BaseController
 			/** @var Image $image */
 			$image = $imagePromise();
 			$meta = $image->exif();
+			echo 'meta keys: ', sizeof($meta), PHP_EOL;
 			$json->$baseName = $meta;
 			file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
@@ -138,11 +140,11 @@ class ScanOneFile extends BaseController
 			$fileContent = file_get_contents($jsonFile);
 			$jsonData = json_decode($fileContent);
 		} else {
-			$jsonData = (object)[];
+			$jsonData = [];
 		}
 
 		$jsonPath = $jsonFile;
-		return $jsonData;
+		return (object)$jsonData;
 	}
 
 }

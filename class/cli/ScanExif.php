@@ -42,9 +42,35 @@ class ScanExif extends BaseController
 
 	function __invoke()
 	{
-		$this->log('Scanning', $this->prefix);
-		$files = $this->fileSystem->listContents('', true);
-		$this->log('Analyzing...');
+		$iterator = new RecursiveDirectoryIterator($this->prefix);
+		/** @var SplFileInfo $dir */
+		foreach ($iterator as $dir) {
+			if ($dir->getFilename()[0] != '.') {
+				echo '>>> ', $dir, PHP_EOL;
+				$files = $this->getFiles($dir);
+				echo 'files: ', sizeof($files), PHP_EOL;
+
+				$pool = $this->analyze($files);
+				$this->process($pool);
+			}
+		}
+	}
+
+	public function getFiles($dir)
+	{
+		$cache = new FileCache();
+		$files = $cache->get($dir, function () use ($dir) {
+			$this->log('Scanning', $dir);
+			$dirWithoutPrefix = str_replace($this->prefix, '', $dir);
+			$files = $this->fileSystem->listContents($dirWithoutPrefix, false);
+			return $files;
+		});
+		return $files;
+	}
+
+	public function analyze(array $files)
+	{
+		$this->log('Analyzing... '.sizeof($files));
 
 		$phpBinaryFinder = new PhpExecutableFinder();
 		$php = $phpBinaryFinder->find();
@@ -74,6 +100,11 @@ class ScanExif extends BaseController
 				$pool->add($p);
 			}
 		}
+		return $pool;
+	}
+
+	public function process(PriorityPool $pool)
+	{
 		$this->log('Processing...');
 		$pool->setMaxSimultaneous(4);
 //		$pool->run();

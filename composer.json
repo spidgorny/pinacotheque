@@ -24,6 +24,7 @@
         ]
     },
     "scripts": {
-        "scan": "php index.php ScanExif d:\\Pictures"
+        "scan1": "php index.php ScanExif /Volumes/photo/BurnCD",
+        "scan2": "php index.php ScanExif /Volumes/photo/Digital\\ Photo/"
     }
 }
