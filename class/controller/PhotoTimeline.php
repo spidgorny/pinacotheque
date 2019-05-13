@@ -37,7 +37,7 @@ class PhotoTimeline extends AppController
 
 
 		$timelineService = new TimelineService($this->prefixURL);
-		$table = $timelineService->getTable($set);
+		$table = $timelineService->getTable($set->getLinear());
 
 		$content[] = new slTable($table, [
 			'class' => 'table is-fullwidth'

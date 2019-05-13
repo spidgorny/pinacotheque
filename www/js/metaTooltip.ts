@@ -1,4 +1,7 @@
 //import Tooltip from "tooltip.js";
+declare class Tooltip {
+	constructor(reference, options: any);
+}
 
 document.addEventListener("DOMContentLoaded", () => {
 	const refDom = document.querySelectorAll('img.meta');

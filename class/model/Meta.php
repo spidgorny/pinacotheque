@@ -96,6 +96,10 @@ class Meta
 		$GPSLongitudeRef= $this->GPSLongitudeRef;
 		$GPSLongitude   = $this->GPSLongitude;
 
+		if (!$GPSLatitude) {
+			return null;
+		}
+
 		$lat_degrees = count($GPSLatitude) > 0
 			? $this->gps2Num($GPSLatitude[0]) : 0;
 		$lat_minutes = count($GPSLatitude) > 1

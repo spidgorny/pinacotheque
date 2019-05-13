@@ -1,4 +1,3 @@
-//import Tooltip from "tooltip.js";
 document.addEventListener("DOMContentLoaded", function () {
     var refDom = document.querySelectorAll('img.meta');
     var refArray = Array.from(refDom);

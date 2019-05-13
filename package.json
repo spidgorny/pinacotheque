@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/leaflet": "^1.4.4",
     "babel-core": "^6.26.3",
     "babel-loader": "^6.4.1",
     "babel-preset-es2015": "^6.24.1",

@@ -22,6 +22,9 @@ class MonthBrowser extends AppController
 
 	protected $prefixURL;
 
+	/** @var MetaSet */
+	protected $metaSet;
+
 	public static function href2month($year, $month)
 	{
 		return __CLASS__.'/'.$year.'/'.$month;
@@ -50,29 +53,29 @@ class MonthBrowser extends AppController
 			$this->prefix,
 			strlen($_SERVER['DOCUMENT_ROOT'])+1
 		);
+		$this->metaSet = new MetaSet(getFlySystem($this->prefix));
 	}
 
 	public function __invoke()
 	{
-		$set = new MetaSet(getFlySystem($this->prefix));
-
-		$timelineService = new TimelineService($this->prefixURL);
-		$table = $timelineService->getTable($set);
-		$table = [$this->year => $table[$this->year]];
-		$slTable = new slTable($table, [
-			'class' => 'table is-fullwidth'
-		]);
-		$slTable->generateThes();
-		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::class, 'Home').'';
-		$content[] = $slTable;
-		$content[] = '<hr />';
-
-		$data = $set->filter(function (Meta $meta) {
+		$data = $this->metaSet->filter(function (Meta $meta) {
 			return date('Y-m', $meta->FileDateTime)
-				== $this->year.'-'.$this->month;
+				== $this->year . '-' . $this->month;
 		});
 		/** @var Meta[] $data */
 		$data = array_values($data);
+
+		$action = ifsetor($_REQUEST['action'], 'index');
+		return $this->$action($data);
+	}
+
+	public function index(array $data)
+	{
+		$content[] = $this->getMonthSelector($this->metaSet->getLinear());
+
+		$ms = new MapService();
+		$content[] = $ms($data);
+		$content[] = '<hr />';
 
 		//debug($this->prefix.'', $this->prefix->getURL().'');
 		$sets = $this->splitIntoRows($data);
@@ -137,6 +140,21 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 });
 </script>"
 		]);
+	}
+
+	public function getMonthSelector(array $set)
+	{
+		$timelineService = new TimelineService($this->prefixURL);
+		$table = $timelineService->getTable($set);
+		$table = [$this->year => $table[$this->year]];
+		$slTable = new slTable($table, [
+			'class' => 'table is-fullwidth'
+		]);
+		$slTable->generateThes();
+		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::class, 'Home').'';
+		$content[] = $slTable;
+		$content[] = '<hr />';
+		return $content;
 	}
 
 	/**
@@ -222,6 +240,17 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 			$content[] = '<div class="meta4img is-hidden" id="md5-' . $id . '">' . UL::DL($someMeta) . '</div>';
 		}
 		return $content;
+	}
+
+	/**
+	 * @param Meta[] $data
+	 * @return false|string
+	 */
+	public function gps(array $data)
+	{
+		$ma = new MetaArray($data);
+		$places = $ma->getGps();
+		return json_encode($places);
 	}
 
 }

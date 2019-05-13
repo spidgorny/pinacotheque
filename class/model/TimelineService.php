@@ -10,9 +10,9 @@ class TimelineService
 		$this->prefixURL = $prefixURL;
 	}
 
-	public function getTable(MetaSet $set)
+	public function getTable(array $set)
 	{
-		$linear = ArrayPlus::create($set->getLinear());
+		$linear = ArrayPlus::create($set);
 //		debug($linear->count());
 
 		$byMonth = $linear->reindex(function ($key, $val) {
