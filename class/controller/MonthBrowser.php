@@ -58,10 +58,13 @@ class MonthBrowser extends AppController
 
 		$timelineService = new TimelineService($this->prefixURL);
 		$table = $timelineService->getTable($set);
-		$table = [$table[$this->year]];
-		$content[] = new slTable($table, [
+		$table = [$this->year => $table[$this->year]];
+		$slTable = new slTable($table, [
 			'class' => 'table is-fullwidth'
 		]);
+		$slTable->generateThes();
+		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::class, 'Home').'';
+		$content[] = $slTable;
 		$content[] = '<hr />';
 
 		$data = $set->filter(function (Meta $meta) {
@@ -100,6 +103,8 @@ class MonthBrowser extends AppController
 		}
 
 		$content = ['<div class="container">', $content, '</div>'];
+
+		$content[] = $this->getTooltipForMeta($data);
 
 		return $this->template($content, [
 			'head' => file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
@@ -176,6 +181,7 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 	{
 		$content = [];
 		$i = 0;
+		/** @var Meta[] $set */
 		foreach ($sets as $set) {
 			$oneWidth = sizeof($set) == 3 ? 'is-4' : 'is-3';
 			foreach ($set as &$meta) {
@@ -193,6 +199,27 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 				$set,
 				'</div>'
 			];
+		}
+		return $content;
+	}
+
+	/**
+	 * @param array $data
+	 * @return array
+	 */
+	public function getTooltipForMeta(array $data): array
+	{
+		$content = [];
+		foreach ($data as $meta) {
+			$id = md5($meta->getFilename());
+			$someMeta = $meta->getAll();
+			unset($someMeta['COMPUTED']);
+			foreach ($someMeta as $key => $val) {
+				if (!$val) {
+					unset($someMeta[$key]);
+				}
+			}
+			$content[] = '<div class="meta4img is-hidden" id="md5-' . $id . '">' . UL::DL($someMeta) . '</div>';
 		}
 		return $content;
 	}

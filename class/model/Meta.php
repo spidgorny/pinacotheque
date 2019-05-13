@@ -26,9 +26,14 @@ class Meta
 		return ifsetor($this->props[$key]);
 	}
 
+	public function getFilename()
+	{
+		return $this->props['FileName'];
+	}
+
 	public function getThumbnail($prefix = '')
 	{
-		$src = $prefix . '/' . $this->_path_ . '/' . $this->props['FileName'];
+		$src = $prefix . '/' . $this->_path_ . '/' . $this->getFilename();
 		return $src;
 	}
 
@@ -39,7 +44,9 @@ class Meta
 			'height' => 256/2,
 			'style' => [
 				'max-height' => '128px',
-			]
+			],
+			'class' => 'meta',
+			'data-id' => 'md5-' . md5($this->getFilename()),
 		]);
 	}
 
@@ -124,6 +131,11 @@ class Meta
 	public function isHorizontal()
 	{
 		return $this->width() > $this->height();
+	}
+
+	public function getAll()
+	{
+		return $this->props;
 	}
 
 }
