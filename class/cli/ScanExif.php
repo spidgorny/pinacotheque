@@ -48,10 +48,10 @@ class ScanExif extends BaseController
 
 	function __invoke()
 	{
-		$iterator = new RecursiveDirectoryIterator($this->prefix);
+		$iterator = new RecursiveDirectoryIterator($this->prefix, FilesystemIterator::SKIP_DOTS);
 		/** @var SplFileInfo $dir */
 		foreach ($iterator as $dir) {
-			if ($dir->getFilename()[0] != '.') {
+			if ($dir->isDir()) {
 				echo '>>> ', $dir, PHP_EOL;
 				$files = $this->getFiles($dir);
 				echo 'files: ', sizeof($files), PHP_EOL;
@@ -60,6 +60,15 @@ class ScanExif extends BaseController
 				$this->process($pool);
 			}
 		}
+
+		$dir = $this->prefix;
+		// folder itself mey contain images
+		echo '>>> ', $dir, PHP_EOL;
+		$files = $this->getFiles($dir);
+		echo 'files: ', sizeof($files), PHP_EOL;
+
+		$pool = $this->analyze($files);
+		$this->process($pool);
 	}
 
 	public function getFiles($dir)
@@ -74,6 +83,10 @@ class ScanExif extends BaseController
 		return $files;
 	}
 
+	/**
+	 * @param array $files
+	 * @return PriorityPool
+	 */
 	public function analyze(array $files)
 	{
 		$this->log('Analyzing... '.sizeof($files));

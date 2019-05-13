@@ -28,7 +28,13 @@ class Meta
 
 	public function getFilename()
 	{
-		return $this->props['FileName'];
+		if (isset($this->props['FileName'])) {
+			return $this->props['FileName'];
+		}
+
+		$id = $this->props['id'];
+		$secret = $this->props['flickr_secret'];
+		return $id.'_'.$secret.'.jpg';
 	}
 
 	public function getThumbnail($prefix = '')
@@ -127,7 +133,7 @@ class Meta
 	{
 		$farm_id = $this->props['flickr_farm'];
 		$server_id = $this->props['flickr_server'];
-		$id = $this->props['filename'];
+		$id = $this->props['id'];
 		$secret = $this->props['flickr_secret'];
 		return "https://farm${farm_id}.staticflickr.com/${server_id}/${id}_${secret}.jpg";
 	}

@@ -168,7 +168,8 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 		foreach ($data as $i => $meta) {
 			$set[] = $meta;
 
-			$width = $this->getSetWidth($set);
+			//$width = $this->getSetWidth($set);
+			$width = sizeof($set);
 			if ($width >= 4) {
 				$sets[] = $set;
 				$set = [];

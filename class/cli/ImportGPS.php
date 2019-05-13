@@ -21,7 +21,7 @@ class ImportGPS extends AppController
 		foreach ($images as $filename => $meta) {
 			if ($meta->GPSLatitude) {
 				$location = $meta->getLocation();
-				debug($location);
+				debug($location, $meta);
 				$row = $this->photo->fetchByFilename($filename);
 				if (!$row) {
 					$this->photo->insert($filename, $location[0], $location[1]);
