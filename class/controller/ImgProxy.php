@@ -5,6 +5,10 @@ class ImgProxy extends AppController
 
 	protected $thumbsPath;
 
+	/**
+	 * ImgProxy constructor.
+	 * @param $thumbsPath - this is not needed as we show the original file
+	 */
 	public function __construct($thumbsPath)
 	{
 		$this->thumbsPath = $thumbsPath;
@@ -14,7 +18,7 @@ class ImgProxy extends AppController
 	{
 		$request = Request::getInstance();
 		$path = $request->getTrim('path');
-		$path = $thumbsPath . '/' . $path;
+		//$path = $this->thumbsPath . '/' . $path;
 //		debug($path, file_exists($path));
 		if (file_exists($path)) {
 			$ext = pathinfo($path, PATHINFO_EXTENSION);
@@ -31,6 +35,8 @@ class ImgProxy extends AppController
 				imagepng($gd);
 				exit;
 			}
+		} else {
+			debug($path, @filesize($path));
 		}
 	}
 

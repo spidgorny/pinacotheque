@@ -20,6 +20,8 @@ class MonthBrowser extends AppController
 	 */
 	protected $prefix;
 
+	protected $prefixURL;
+
 	public static function href2month($year, $month)
 	{
 		return __CLASS__.'/'.$year.'/'.$month;
@@ -44,11 +46,24 @@ class MonthBrowser extends AppController
 		$this->prefix = new Path(
 			$adapter->getPathPrefix()
 		);
+		$this->prefixURL = substr(
+			$this->prefix,
+			strlen($_SERVER['DOCUMENT_ROOT'])+1
+		);
 	}
 
 	public function __invoke()
 	{
 		$set = new MetaSet(getFlySystem($this->prefix));
+
+		$timelineService = new TimelineService($this->prefixURL);
+		$table = $timelineService->getTable($set);
+		$table = [$table[$this->year]];
+		$content[] = new slTable($table, [
+			'class' => 'table is-fullwidth'
+		]);
+		$content[] = '<hr />';
+
 		$data = $set->filter(function (Meta $meta) {
 			return date('Y-m', $meta->FileDateTime)
 				== $this->year.'-'.$this->month;
@@ -56,32 +71,21 @@ class MonthBrowser extends AppController
 		/** @var Meta[] $data */
 		$data = array_values($data);
 
-		$content = ['<div class="tile is-ancestor is-vertical">'];
-		$set = [];
-		foreach ($data as $i => $meta) {
-			$img = $meta->toHTML($this->prefix->getURL());
-			$img->attr('data-index', $i);
-			$set[] = [
-				'<div class="tile is-child is-1">',
-				$img,
-				'</div>',
-			];
-			if (($i % 12) == 11) {
-				$content[] = [
-					'<div class="tile is-parent">',
-					$set,
-					'</div>'];
-				$set = [];
-			}
+		//debug($this->prefix.'', $this->prefix->getURL().'');
+		$sets = $this->splitIntoRows($data);
+		if (false) {
+			$setSize = array_map(function (array $set) {
+				return sizeof($set) . ' : ' . implode(', ', array_map(function ($item) {
+						return get_class($item);
+					}, $set));
+			}, $sets);
+			debug($setSize);
 		}
-		// add remaining
-		if ($set) {
-			$content[] = [
-				'<div class="tile is-parent">',
-				$set,
-				'</div>'];
-		}
-		$content[] = '</div>'; // is-ancestor
+
+		$images = $this->setsToImages($sets);
+		$content[] = ['<div class="tile is-ancestor is-vertical">', $images,
+			'</div>'
+		]; // is-ancestor
 
 		$items = [];
 		foreach ($data as $i => $meta) {
@@ -94,6 +98,8 @@ class MonthBrowser extends AppController
 				'h' => $meta->height(),
 			];
 		}
+
+		$content = ['<div class="container">', $content, '</div>'];
 
 		return $this->template($content, [
 			'head' => file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
@@ -126,6 +132,69 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 });
 </script>"
 		]);
+	}
+
+	/**
+	 * @param Meta[] $data
+	 * @return array
+	 */
+	public function splitIntoRows(array $data): array
+	{
+		$sets = [];
+		$set = [];
+		foreach ($data as $i => $meta) {
+			$set[] = $meta;
+
+			$width = $this->getSetWidth($set);
+			if ($width >= 4) {
+				$sets[] = $set;
+				$set = [];
+			}
+		}
+		// add remaining
+		if ($set) {
+			$sets[] = $set;
+		}
+		return $sets;
+	}
+
+	/**
+	 * @param Meta[] $set
+	 * @return float|int
+	 */
+	public function getSetWidth(array $set)
+	{
+		$width = 0;
+		foreach ($set as $meta) {
+			$isHorizontal = $meta->isHorizontal();
+			$width += $isHorizontal ? 1 : 0.5;
+		}
+		return $width;
+	}
+
+	public function setsToImages(array $sets)
+	{
+		$content = [];
+		$i = 0;
+		foreach ($sets as $set) {
+			$oneWidth = sizeof($set) == 3 ? 'is-4' : 'is-3';
+			foreach ($set as &$meta) {
+				$img = $meta->toHTML($this->prefix->getURL());
+				$img->attr('data-index', $i);
+				$meta = [
+					'<div class="tile is-child '.$oneWidth.'">',
+					$img,
+					'</div>',
+				];
+				$i++;
+			}
+			$content[] = [
+				'<div class="tile is-parent">',
+				$set,
+				'</div>'
+			];
+		}
+		return $content;
 	}
 
 }

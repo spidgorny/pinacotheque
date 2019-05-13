@@ -35,7 +35,11 @@ class Meta
 	public function toHTML($prefix = '')
 	{
 		return HTMLTag::img($this->getThumbnail($prefix), [
-			'width' => 256,
+//			'width' => 256,
+			'height' => 256/2,
+			'style' => [
+				'max-height' => '128px',
+			]
 		]);
 	}
 
@@ -115,6 +119,11 @@ class Meta
 		$id = $this->props['filename'];
 		$secret = $this->props['flickr_secret'];
 		return "https://farm${farm_id}.staticflickr.com/${server_id}/${id}_${secret}.jpg";
+	}
+
+	public function isHorizontal()
+	{
+		return $this->width() > $this->height();
 	}
 
 }
