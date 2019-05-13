@@ -10,16 +10,17 @@ class TimelineService
 		$this->prefixURL = $prefixURL;
 	}
 
+	/**
+	 * @param Meta[] $set
+	 * @return array
+	 */
 	public function getTable(array $set)
 	{
 		$linear = ArrayPlus::create($set);
 //		debug($linear->count());
 
-		$byMonth = $linear->reindex(function ($key, $val) {
-			$key = @$val->FileDateTime;
-			return is_int($key)
-				? date('Y-m', $key)
-				: $key;
+		$byMonth = $linear->reindex(function ($key, Meta $val) {
+			return $val->yearMonth();
 		});
 //		debug($byMonth->getData());
 

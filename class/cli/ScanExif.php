@@ -93,7 +93,7 @@ class ScanExif extends BaseController
 
 		$phpBinaryFinder = new PhpExecutableFinder();
 		$php = $phpBinaryFinder->find();
-		$this->log($php);
+//		$this->log($php);
 
 		$pool = new PriorityPool();
 		$percent = new Percent(sizeof($files));
@@ -124,7 +124,7 @@ class ScanExif extends BaseController
 
 	public function process(PriorityPool $pool)
 	{
-		$this->log('Processing...');
+		$this->log('Processing... ');
 		$pool->setMaxSimultaneous(4);
 //		$pool->run();
 

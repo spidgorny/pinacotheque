@@ -148,4 +148,18 @@ class Meta
 		return $this->props;
 	}
 
+	public function yearMonth()
+	{
+		// 2008:05:08 20:59:49
+		$key = @$this->DateTime;
+		if ($key && $key[0] != '0') {
+			$parts = trimExplode(':', $key);
+			return $parts[0].'-'.$parts[1];
+		}
+		$key = @$this->FileDateTime;
+		return is_int($key)
+			? date('Y-m', $key)
+			: $key;
+	}
+
 }

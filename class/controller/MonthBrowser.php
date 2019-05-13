@@ -59,7 +59,7 @@ class MonthBrowser extends AppController
 	public function __invoke()
 	{
 		$data = $this->metaSet->filter(function (Meta $meta) {
-			return date('Y-m', $meta->FileDateTime)
+			return $meta->yearMonth()
 				== $this->year . '-' . $this->month;
 		});
 		/** @var Meta[] $data */
