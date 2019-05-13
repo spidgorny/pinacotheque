@@ -6,6 +6,9 @@
             "email": "depidsvy@nintendo.de"
         }
     ],
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "ext-json": "*",
         "intervention/image": "^2.4",
