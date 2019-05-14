@@ -37,6 +37,8 @@ class ScanExif extends BaseController
 	 */
 	protected $thumbsPath;
 
+	protected $useCache = false;
+
 	public function __construct(Filesystem $fileSystem, $thumbsPath)
 	{
 		$this->fileSystem = $fileSystem;
@@ -73,13 +75,27 @@ class ScanExif extends BaseController
 
 	public function getFiles($dir)
 	{
+		if (!$this->useCache) {
+			return $this->scandir($dir);
+		}
 		$cache = new FileCache();
 		$files = $cache->get($dir, function () use ($dir) {
-			$this->log('Scanning', $dir);
-			$dirWithoutPrefix = str_replace($this->prefix, '', $dir);
-			$files = $this->fileSystem->listContents($dirWithoutPrefix, false);
-			return $files;
+			return $this->scandir($dir);
 		});
+		return $files;
+	}
+
+	public function scandir($dir)
+	{
+		$files = [];
+		$this->log('Scanning', $dir);
+		$dirWithoutPrefix = str_replace($this->prefix, '', $dir);
+		try {
+			$files = $this->fileSystem->listContents($dirWithoutPrefix, true);
+			usort($files, function ($a, $b) {
+				return strcmp($a['path'], $b['path']);
+			});
+		} catch (RuntimeException $e) {}
 		return $files;
 	}
 
