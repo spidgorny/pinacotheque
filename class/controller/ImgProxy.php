@@ -18,6 +18,10 @@ class ImgProxy extends AppController
 	{
 		$request = Request::getInstance();
 		$path = $request->getTrim('path');
+		if ($path[0] != '/') {
+			$path = '/' . $path;
+		}
+		// this is a link to the original file not a thumbnail
 		//$path = $this->thumbsPath . '/' . $path;
 //		debug($path, file_exists($path));
 		if (file_exists($path)) {
@@ -36,7 +40,18 @@ class ImgProxy extends AppController
 				exit;
 			}
 		} else {
-			debug($path, @filesize($path));
+			$newPath = [];
+			$pathParts = trimExplode('/', $path);
+			foreach ($pathParts as $plus) {
+				$newPath[] = $plus;
+				$strPath = '/'.implode('/', $newPath);
+				$isDir = is_dir($strPath);
+				$isFile = is_file($strPath);
+				debug($strPath, $isDir, $isFile, $isFile ? @filesize($strPath) : null, glob($strPath.'/*', GLOB_ONLYDIR));
+				if (!$isDir && !$isFile) {
+					break;
+				}
+			}
 		}
 	}
 
