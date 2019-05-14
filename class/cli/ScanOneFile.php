@@ -19,11 +19,6 @@ class ScanOneFile extends BaseController
 
 	protected $prefix;
 
-	/**
-	 * @var string
-	 */
-	protected $prefixMerged;
-
 	protected $shortened;
 
 	/**
@@ -36,29 +31,33 @@ class ScanOneFile extends BaseController
 	 *
 	 * @param Filesystem $fileSystem
 	 * @param string $file
-	 * @param string $shortened
 	 * @param string $thumbsPath
+	 * @param string $shortened
 	 */
-	public function __construct(Filesystem $fileSystem, $file, $shortened, $thumbsPath)
+	public function __construct(Filesystem $fileSystem, $file, $thumbsPath, $shortened)
 	{
+//		debug($_SERVER['argv']);
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();
 		$this->prefix = realpath($adapter->getPathPrefix());
-		$this->prefixMerged = strtr($this->prefix, '/\\:', '___');
 
 		$this->file = $file;
 		if (!is_file($this->file)) {
 			throw new InvalidArgumentException($this->file . ' not found');
 		}
 
-		$this->shortened = $shortened;
 		$this->thumbsPath = $thumbsPath;
+		$this->shortened = $shortened;
 	}
 
 	public function __invoke()
 	{
-		$this->log($this->file);
+		$this->log('Start', $this->file);
+		$this->log('Prefix', $this->prefix);
+		$this->log('Thumbs path', $this->thumbsPath);
+		$this->log('Shortened', $this->shortened);
+		$this->log('Destination', $this->getDestinationFor($this->shortened));
 //		$this->log('Destination: ', $this->getDestinationFor(''));
 		$manager = new ImageManager();
 		$imagePromise = function () use ($manager) {
@@ -75,16 +74,17 @@ class ScanOneFile extends BaseController
 
 		$this->saveMeta($imagePromise, $this->shortened);
 		$this->saveThumbnail($imagePromise, $this->shortened);
+		$this->log('Done');
 	}
 
 	/**
 	 * /data/thumbs/PrefixMerged/folder/path/file.jpg
-	 * @param string $suffix
+	 * @param string $suffix = $this->shortened most of the time
 	 * @return bool|string
 	 */
 	public function getDestinationFor($suffix)
 	{
-		$destination = cap($this->thumbsPath) . $this->prefixMerged . '/' . $suffix;
+		$destination = cap($this->thumbsPath) . $suffix;
 		@mkdir(dirname($destination), 0777, true);
 		$real = realpath($destination);    // after mkdir()
 		if ($real) {
@@ -97,7 +97,7 @@ class ScanOneFile extends BaseController
 	{
 		$dirName = dirname($file);
 		$jsonFile = $this->getDestinationFor($dirName . '/meta.json');
-		echo $jsonFile, PHP_EOL;
+		$this->log('jsonFile', $jsonFile);
 		$json = $this->getCachedJSONFrom($jsonFile);
 		$baseName = basename($file);
 		if (isset($json->$baseName)) {
@@ -107,7 +107,7 @@ class ScanOneFile extends BaseController
 			/** @var Image $image */
 			$image = $imagePromise();
 			$meta = $image->exif();
-			echo 'meta keys: ', sizeof($meta), PHP_EOL;
+			$this->log('meta keys', sizeof($meta));
 			$json->$baseName = $meta;
 			file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
 		} catch (Intervention\Image\Exception\NotReadableException $e) {

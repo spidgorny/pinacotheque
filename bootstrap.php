@@ -44,16 +44,32 @@ function getFlySystem($root = __DIR__.'/data')
 	return $filesystem;
 }
 
+function getPathToThumbsFrom($index)
+{
+	$storageFolder = ifsetor($_SERVER['argv'][$index]);
+	if (!$storageFolder) {
+		throw new RuntimeException('php ScanOneFile /path/to/source <project name>');
+	}
+	if ($storageFolder[0] != '/') {
+		$DATA_STORAGE = getenv('DATA_STORAGE');
+		if (!$DATA_STORAGE) {
+			throw new RuntimeException('Make .env with DATA_STORAGE=' . getcwd());
+		}
+		$thumbsPath = cap($DATA_STORAGE) . $storageFolder;
+	} else {
+		$thumbsPath = $storageFolder;	// absolute path provided
+	}
+	if (!is_dir($thumbsPath)) {
+		throw new RuntimeException($thumbsPath.' is not a folder');
+	}
+//	debug($storageFolder, $thumbsPath);
+	return $thumbsPath;
+}
+
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions([
 	Filesystem::class => function (ContainerInterface $c) {
 		return getFlySystem($_SERVER['argv'][2]);
-	},
-	'PathThumbs' => function (ContainerInterface $c) {
-		if (!getenv('DATA_STORAGE')) {
-			throw new RuntimeException('Make .env with DATA_STORAGE='.getcwd());
-		}
-		return cap(getenv('DATA_STORAGE')).'thumbs';
 	},
 	'FlyThumbs' => function (ContainerInterface $c) {
 		return getFlySystem($c->get('PathThumbs'));
@@ -75,11 +91,15 @@ $builder->addDefinitions([
 		return $db;
 	},
 	ScanExif::class => function (ContainerInterface $c) {
-		return new ScanExif($c->get(Filesystem::class), $c->get('PathThumbs'));
+		$thumbsPath = getPathToThumbsFrom(3);
+		return new ScanExif($c->get(Filesystem::class), $thumbsPath);
 	},
 	ScanOneFile::class => function (ContainerInterface $c) {
-		$short = $_SERVER['argv'][4];
-		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $short, $c->get('PathThumbs'));
+		$thumbsPath = getPathToThumbsFrom(4);
+		$short = $_SERVER['argv'][5];
+
+		// -------------------------------[2]----------------------[3]=file-------------[4]=data/project----[5]=jpg
+		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath,         $short);
 	},
 	'ThirdParameter' => function (ContainerInterface $c) {
 		return $_SERVER['argv'][3];

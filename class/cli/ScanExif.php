@@ -125,13 +125,15 @@ class ScanExif extends BaseController
 				continue;
 			}
 
-			// ignore files which have thumbnails
-			$scan = new ScanOneFile($this->fileSystem, $pathFile, $file['path'], $this->thumbsPath);
+			$scan = new ScanOneFile($this->fileSystem, $pathFile, $this->thumbsPath, $file['path']);
 			$thumbFile = $scan->getDestinationFor($file['path']);
+//			debug($pathFile, $file['path'], $this->thumbsPath, $thumbFile);
+//			exit;
+			// ignore files which have thumbnails
 			if (!is_file($thumbFile)) {
 				$this->log($percent->get() . ' %', $this->prefix, $file['path']);
 //	    		$scan();
-				$p = new Process([$php, 'index.php', ScanOneFile::class, $this->prefix, $pathFile, $file['path']]);
+				$p = new Process([$php, 'index.php', ScanOneFile::class, $this->prefix, $pathFile, $this->thumbsPath, $file['path']]);
 				$pool->add($p);
 			}
 		}

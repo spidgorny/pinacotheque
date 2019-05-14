@@ -28,10 +28,11 @@
         ]
     },
     "scripts": {
-        "scan1": "php index.php ScanExif /Volumes/photo/BurnCD",
-        "scan2": "php index.php ScanExif /Volumes/photo/Digital\\ Photo/",
+        "scan1": "php index.php ScanExif /Volumes/photo/BurnCD BurnCD",
+        "scan2": "php index.php ScanExif /Volumes/photo/Digital\\ Photo Digital_Photo",
         "GeoQuery": "php index.php GeoQuery",
         "Cameras": "php index.php Cameras",
-        "serve": "php -S 127.0.0.1:8080 router.php"
+        "serve": "php -S 127.0.0.1:8080 router.php",
+        "ScanOneFile": "php index.php ScanOneFile /Volumes/photo/BurnCD /Volumes/photo/BurnCD/Kodak2016/Lesik2013/1/17300.jpg /Users/depidsvy/dev/pinacotheque/data/BurnCD Kodak2016/Lesik2013/1/17300.jpg"
     }
 }
