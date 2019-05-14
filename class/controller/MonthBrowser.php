@@ -93,22 +93,11 @@ class MonthBrowser extends AppController
 			'</div>'
 		]; // is-ancestor
 
-		$items = [];
-		foreach ($data as $i => $meta) {
-			$items[] = [
-//				'src' => $meta->getThumbnail($this->prefix->getURL()),
-				'src' => $meta->getOriginal(ImgProxy::href([
-					'path' => '',
-				])),
-				'w' => $meta->width(),
-				'h' => $meta->height(),
-			];
-		}
-
 		$content = ['<div class="container">', $content, '</div>'];
 
 		$content[] = $this->getTooltipForMeta($data);
 
+		$items = $this->getOriginalImages($data);
 		return $this->template($content, [
 			'head' => file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
 			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
@@ -204,7 +193,9 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 		foreach ($sets as $set) {
 			$oneWidth = sizeof($set) == 3 ? 'is-4' : 'is-3';
 			foreach ($set as &$meta) {
-				$img = $meta->toHTML($this->prefix->getURL());
+				$img = $meta->toHTML($this->prefix->getURL(), [
+					'class' => 'meta',
+				]);
 				$img->attr('data-index', $i);
 				$meta = [
 					'<div class="tile is-child '.$oneWidth.'">',
@@ -241,6 +232,24 @@ Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
 			$content[] = '<div class="meta4img is-hidden" id="md5-' . $id . '">' . UL::DL($someMeta) . '</div>';
 		}
 		return $content;
+	}
+
+	/**
+	 * @param Meta[] $data
+	 * @return array
+	 */
+	public function getOriginalImages(array $data)
+	{
+		$items = [];
+		foreach ($data as $i => $meta) {
+			$items[] = [
+//				'src' => $meta->getThumbnail($this->prefix->getURL()),
+				'src' => $meta->getOriginal(),
+				'w' => $meta->width(),
+				'h' => $meta->height(),
+			];
+		}
+		return $items;
 	}
 
 	/**

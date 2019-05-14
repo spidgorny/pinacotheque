@@ -43,15 +43,14 @@ class Meta
 		return $src;
 	}
 
-	public function toHTML($prefix = '')
+	public function toHTML($prefix = '', array $attributes = [])
 	{
-		return HTMLTag::img($this->getThumbnail($prefix), [
+		return HTMLTag::img($this->getThumbnail($prefix), $attributes + [
 //			'width' => 256,
 			'height' => 256/2,
 			'style' => [
 				'max-height' => '128px',
 			],
-			'class' => 'meta',
 			'data-id' => 'md5-' . md5($this->getFilename()),
 		]);
 	}
@@ -66,14 +65,9 @@ class Meta
 		return $this->COMPUTED['Height'];
 	}
 
-	public function getOriginal($prefix = '')
+	public function getOriginal()
 	{
-		$path = str_replace('__', ':/', $this->_path_);
-		$path = trimExplode('_', $path);
-		$path = implode('/', $path);
-//		$path = new Path($path);
-//		$path = $path->getURL();
-		return $prefix . cap($path) . $this->FileName;
+		return ImgProxy::href2img($this);
 	}
 
 	public function __debugInfo()

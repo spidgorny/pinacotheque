@@ -55,7 +55,9 @@ class TimelineService
 						new htmlString([
 							'<figure style="position: relative">',
 							'<a href="'.$browser.'">',
-							$meta->toHTML($this->prefixURL),
+							$meta->toHTML($this->prefixURL, [
+								'class' => '',
+							]),
 							'</a>',
 							'<div class="" 
 							style="position: absolute;

@@ -3,24 +3,34 @@
 class ImgProxy extends AppController
 {
 
-	protected $thumbsPath;
+	public static function href2img(Meta $meta)
+	{
+		// ImgProxy?path= /Volume/photos & SomeFolder/SomeFile.jpg
+		$url = ImgProxy::href([
+			'path' => $meta->_path_,
+			'file' => $meta->getFilename(),
+		]);
+		return $url;
+	}
 
 	/**
 	 * ImgProxy constructor.
-	 * @param $thumbsPath - this is not needed as we show the original file
 	 */
-	public function __construct($thumbsPath)
+	public function __construct()
 	{
-		$this->thumbsPath = $thumbsPath;
 	}
 
 	public function __invoke()
 	{
 		$request = Request::getInstance();
+//		debug($_REQUEST);
 		$path = $request->getTrim('path');
-		if ($path[0] != '/') {
-			$path = '/' . $path;
-		}
+		$path = str_replace('__', ':/', $path);
+		$path = trimExplode('_', $path);
+		$path = implode('/', $path);
+
+		$filename = $request->getTrim('file');
+		$path .= '/' . $filename; // without decoding
 		// this is a link to the original file not a thumbnail
 		//$path = $this->thumbsPath . '/' . $path;
 //		debug($path, file_exists($path));
@@ -40,14 +50,15 @@ class ImgProxy extends AppController
 				exit;
 			}
 		} else {
+			debug($path);
 			$newPath = [];
 			$pathParts = trimExplode('/', $path);
 			foreach ($pathParts as $plus) {
 				$newPath[] = $plus;
-				$strPath = '/'.implode('/', $newPath);
+				$strPath = '/' . implode('/', $newPath);
 				$isDir = is_dir($strPath);
 				$isFile = is_file($strPath);
-				debug($strPath, $isDir, $isFile, $isFile ? @filesize($strPath) : null, glob($strPath.'/*', GLOB_ONLYDIR));
+				debug($strPath, $isDir, $isFile, $isFile ? @filesize($strPath) : null, glob($strPath . '/*', GLOB_ONLYDIR));
 				if (!$isDir && !$isFile) {
 					break;
 				}
