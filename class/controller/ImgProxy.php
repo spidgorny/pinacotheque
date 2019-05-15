@@ -3,6 +3,8 @@
 class ImgProxy extends AppController
 {
 
+	protected $dataPath;
+
 	public static function href2img(Meta $meta)
 	{
 		// ImgProxy?path= /Volume/photos & SomeFolder/SomeFile.jpg
@@ -15,9 +17,11 @@ class ImgProxy extends AppController
 
 	/**
 	 * ImgProxy constructor.
+	 * @param $dataPath
 	 */
-	public function __construct()
+	public function __construct($dataPath)
 	{
+		$this->dataPath = $dataPath;
 	}
 
 	public function __invoke()
@@ -28,6 +32,18 @@ class ImgProxy extends AppController
 		$path = str_replace('__', ':/', $path);
 		$path = trimExplode('_', $path);
 		$path = implode('/', $path);
+
+		$pathParts = trimExplode('/', $path);
+		$sourceBase = first($pathParts);
+		$sourceJson = path_plus($this->dataPath, $sourceBase, 'source.json');
+		//debug($sourceBase, $sourceJson);
+		if (is_file($sourceJson)) {
+			$text = file_get_contents($sourceJson);
+			$json = json_decode($text);
+			$sourcePath = $json->source;
+			// $sourceBase is already in the $sourcePath
+			$path = path_plus($sourcePath, implode('/', array_slice($pathParts, 1)));
+		}
 
 		$filename = $request->getTrim('file');
 		$path .= '/' . $filename; // without decoding

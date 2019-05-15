@@ -3,11 +3,7 @@ node_modules
 www/bundle.js
 /typings/
 /www/bundle.js.map
-/data/ThomasGasson
-/data/thumbs
+/data/
 /vendor/
-/data/flickr/
-/data/*.sqlite
-/data/*.csv
 .env
 /cache/

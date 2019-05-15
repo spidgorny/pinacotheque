@@ -5,6 +5,10 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use Psr\Container\ContainerInterface;
 
+ini_set('error_prepend_string', '<pre style="white-space: pre-wrap">');
+ini_set('error_append_string', '</pre>');
+ini_set('html_errors', true);
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 Dotenv::create(__DIR__)->load();
@@ -72,7 +76,7 @@ $builder->addDefinitions([
 		return getFlySystem($_SERVER['argv'][2]);
 	},
 	'FlyThumbs' => function (ContainerInterface $c) {
-		return getFlySystem($c->get('PathThumbs'));
+		return getFlySystem(getenv('DATA_STORAGE'));
 	},
 	Cameras::class => function (ContainerInterface $c) {
 		return new Cameras($c->get('FlyThumbs'));
@@ -105,7 +109,7 @@ $builder->addDefinitions([
 		return $_SERVER['argv'][3];
 	},
 	ImgProxy::class => function (ContainerInterface $c) {
-		return new ImgProxy($c->get('PathThumbs'));
+		return new ImgProxy(getenv('DATA_STORAGE'));
 	}
 ]);
 $container = $builder->build();
