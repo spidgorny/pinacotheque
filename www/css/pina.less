@@ -20,3 +20,19 @@ dt {
 dd {
 	text-align: left;
 }
+
+td {
+	figure.picWithCount {
+		position: relative;
+
+		.count {
+			position: absolute;
+			right: 0;
+			bottom: 0;
+		}
+	}
+
+	&.active {
+		background: silver;
+	}
+}

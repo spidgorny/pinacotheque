@@ -5,6 +5,11 @@ class TimelineService
 
 	var $prefixURL;
 
+	/**
+	 * @var string $year-$month
+	 */
+	public $selected;
+
 	public function __construct($prefixURL)
 	{
 		$this->prefixURL = $prefixURL;
@@ -38,40 +43,53 @@ class TimelineService
 		$max = new Date(max($dates));
 
 		$table = [];
-		$months = range(1, 12);
 		for ($year = $min->getYear(); $year <= $max->getYear(); $year++) {
 			$table[$year]['year'] = $year;
-			foreach ($months as $month) {
-				$month = str_pad($month, 2, '0', STR_PAD_LEFT);
-				$table[$year][$month] = '';
-				$key = $year.'-'.$month;
-				$images = ifsetor($byMonth[$key], []);
-				if ($images) {
-//					debug(first($images));
-					/** @var Meta $meta */
-					$meta = first($images);
-					$browser = MonthBrowser::href2month($year, $month);
-					$table[$year][$month] =
-						new htmlString([
-							'<figure style="position: relative">',
-							'<a href="'.$browser.'">',
-							$meta->toHTML($this->prefixURL, [
-								'class' => '',
-							]),
-							'</a>',
-							'<div class="" 
-							style="position: absolute;
-							right: 0; bottom: 0">
-							<span class="tag is-info">
-  '.sizeof($images).'
-</span>
-</div>',
-							'</figure>'
-						]);
-				}
-			}
+			$table[$year] += $this->getMonthRow($year, $byMonth);
 		}
 		return $table;
+	}
+
+	/**
+	 * @param string $year
+	 * @param ArrayPlus $byMonth
+	 * @return array
+	 */
+	public function getMonthRow(string $year, ArrayPlus $byMonth): array
+	{
+		$row = [];
+		$months = range(1, 12);
+		foreach ($months as $month) {
+			$month = str_pad($month, 2, '0', STR_PAD_LEFT);
+			$row[$month] = '';
+			$key = $year . '-' . $month;
+			$images = ifsetor($byMonth[$key], []);
+			if ($images) {
+//					debug(first($images));
+				/** @var Meta $meta */
+				$meta = first($images);
+				$browser = MonthBrowser::href2month($year, $month);
+				$selected = $this->selected == $key ? 'active' : '';
+				$row[$month] = new HTMLTag('td', [
+						'class' => $selected
+					],
+					new htmlString([
+						'<figure class="picWithCount">',
+						'<a href="' . $browser . '">',
+						$meta->toHTML($this->prefixURL, [
+							'class' => '',
+						]),
+						'</a>',
+						'<div class="count">
+							<span class="tag is-info">
+  ' . sizeof($images) . '
+</span>
+</div>',
+						'</figure>'
+					]));
+			}
+		}
+		return $row;
 	}
 
 }

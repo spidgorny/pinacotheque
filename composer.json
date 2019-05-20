@@ -33,6 +33,7 @@
         "GeoQuery": "php index.php GeoQuery",
         "Cameras": "php index.php Cameras",
         "serve": "php -S 127.0.0.1:8080 router.php",
-        "ScanOneFile": "php index.php ScanOneFile /Volumes/photo/BurnCD /Volumes/photo/BurnCD/Kodak2016/Lesik2013/1/17300.jpg /Users/depidsvy/dev/pinacotheque/data/BurnCD Kodak2016/Lesik2013/1/17300.jpg"
+        "ScanOneFile": "php index.php ScanOneFile /Volumes/photo/BurnCD /Volumes/photo/BurnCD/Kodak2016/Lesik2013/1/17300.jpg /Users/depidsvy/dev/pinacotheque/data/BurnCD Kodak2016/Lesik2013/1/17300.jpg",
+        "less": "lessc www/css/pina.less > www/css/pina.css"
     }
 }

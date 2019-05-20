@@ -22,6 +22,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 			L.marker([info.lat, info.lon]).addTo(map);
 		});
 	}
-
 });
 

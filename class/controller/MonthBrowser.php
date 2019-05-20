@@ -102,38 +102,18 @@ class MonthBrowser extends AppController
 			'head' => file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
 			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
 			'scripts' => "<script>
-var pswpElement = document.querySelector('.pswp');
-
-// build items array
-var items = ".json_encode($items).";
-
-// define options (if needed)
-var options = {
-    // optionName: 'option value'
-    // for example:
-    index: 0 // start at first slide
-};
-
-// Initializes and opens PhotoSwipe
-Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
-.filter(img => {
-	img.addEventListener('click', (e) => {
-		console.log(e);
-		var img = e.target;
-		var dataIndex = img.getAttribute('data-index');
-		options.index = parseInt(dataIndex, 10);
-		console.log(dataIndex, options.index);
-		var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
-		gallery.init();
-	});
-});
-</script>"
+				// build items array
+				var items = ".json_encode($items).";
+			</script>
+			<script src='/www/js/photoSwipe.js'></script>
+			"
 		]);
 	}
 
 	public function getMonthSelector(array $set)
 	{
 		$timelineService = new TimelineService($this->prefixURL);
+		$timelineService->selected = $this->year.'-'.$this->month;
 		$table = $timelineService->getTable($set);
 		$table = [$this->year => $table[$this->year]];
 		$slTable = new slTable($table, [
