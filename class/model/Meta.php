@@ -72,7 +72,7 @@ class Meta
 
 	public function __debugInfo()
 	{
-		return $this->props;
+		return ['_class__' => get_class($this)] + $this->props;
 	}
 
 	protected function gps2Num($coordPart)
@@ -154,6 +154,11 @@ class Meta
 		return is_int($key)
 			? date('Y-m', $key)
 			: $key;
+	}
+
+	public function getPath()
+	{
+		return $this->_path_;
 	}
 
 }

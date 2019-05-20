@@ -72,6 +72,7 @@ class MonthBrowser extends AppController
 	public function index(array $data)
 	{
 		$content[] = $this->getMonthSelector($this->metaSet->getLinear());
+		$content[] = $this->getFoldersInMetaset($this->metaSet);
 
 		$ms = new MapService();
 		$content[] = $ms($data);
@@ -241,6 +242,22 @@ class MonthBrowser extends AppController
 		$ma = new MetaArray($data);
 		$places = $ma->getGps();
 		return json_encode($places);
+	}
+
+	public function getFoldersInMetaset(MetaSet $set)
+	{
+		//debug($set->get());
+		$content = [];
+		/**
+		 * @var string $path
+		 * @var Meta[] $info
+		 */
+		foreach ($set->get() as $path => $info) {
+			$info1 = first($info);
+			$content[] = '<li>'.$info1->getPath().'</li>';
+		}
+		$content[] = '<hr />';
+		return $content;
 	}
 
 }
