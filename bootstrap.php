@@ -1,23 +1,6 @@
 <?php
 
-use Dotenv\Dotenv;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Adapter\Local;
-use Psr\Container\ContainerInterface;
-
-ini_set('error_prepend_string', '<pre style="white-space: pre-wrap">');
-ini_set('error_append_string', '</pre>');
-ini_set('html_errors', true);
-
-require_once __DIR__ . '/vendor/autoload.php';
-
-Dotenv::create(__DIR__)->load();
-
-define('BR', "<br />\n");
-define('TAB', "\t");
-define('DEVELOPMENT', true);
-
-ini_set('memory_limit', '1G');
+require_once __DIR__.'/autoload.php';
 
 function getContext()
 {
@@ -39,13 +22,6 @@ function getContext()
 function __($a)
 {
 	return $a;
-}
-
-function getFlySystem($root = __DIR__.'/data')
-{
-	$adapter = new Local($root);
-	$filesystem = new Filesystem($adapter);
-	return $filesystem;
 }
 
 function getPathToThumbsFrom($index)
@@ -71,45 +47,6 @@ function getPathToThumbsFrom($index)
 }
 
 $builder = new DI\ContainerBuilder();
-$builder->addDefinitions([
-	Filesystem::class => function (ContainerInterface $c) {
-		return getFlySystem($_SERVER['argv'][2]);
-	},
-	'FlyThumbs' => function (ContainerInterface $c) {
-		return getFlySystem(getenv('DATA_STORAGE'));
-	},
-	Cameras::class => function (ContainerInterface $c) {
-		return new Cameras($c->get('FlyThumbs'));
-	},
-	PhotoTimeline::class => function (ContainerInterface $c) {
-		return new PhotoTimeline($c->get('FlyThumbs'));
-	},
-	MonthBrowser::class => function (ContainerInterface $c) {
-		return MonthBrowser::route($c);
-	},
-	PhotoGPS::class => function (ContainerInterface $c) {
-		return new PhotoGPS($c->get('PDO'));
-	},
-	PDO::class => function (ContainerInterface $c) {
-		$db = new PDO('sqlite:'.__DIR__.'/data/geodb.sqlite');
-		return $db;
-	},
-	ScanExif::class => function (ContainerInterface $c) {
-		$thumbsPath = getPathToThumbsFrom(3);
-		return new ScanExif($c->get(Filesystem::class), $thumbsPath);
-	},
-	ScanOneFile::class => function (ContainerInterface $c) {
-		$thumbsPath = getPathToThumbsFrom(4);
-		$short = $_SERVER['argv'][5];
-
-		// -------------------------------[2]----------------------[3]=file-------------[4]=data/project----[5]=jpg
-		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath,         $short);
-	},
-	'ThirdParameter' => function (ContainerInterface $c) {
-		return $_SERVER['argv'][3];
-	},
-	ImgProxy::class => function (ContainerInterface $c) {
-		return new ImgProxy(getenv('DATA_STORAGE'));
-	}
-]);
+$builder->useAnnotations(true);
+$builder->addDefinitions(__DIR__.'/definitions.php');
 $container = $builder->build();

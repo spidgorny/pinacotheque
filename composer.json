@@ -10,18 +10,19 @@
         "sort-packages": true
     },
     "require": {
+        "ext-gd": "*",
         "ext-json": "*",
+        "ext-pdo": "*",
+        "doctrine/annotations": "^1.6",
+        "graze/console-diff-renderer": "^0.6.2",
+        "graze/parallel-process": "^0.8.1",
         "intervention/image": "^2.4",
         "league/flysystem": "^1.0",
-        "spidgorny/nadlib": "dev-master",
         "php-di/php-di": "^6.0",
-		"ext-gd": "*",
-		"ext-pdo": "*",
+        "spidgorny/nadlib": "dev-master",
         "symfony/process": "^3.4",
-        "graze/parallel-process": "^0.8.1",
-        "graze/console-diff-renderer": "^0.6.2",
         "vlucas/phpdotenv": "^3.3"
-	},
+    },
     "autoload": {
         "classmap": [
             "class"
@@ -35,5 +36,8 @@
         "serve": "php -S 127.0.0.1:8080 router.php",
         "ScanOneFile": "php index.php ScanOneFile /Volumes/photo/BurnCD /Volumes/photo/BurnCD/Kodak2016/Lesik2013/1/17300.jpg /Users/depidsvy/dev/pinacotheque/data/BurnCD Kodak2016/Lesik2013/1/17300.jpg",
         "less": "lessc www/css/pina.less > www/css/pina.css"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
     }
 }

@@ -146,8 +146,8 @@ class Meta
 	{
 		// 2008:05:08 20:59:49
 		$key = @$this->DateTime;
-		if ($key && $key[0] != '0') {
-			$parts = trimExplode(':', $key);
+		if ($key && $key[0] != '0' && str_contains($key, ':')) {
+			$parts = trimExplode(':', $key, 2);
 			return $parts[0].'-'.$parts[1];
 		}
 		$key = @$this->FileDateTime;

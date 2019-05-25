@@ -46,13 +46,15 @@ class MetaSet
 				continue;
 			}
 
-			$images = $this->readMeta($file);
-			$dirName = dirname($file['path']);
-			foreach ($images as &$meta) {
-				$meta['_path_'] = $dirName;
-				$meta = new Meta($meta);
-			}
-			$models[$dirName] = $images;
+			try {
+				$images = $this->readMeta($file);
+				$dirName = dirname($file['path']);
+				foreach ($images as &$meta) {
+					$meta['_path_'] = $dirName;
+					$meta = new Meta($meta);
+				}
+				$models[$dirName] = $images;
+			} catch (Exception $e) {};
 		}
 
 		return $models;
@@ -61,12 +63,13 @@ class MetaSet
 	public function readMeta(array $file)
 	{
 		$json = [];
-		$fileContent = file_get_contents($this->prefix.'/'.$file['path']);
+		$fullPath = $this->prefix . '/' . $file['path'];
+		$fileContent = file_get_contents($fullPath);
 		if ($fileContent) {
 			$json = json_decode($fileContent, true);
 		}
 		if (!$json) {
-			//debug($file);
+			throw new Exception('File ['.$fullPath.'] cannot be parsed as JSON');
 		}
 		return $json;
 	}
