@@ -69,10 +69,17 @@ class MonthBrowser extends AppController
 		return $this->$action($data);
 	}
 
+	/**
+	 * @param array $data
+	 * @return mixed|string
+	 */
 	public function index(array $data)
 	{
 		$content[] = $this->getMonthSelector($this->metaSet->getLinear());
-		$content[] = $this->getFoldersInMetaset($this->metaSet);
+		$metaFromArray = $this->metaSet->filterMA(function (MetaArray $meta) {
+			return $meta->containsYearMonth($this->year, $this->month);
+		});
+		$content[] = $this->getFoldersInMetaset($metaFromArray);
 
 		$ms = new MapService();
 		$content[] = $ms($data);
@@ -244,16 +251,16 @@ class MonthBrowser extends AppController
 		return json_encode($places);
 	}
 
-	public function getFoldersInMetaset(MetaSet $set)
+	public function getFoldersInMetaset(array $set)
 	{
-		//debug($set->get());
+		//debug($set->get());Í
 		$content = [];
 		/**
 		 * @var string $path
-		 * @var Meta[] $info
+		 * @var MetaArray $info
 		 */
-		foreach ($set->get() as $path => $info) {
-			$info1 = first($info);
+		foreach ($set as $path => $info) {
+			$info1 = $info->getFirst();
 			$content[] = '<li>'.$info1->getPath().'</li>';
 		}
 		$content[] = '<hr />';

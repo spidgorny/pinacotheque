@@ -29,8 +29,19 @@ class MetaSetTest extends PHPUnit\Framework\TestCase
 	{
 		$set = new MetaSet($this->fly);
 		foreach ($set->get() as $path => $info) {
-			$info1 = first($info);
+			$info1 = $info->getFirst();
 			$this->assertNotFalse($info1);
 		}
 	}
+
+	public function test_filterMA()
+	{
+		$metaSet = new MetaSet($this->fly);
+		$filtered = $metaSet->filterMA(function (MetaArray $ma) {
+			return true;
+		});
+		$this->assertInstanceOf(MetaArray::class, first($filtered));
+	}
+
+
 }

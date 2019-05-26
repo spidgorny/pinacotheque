@@ -161,4 +161,9 @@ class Meta
 		return $this->_path_;
 	}
 
+	public function getYearMonth()
+	{
+		return $this->yearMonth();
+	}
+
 }

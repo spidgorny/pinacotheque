@@ -6,13 +6,14 @@ use Psr\Container\ContainerInterface;
 
 require_once __DIR__.'/autoload.php';
 
-function getFlySystem($root = __DIR__.'/data')
-{
-	$adapter = new Local($root);
-	$filesystem = new Filesystem($adapter);
-	return $filesystem;
+if (!function_exists('getFlySystem')) {
+	function getFlySystem($root = __DIR__ . '/data')
+	{
+		$adapter = new Local($root);
+		$filesystem = new Filesystem($adapter);
+		return $filesystem;
+	}
 }
-
 
 return [
 	Filesystem::class => function (ContainerInterface $c) {

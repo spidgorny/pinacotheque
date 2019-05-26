@@ -20,7 +20,7 @@ class MetaSet
 	protected $prefix;
 
 	/**
-	 * @var array
+	 * @var MetaArray[]
 	 */
 	protected $data;
 
@@ -53,7 +53,7 @@ class MetaSet
 					$meta['_path_'] = $dirName;
 					$meta = new Meta($meta);
 				}
-				$models[$dirName] = $images;
+				$models[$dirName] = new MetaArray($images);
 			} catch (Exception $e) {};
 		}
 
@@ -78,7 +78,7 @@ class MetaSet
 	{
 		$sum = 0;
 		foreach ($this->data as $set) {
-			$sum += sizeof($set);
+			$sum += $set->getSize();
 		}
 		return $sum;
 	}
@@ -93,7 +93,10 @@ class MetaSet
 	 */
 	public function getLinear()
 	{
-		return call_user_func_array('array_merge', $this->data);
+		$onlyMeta = array_map(function (MetaArray $ma) {
+			return $ma->getAll();
+		}, $this->data);
+		return call_user_func_array('array_merge', $onlyMeta);
 	}
 
 	/**
@@ -121,6 +124,15 @@ class MetaSet
 	public function filter(callable $predicate)
 	{
 		return array_filter($this->getLinear(), $predicate);
+	}
+
+	/**
+	 * @param callable $predicate
+	 * @return Meta[]
+	 */
+	public function filterMA(callable $predicate)
+	{
+		return array_filter($this->data, $predicate);
 	}
 
 }

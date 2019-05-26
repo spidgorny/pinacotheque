@@ -10,7 +10,7 @@ class TimelineService
 	 */
 	public $selected;
 
-	public function __construct($prefixURL)
+	public function __construct($prefixURL = null)
 	{
 		$this->prefixURL = $prefixURL;
 	}
