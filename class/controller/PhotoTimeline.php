@@ -22,7 +22,7 @@ class PhotoTimeline extends AppController
 		$this->prefix = realpath($this->prefix);
 		$this->prefixURL = substr(
 			$this->prefix,
-			strlen($_SERVER['DOCUMENT_ROOT'])+1
+			strlen($_SERVER['DOCUMENT_ROOT']) + 1
 		);
 		$this->prefixURL = str_replace('\\', '/', $this->prefixURL);
 //		debug($this->prefix, $_SERVER['DOCUMENT_ROOT'], $this->prefixURL);
@@ -37,11 +37,22 @@ class PhotoTimeline extends AppController
 
 
 		$timelineService = new TimelineService($this->prefixURL);
-		$table = $timelineService->getTable($set->getLinear());
+		$imageFiles = $set->getLinear();
+		$table = $timelineService->getTable($imageFiles);
 
 		$content[] = new slTable($table, [
 			'class' => 'table is-fullwidth'
 		]);
+
+		$content[] = '<hr>';
+
+		$content[] = new HTMLTag('p', [], 'Total Files: ' . sizeof($imageFiles));
+		$totalSize = array_reduce($imageFiles, function ($acc, Meta $meta) {
+			return $acc + $meta->getSize();
+		}, 0);
+		$bytes = new Bytes($totalSize);
+		$content[] = new HTMLTag('p', [], 'Total Size: ' . $bytes->renderDynamic());
+
 		return $this->template($content);
 	}
 

@@ -15,11 +15,7 @@ class TimelineService
 		$this->prefixURL = $prefixURL;
 	}
 
-	/**
-	 * @param Meta[] $set
-	 * @return array
-	 */
-	public function getTable(array $set)
+	public function groupByDate(array $set)
 	{
 		$linear = ArrayPlus::create($set);
 //		debug($linear->count());
@@ -34,6 +30,39 @@ class TimelineService
 //				? date('Y-m-d H:i', $key)
 //				: $key;
 //		});
+		return $byMonth;
+	}
+
+	public function groupByYearMonth(array $set)
+	{
+		$byMonth = $this->groupByDate($set);
+		$dates = array_keys($byMonth->getData());
+		$dates = array_filter($dates);
+//		debug($dates);
+//		debug($byDate->countEach());
+
+		$min = new Date(min($dates));
+		$max = new Date(max($dates));
+
+		$table = [];
+		for ($year = $min->getYear(); $year <= $max->getYear(); $year++) {
+			$table[$year] = [];
+			foreach (range(1, 12) as $month) {
+				$key = $year . '-' . $month;
+				$images = ifsetor($byMonth[$key], []);
+				$table[$year][$month] = $images;
+			}
+		}
+		return $table;
+	}
+
+	/**
+	 * @param Meta[] $set
+	 * @return array
+	 */
+	public function getTable(array $set)
+	{
+		$byMonth = $this->groupByDate($set);
 		$dates = array_keys($byMonth->getData());
 		$dates = array_filter($dates);
 //		debug($dates);

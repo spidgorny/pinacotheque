@@ -10,6 +10,8 @@
  * @property array GPSLatitude
  * @property string GPSLongitudeRef
  * @property array GPSLongitude
+ * @property mixed DateTimeOriginal
+ * @property mixed DateTime
  */
 class Meta
 {
@@ -145,9 +147,12 @@ class Meta
 	public function yearMonth()
 	{
 		// 2008:05:08 20:59:49
-		$key = @$this->DateTime;
+		$dt = ifsetor($this->props['DateTime']);
+		$dto = ifsetor($this->props['DateTimeOriginal']);
+		$key = $dt > 0 ? $dt : $dto;
+		//debug($dt, $dto, $key);
 		if ($key && $key[0] != '0' && str_contains($key, ':')) {
-			$parts = trimExplode(':', $key, 2);
+			$parts = trimExplode(':', $key, 3);
 			return $parts[0].'-'.$parts[1];
 		}
 		$key = @$this->FileDateTime;
@@ -164,6 +169,11 @@ class Meta
 	public function getYearMonth()
 	{
 		return $this->yearMonth();
+	}
+
+	public function getSize()
+	{
+		return ifsetor($this->props['FileSize'], 0);
 	}
 
 }
