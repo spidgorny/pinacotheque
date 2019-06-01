@@ -15,20 +15,26 @@ if (!function_exists('getFlySystem')) {
 	}
 }
 
+//error_log(__FILE__);
+
 return [
 	Filesystem::class => function (ContainerInterface $c) {
+		error_log(Filesystem::class);
 		return getFlySystem($_SERVER['argv'][2]);
 	},
 	'FlyThumbs' => function (ContainerInterface $c) {
+		error_log('FlyThumbs');
 		return getFlySystem(getenv('DATA_STORAGE'));
 	},
 	Cameras::class => function (ContainerInterface $c) {
 		return new Cameras($c->get('FlyThumbs'));
 	},
 	PhotoTimeline::class => function (ContainerInterface $c) {
-		return new PhotoTimeline($c->get('FlyThumbs'));
+		error_log(PhotoTimeline::class);
+		return new PhotoTimeline($c->get('FlyThumbs'), $c->get('MetaSet4Thumbs'));
 	},
 	MonthBrowser::class => function (ContainerInterface $c) {
+		error_log(MonthBrowser::class);
 		return MonthBrowser::route($c);
 	},
 	PhotoGPS::class => function (ContainerInterface $c) {
@@ -54,5 +60,22 @@ return [
 	},
 	ImgProxy::class => function (ContainerInterface $c) {
 		return new ImgProxy(getenv('DATA_STORAGE'));
+	},
+	'MetaSet4Thumbs' => function (ContainerInterface $c) {
+		if (ifsetor($_SESSION['MetaSet4Thumbs'])) {
+			return $_SESSION['MetaSet4Thumbs'];
+		}
+		error_log(MetaSet::class);
+		$filesystem = $c->get('FlyThumbs');
+		/** @var \League\Flysystem\Adapter\Local $adapter */
+		$adapter = $filesystem->getAdapter();
+		$prefix = new Path(
+			$adapter->getPathPrefix()
+		);
+		error_log('prefix=' . $prefix);
+//		var_dump(['prefix' => $prefix]);1
+		$ms = new MetaSet(getFlySystem($prefix));
+		$_SESSION['MetaSet4Thumbs'] = $ms;
+		return $ms;
 	}
 ];

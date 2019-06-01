@@ -18,7 +18,7 @@ $parts = trimExplode('/', $requestURI);
 function debug_path()
 {
 	$pathParts = [__DIR__];
-	foreach ($parts as $plus) {
+	foreach ($pathParts as $plus) {
 		$pathParts[] = $plus;
 		$path = implode('/', $pathParts);
 		$isDir = is_dir($path);

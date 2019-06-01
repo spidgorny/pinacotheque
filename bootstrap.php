@@ -47,6 +47,6 @@ function getPathToThumbsFrom($index)
 }
 
 $builder = new DI\ContainerBuilder();
-$builder->useAnnotations(true);
 $builder->addDefinitions(__DIR__.'/definitions.php');
+$builder->useAnnotations(true);
 $container = $builder->build();

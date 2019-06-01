@@ -35,15 +35,26 @@ class MonthBrowser extends AppController
 		$request = Request::getInstance();
 		$year = $request->getNameless(1);
 		$month = $request->getNameless(2);
-		$self = new self($c->get('FlyThumbs'), $year, $month);
+		$flyThumbs = $c->get('FlyThumbs');
+		$ms = $c->get('MetaSet4Thumbs');
+		$self = new self($flyThumbs, $ms, $year, $month);
 		return $self;
 	}
 
-	public function __construct(Filesystem $filesystem, $year, $month)
+	public function __construct(Filesystem $filesystem, MetaSet $metaSet, $year, $month)
 	{
 		$this->filesystem = $filesystem;
+
+		if (!$year) {
+			throw new InvalidArgumentException('Year: '.$year);
+		}
 		$this->year = $year;
+
+		if (!$month) {
+			throw new InvalidArgumentException('Month: '.$month);
+		}
 		$this->month = $month;
+
 		/** @var \League\Flysystem\Adapter\Local $adapter */
 		$adapter = $this->filesystem->getAdapter();
 		$this->prefix = new Path(
@@ -53,7 +64,7 @@ class MonthBrowser extends AppController
 			$this->prefix,
 			strlen($_SERVER['DOCUMENT_ROOT'])+1
 		);
-		$this->metaSet = new MetaSet(getFlySystem($this->prefix));
+		$this->metaSet = $metaSet;
 	}
 
 	public function __invoke()

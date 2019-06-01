@@ -26,6 +26,7 @@ class MetaSet
 
 	public function __construct(Filesystem $filesystem)
 	{
+		error_log(__METHOD__);
 		$this->fileSystem = $filesystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();

@@ -15,7 +15,13 @@ class PhotoTimeline extends AppController
 
 	protected $prefixURL;
 
-	public function __construct(Filesystem $fileSystem)
+	/**
+	 * Inject("MetaSet4Thumbs")
+	 * @var MetaSet
+	 */
+	protected $set;
+
+	public function __construct(Filesystem $fileSystem, MetaSet $set)
 	{
 		$this->fileSystem = $fileSystem;
 		$this->prefix = $fileSystem->getAdapter()->getPathPrefix();
@@ -26,18 +32,18 @@ class PhotoTimeline extends AppController
 		);
 		$this->prefixURL = str_replace('\\', '/', $this->prefixURL);
 //		debug($this->prefix, $_SERVER['DOCUMENT_ROOT'], $this->prefixURL);
+		$this->set = $set;
 	}
 
 	public function __invoke()
 	{
 		$content = [];
-		$set = new MetaSet(getFlySystem($this->prefix));
 //		debug($set->size());
 //		$times = $set->groupBy('FileDateTime');
 
 
 		$timelineService = new TimelineService($this->prefixURL);
-		$imageFiles = $set->getLinear();
+		$imageFiles = $this->set->getLinear();
 		$table = $timelineService->getTable($imageFiles);
 
 		$content[] = new slTable($table, [
