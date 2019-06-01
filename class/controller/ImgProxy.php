@@ -30,19 +30,20 @@ class ImgProxy extends AppController
 //		debug($_REQUEST);
 		$path = $request->getTrim('path');
 		$path = str_replace('__', ':/', $path);
-		$path = trimExplode('_', $path);
-		$path = implode('/', $path);
 
 		$pathParts = trimExplode('/', $path);
 		$sourceBase = first($pathParts);
 		$sourceJson = path_plus($this->dataPath, $sourceBase, 'source.json');
 		//debug($sourceBase, $sourceJson);
+
 		if (is_file($sourceJson)) {
 			$text = file_get_contents($sourceJson);
 			$json = json_decode($text);
 			$sourcePath = $json->source;
 			// $sourceBase is already in the $sourcePath
 			$path = path_plus($sourcePath, implode('/', array_slice($pathParts, 1)));
+		} else {
+			throw new \League\Flysystem\FileNotFoundException($sourceJson);
 		}
 
 		$filename = $request->getTrim('file');

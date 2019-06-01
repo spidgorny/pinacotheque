@@ -53,11 +53,11 @@ class ScanOneFile extends BaseController
 
 	public function __invoke()
 	{
-		$this->log('Start', $this->file);
-		$this->log('Prefix', $this->prefix);
-		$this->log('Thumbs path', $this->thumbsPath);
-		$this->log('Shortened', $this->shortened);
-		$this->log('Destination', $this->getDestinationFor($this->shortened));
+		$this->log($this->file);
+//		$this->log('Prefix', $this->prefix);
+//		$this->log('Thumbs path', $this->thumbsPath);
+//		$this->log('Shortened', $this->shortened);
+//		$this->log('Destination', $this->getDestinationFor($this->shortened));
 //		$this->log('Destination: ', $this->getDestinationFor(''));
 		$manager = new ImageManager();
 		$imagePromise = function () use ($manager) {
@@ -74,7 +74,7 @@ class ScanOneFile extends BaseController
 
 		$this->saveMeta($imagePromise, $this->shortened);
 		$this->saveThumbnail($imagePromise, $this->shortened);
-		$this->log('Done');
+//		$this->log('Done');
 	}
 
 	/**
@@ -97,7 +97,7 @@ class ScanOneFile extends BaseController
 	{
 		$dirName = dirname($file);
 		$jsonFile = $this->getDestinationFor($dirName . '/meta.json');
-		$this->log('jsonFile', $jsonFile);
+//		$this->log('jsonFile', $jsonFile);
 		$json = $this->getCachedJSONFrom($jsonFile);
 		$baseName = basename($file);
 		if (isset($json->$baseName)) {
@@ -107,7 +107,7 @@ class ScanOneFile extends BaseController
 			/** @var Image $image */
 			$image = $imagePromise();
 			$meta = $image->exif();
-			$this->log('meta keys', sizeof($meta));
+//			$this->log('meta keys', sizeof($meta));
 			$json->$baseName = $meta;
 			file_put_contents($jsonFile, json_encode($json, JSON_PRETTY_PRINT));
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
