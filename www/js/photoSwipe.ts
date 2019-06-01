@@ -16,12 +16,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 	};
 
 	// Initializes and opens PhotoSwipe
-	Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
-		.filter(img => {
-			img.addEventListener('click', (e) => {
-				console.log(e);
-				var img = e.target;
-				var dataIndex = img.getAttribute('data-index');
+	Array.prototype.slice.call(document.querySelectorAll('.tile figure'))
+		.filter(figure => {
+			figure.addEventListener('click', (e) => {
+				// console.log(e);
+				var imgClicked = e.target;
+				console.log(imgClicked);
+				var dataIndex = imgClicked.closest('figure').getAttribute('data-index');
 				options.index = parseInt(dataIndex, 10);
 				console.log(dataIndex, options.index);
 				var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
@@ -29,4 +30,3 @@ document.addEventListener("DOMContentLoaded", async () => {
 			});
 		});
 });
-

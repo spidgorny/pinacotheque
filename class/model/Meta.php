@@ -47,14 +47,23 @@ class Meta
 
 	public function toHTML($prefix = '', array $attributes = [])
 	{
-		return HTMLTag::img($this->getThumbnail($prefix), $attributes + [
+		$img = HTMLTag::img($this->getThumbnail($prefix), $attributes + [
 //			'width' => 256,
 			'height' => 256/2,
 			'style' => [
 				'max-height' => '128px',
 			],
-			'data-id' => 'md5-' . md5($this->getFilename()),
 		]);
+		$content[] = $img;
+
+		$span = new HTMLTag('span', [
+			'class' => 'tag meta',
+			'data-id' => 'md5-' . md5($this->getFilename()),
+		], 'i');
+		$content[] = '<div class="count">'.$span.'</div>';
+		return new HTMLTag('figure', [
+			'class' => 'picWithCount',
+		], $content, true);
 	}
 
 	public function width()

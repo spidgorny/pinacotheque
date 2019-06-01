@@ -44,12 +44,13 @@ document.addEventListener("DOMContentLoaded", function () { return __awaiter(_th
             index: 0 // start at first slide
         };
         // Initializes and opens PhotoSwipe
-        Array.prototype.slice.call(document.querySelectorAll('.tile > img'))
-            .filter(function (img) {
-            img.addEventListener('click', function (e) {
-                console.log(e);
-                var img = e.target;
-                var dataIndex = img.getAttribute('data-index');
+        Array.prototype.slice.call(document.querySelectorAll('.tile figure'))
+            .filter(function (figure) {
+            figure.addEventListener('click', function (e) {
+                // console.log(e);
+                var imgClicked = e.target;
+                console.log(imgClicked);
+                var dataIndex = imgClicked.closest('figure').getAttribute('data-index');
                 options.index = parseInt(dataIndex, 10);
                 console.log(dataIndex, options.index);
                 var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);

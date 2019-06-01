@@ -12,6 +12,29 @@ class AppController
 		'tiff',
 	];
 
+	/**
+	 * @Inject
+	 * @var ErrorLogLogger
+	 */
+	protected $logger;
+
+	public function __construct()
+	{
+		if (!$this->logger) {
+			$this->logger = new ErrorLogLogger();
+		}
+	}
+
+	public function log($key, ...$data)
+	{
+		$caller = Debug::getCaller();
+		if ($key && $data) {
+			$this->logger->log($caller, [$key => $data]);
+		} else {
+			$this->logger->log($caller, $key);
+		}
+	}
+
 	function template($body, array $params = [])
 	{
 		$view = View::getInstance(__DIR__ . '/../../template/template.phtml', $this);

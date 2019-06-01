@@ -21,6 +21,7 @@ class ImgProxy extends AppController
 	 */
 	public function __construct($dataPath)
 	{
+		parent::__construct();
 		$this->dataPath = $dataPath;
 	}
 
@@ -34,14 +35,22 @@ class ImgProxy extends AppController
 		$pathParts = trimExplode('/', $path);
 		$sourceBase = first($pathParts);
 		$sourceJson = path_plus($this->dataPath, $sourceBase, 'source.json');
+		if (!str_endsWith($sourceJson, 'source.json')) {
+			$sourceJson = path_plus($sourceJson, 'source.json');
+		}
 		//debug($sourceBase, $sourceJson);
+		$this->logger->log(__METHOD__, ['sourceBase' => $sourceBase]);
+		$this->logger->log(__METHOD__, ['sourceJson' => $sourceJson]);
 
 		if (is_file($sourceJson)) {
 			$text = file_get_contents($sourceJson);
+			$this->log(['source.json' => $text]);
 			$json = json_decode($text);
 			$sourcePath = $json->source;
-			// $sourceBase is already in the $sourcePath
-			$path = path_plus($sourcePath, implode('/', array_slice($pathParts, 1)));
+			if ($sourcePath) {
+				// $sourceBase is already in the $sourcePath
+				$path = path_plus($sourcePath, implode('/', array_slice($pathParts, 1)));
+			}
 		} else {
 			throw new \League\Flysystem\FileNotFoundException($sourceJson);
 		}
@@ -67,7 +76,7 @@ class ImgProxy extends AppController
 				exit;
 			}
 		} else {
-			debug($path);
+			debug('File does not exist', $path);
 			$newPath = [];
 			$pathParts = trimExplode('/', $path);
 			foreach ($pathParts as $plus) {

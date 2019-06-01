@@ -4,7 +4,7 @@ declare class Tooltip {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-	const refDom = document.querySelectorAll('img.meta');
+	const refDom = document.querySelectorAll('span.meta');
 	const refArray = Array.from(refDom);
 	for (let reference of refArray) {
 		const id = reference.getAttribute('data-id');
