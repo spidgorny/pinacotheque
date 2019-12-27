@@ -77,5 +77,8 @@ return [
 		$ms = new MetaSet(getFlySystem($prefix));
 		$_SESSION['MetaSet4Thumbs'] = $ms;
 		return $ms;
-	}
+	},
+    DBLayerSQLite::class => static function ($c) {
+        return new \DBLayerSQLite(__DIR__.'/data/database.sqlite');
+    },
 ];

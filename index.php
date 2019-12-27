@@ -8,7 +8,9 @@ if (php_sapi_name() == 'cli') {
 		throw new RuntimeException('Usage: php index.php <Controller>');
 	}
 } else {
+	$start = microtime(true);
 	session_start();
+	error_log('Session loading: '.(microtime(true) - $start));
 	$pathInfo = ifsetor($_SERVER['PATH_INFO']);
 	$requestURI = ifsetor($_SERVER['REQUEST_URI']);
 	error_log($requestURI);
