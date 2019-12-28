@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<base href="<?= $this->baseHref ?>" />
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
-	<?= $head ?>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <base href="<?= $this->baseHref ?>"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css"/>
+    <?= $head ?>
 </head>
 <body>
-<?= $this->s($body) ?>
+<div class="columns">
+    <div class="column is-one-fifth">
+        <aside class="menu">
+            <p class="menu-label">
+                Menu
+            </p>
+            <ul class="menu-list">
+                <li><a href=".">Year/Month</a></li>
+                <li><a href="Sources">Sources</a></li>
+            </ul>
+        </aside>
+    </div>
+    <div class="column">
+        <?= $this->s($body) ?>
+    </div>
+</div>
 <?= $foot ?>
 <?= $this->s($scripts) ?>
 </body>

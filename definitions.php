@@ -2,6 +2,7 @@
 
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use Predis\Client;
 use Psr\Container\ContainerInterface;
 
 require_once __DIR__.'/autoload.php';
@@ -81,4 +82,10 @@ return [
     DBLayerSQLite::class => static function ($c) {
         return new \DBLayerSQLite(__DIR__.'/data/database.sqlite');
     },
+    Client::class => static function ($c) {
+        $predis = new Client('tcp://127.0.0.1', array(
+            'prefix' => 'bernard:',
+        ));
+        return $predis;
+    }
 ];

@@ -19,9 +19,12 @@ $driver = new Driver($predis);
 $factory = new PersistentFactory($driver, new Serializer());
 $producer = new Producer($factory, new EventDispatcher());
 
-$message = new PlainMessage('SendNewsletter', [
+$JobType = ifsetor($_SERVER['argv'][1], 'SendNewsletter');
+$message = new PlainMessage($JobType, [
     'newsletterId' => 12,
 ]);
 
+//$queue = 'send-newsletter';
+//$queue = $factory->create('send-newsletter');
 $producer->produce($message);
-echo 'produced', PHP_EOL;
+echo 'produced', "\t", $JobType, PHP_EOL;
