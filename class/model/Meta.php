@@ -30,8 +30,8 @@ class Meta
 
 	public function getFilename()
 	{
-		if (isset($this->props['FileName'])) {
-			return $this->props['FileName'];
+		if (isset($this->FileName)) {
+			return $this->FileName;
 		}
 
 		$id = $this->props['id'];
@@ -83,7 +83,7 @@ class Meta
 
 	public function __debugInfo()
 	{
-		return ['_class__' => get_class($this)] + $this->props;
+		return ['__class__' => get_class($this)] + $this->props;
 	}
 
 	protected function gps2Num($coordPart)

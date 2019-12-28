@@ -4,6 +4,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 $requestURI = $_SERVER['REQUEST_URI'];
 $requestURI = urldecode($requestURI);	// %20 is not converted yet
+error_log('ru: ' . $requestURI);
 if (file_exists(__DIR__ . '/' . $requestURI)) {
 	return false; // serve the requested resource as-is.
 }

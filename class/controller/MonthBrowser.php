@@ -43,7 +43,8 @@ class MonthBrowser extends AppController
 
 	public function __construct(Filesystem $filesystem, MetaSet $metaSet, $year, $month)
 	{
-		$this->filesystem = $filesystem;
+        parent::__construct();
+        $this->filesystem = $filesystem;
 
 		if (!$year) {
 			throw new InvalidArgumentException('Year: '.$year);

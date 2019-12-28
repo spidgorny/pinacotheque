@@ -13,6 +13,7 @@ if (php_sapi_name() == 'cli') {
 	error_log('Session loading: '.(microtime(true) - $start));
 	$pathInfo = ifsetor($_SERVER['PATH_INFO']);
 	$requestURI = ifsetor($_SERVER['REQUEST_URI']);
+//	error_log($pathInfo);
 	error_log($requestURI);
 	$c = $pathInfo ?: ($requestURI ?: PhotoTimeline::class);
 	//debug($pathInfo, $requestURI, $c);

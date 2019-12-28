@@ -23,7 +23,8 @@ class PhotoTimeline extends AppController
 
 	public function __construct(Filesystem $fileSystem, MetaSet $set)
 	{
-		$this->fileSystem = $fileSystem;
+        parent::__construct();
+        $this->fileSystem = $fileSystem;
 		$this->prefix = $fileSystem->getAdapter()->getPathPrefix();
 		$this->prefix = realpath($this->prefix);
 		$this->prefixURL = substr(

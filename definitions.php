@@ -80,7 +80,10 @@ return [
 		return $ms;
 	},
     DBLayerSQLite::class => static function ($c) {
-        return new \DBLayerSQLite(__DIR__.'/data/database.sqlite');
+        $db = new \DBLayerSQLite(__DIR__.'/data/database.sqlite');
+        $qb = new SQLBuilder($db);
+        $db->setQB($qb);
+        return $db;
     },
     Client::class => static function ($c) {
         $predis = new Client('tcp://127.0.0.1', array(
