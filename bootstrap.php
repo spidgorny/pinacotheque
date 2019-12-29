@@ -24,6 +24,11 @@ function __($a)
 	return $a;
 }
 
+function llog($msg)
+{
+	error_log($msg);
+}
+
 function getPathToThumbsFrom($index)
 {
 	$storageFolder = ifsetor($_SERVER['argv'][$index]);
