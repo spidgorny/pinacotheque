@@ -46,9 +46,15 @@ Alternatives/Other tools
 ToDo
 ----
 
-[x] Scan folders and build thumbnails
-[x] Scan folders and store metadata
-[ ] Zip thumbnails - I don't like thousands of small files
-[x] Load all meta information into RAM to do queries
-[ ] Accept HTTP requests to query different things
-[ ] Make React app to show images and filter by all metadata
+* [x] Scan folders and build thumbnails
+* [x] Scan folders and store metadata
+* [ ] Zip thumbnails - I don't like thousands of small files
+* [x] Load all meta information into RAM to do queries
+* [ ] Accept HTTP requests to query different things
+* [ ] Make React app to show images and filter by all metadata
+* [ ] ScanDir should skip non-image files
+* [ ] Add scanning Exif data to the database
+* [ ] Add scanning redis queue and give tasks to the queue
+
+Later:
+* [ ] Add editing sources in UI

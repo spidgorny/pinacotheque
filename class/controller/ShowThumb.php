@@ -17,6 +17,18 @@ class ShowThumb extends AppController
 
 	public function __invoke()
 	{
+		session_write_close();
+		try {
+			return $this->index();
+		} catch (Exception $e) {
+			return $this->template([
+				HTMLTag::div($e, ['class' => 'is-danger']),
+			]);
+		}
+	}
+
+	public function index()
+	{
 		$file = $this->request->getTrim('file');
 		if (!$file) {
 			header('Content-Type: image/png');
@@ -25,6 +37,11 @@ class ShowThumb extends AppController
 
 		$meta = MetaForSQL::findByID($this->db, $file);
 		$content[] = getDebug($meta);
+
+		if (!$meta->id) {
+			debug($this->db->getLastQuery());
+			throw new Exception404('File with id=' . $file . ' not found');
+		}
 
 		$filePath = $meta->getFullPath();
 		$content[] = 'File: ' . $filePath . BR;

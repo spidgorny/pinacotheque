@@ -1,5 +1,7 @@
 <?php
 
+use nadlib\HTTP\Session;
+
 class Sources extends AppController
 {
 
@@ -10,16 +12,33 @@ class Sources extends AppController
 
 	protected $prefixURL;
 
+	protected $session;
+
+	/** @var Source  */
+	protected $source;
+
 	public function __construct(DBLayerSQLite $db)
 	{
 		parent::__construct();
 		$this->db = $db;
 		$this->prefixURL = ShowThumb::class.'?file=';
+		$this->session = new Session(__CLASS__);
+		$this->source = Source::findByID($this->db, $this->session->get('source', 1));
 	}
 
-	public function __invoke()
+	public function setSource($id)
 	{
-		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery('files', [], '', 'min(timestamp) as min, max(timestamp) as max');
+		$this->session->set('source', $id);
+		$this->request->goBack();
+	}
+
+	public function index()
+	{
+		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery('files', [
+			'source' => $this->source->id,
+			'type' => 'file',
+		], '',
+			'min(timestamp) as min, max(timestamp) as max');
 //        $content[] = 'query: ' . $this->db->getLastQuery() . BR;
 //        $content[] = 'min: ' . $min . BR;
 //        $content[] = 'max: ' . $max . BR;
@@ -35,6 +54,7 @@ class Sources extends AppController
 
 		$YM = "strftime('%Y-%m', datetime(timestamp, 'unixepoch'))";
 		$imageFiles = $this->db->fetchAllSelectQuery('files', [
+			'source' => $this->source->id,
 			'type' => 'file',
 		], "GROUP BY ".$YM.
 			' ORDER BY '.$YM,
@@ -49,10 +69,7 @@ class Sources extends AppController
 
 		$byMonth = $byMonth->map(static function ($el) {
 			$row0 = $el[0];
-			$meta = new MetaForSQL($row0 + [
-					'_path_' => dirname($row0['path']),
-					'FileName' => basename($row0['path']),
-				]);
+			$meta = new MetaForSQL($row0);
 //			debug($meta);
 			$firstMetaRestCount = [$meta];
 			$firstMetaRestCount += array_fill(1, $row0['count'], null);
@@ -64,6 +81,8 @@ class Sources extends AppController
 		$content[] = new slTable($table, [
 			'class' => 'table is-fullwidth'
 		]);
+
+		$content[] = getDebug($imageFiles->getData());
 
 		return $this->template($content, [
 			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',

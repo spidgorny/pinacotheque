@@ -1,6 +1,6 @@
 <?php
 
-class ScanDir
+class ScanDir extends AppController
 {
 
     /**
@@ -10,6 +10,7 @@ class ScanDir
 
     public function __construct(DBLayerSQLite $db)
     {
+    	parent::__construct();
         $this->db = $db;
     }
 

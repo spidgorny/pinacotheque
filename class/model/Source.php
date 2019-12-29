@@ -7,8 +7,10 @@ class Source extends POPOBase
 {
 
 	use DatabaseMixin;
+//	use DatabaseManipulation;
 
 	public $id;
+	public $name;
 	public $path;
 	public $thumbRoot;
 

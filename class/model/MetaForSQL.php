@@ -10,10 +10,18 @@ class MetaForSQL extends Meta
 {
 
 	use DatabaseMixin;
+	use DatabaseManipulation;
+
+	protected $db;
 
 	public static function getTableName()
 	{
 		return 'files';
+	}
+
+	public function __construct(array $meta)
+	{
+		parent::__construct($meta);
 	}
 
 	public function getThumbnail($prefix = '')
@@ -33,7 +41,7 @@ class MetaForSQL extends Meta
 		$source = Source::findByID($this->db, $this->source);
 //		$content[] = getDebug($source);
 //		debug($this->db->getLastQuery());
-//		debug($source);
+		//debug($this->source, $this->props, $source);
 		return $source;
 	}
 

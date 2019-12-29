@@ -1,10 +1,18 @@
+<?php
+/** @var $head string */
+/** @var $sources Source[] */
+/** @var $body string */
+/** @var $foot string */
+/** @var $scripts string */
+?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <base href="<?= $this->baseHref ?>"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css"/>
-    <?= $head ?>
+    <title>Pinacotheque</title>
+	<?= $head ?>
 </head>
 <body>
 <div class="columns">
@@ -15,7 +23,18 @@
             </p>
             <ul class="menu-list">
                 <li><a href=".">Year/Month</a></li>
-                <li><a href="Sources">Sources</a></li>
+                <li><a href="Sources">Browse DB</a></li>
+            </ul>
+            <p class="menu-label">
+                Sources
+            </p>
+            <ul class="menu-list">
+                <?php foreach ($sources as $source): ?>
+                   <li><a href="Sources?action=setSource&id=<?= $source->id ?>"
+                       title="<?= $source->path ?>">
+                           <?= $source->name ?>
+                       </a></li>
+                <?php endforeach; ?>
             </ul>
         </aside>
     </div>

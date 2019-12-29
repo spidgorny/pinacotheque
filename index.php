@@ -20,7 +20,10 @@ if (php_sapi_name() == 'cli') {
 	$c = first(trimExplode('/', $c));
 	$c = $c ?: PhotoTimeline::class;
 }
+
+/** @var AppController $o */
 $o = $container->get($c);
+$o->setContainer($container);
 $content = $o();
 if (is_array($content)) {
 	$content = implode(PHP_EOL, $content);

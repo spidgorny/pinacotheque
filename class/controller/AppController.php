@@ -23,12 +23,47 @@ class AppController
 	 */
 	protected $request;
 
+	/** @var Psr\Container\ContainerInterface */
+	public $container;
+
 	public function __construct()
 	{
 		if (!$this->logger) {
 			$this->logger = new ErrorLogLogger();
 		}
 		$this->request = Request::getInstance();
+	}
+
+	public function setContainer($container)
+	{
+		$this->container = $container;
+	}
+
+	/**
+	 * @return mixed|null
+	 * @throws ReflectionException
+	 * @throws Exception
+	 */
+	public function __invoke()
+	{
+		$action = $this->getValidAction();
+		if ($action) {
+//			return $this->$action();
+			$delegator = new MarshalParams($this);
+			return $delegator->call($action);
+		}
+		return $this->index();
+	}
+
+	/**
+	 * @return null
+	 * @throws Exception
+	 */
+	public function index()
+	{
+		throw new Exception('Not implemented');
+		/** @noinspection PhpUnreachableStatementInspection */
+		return null;
 	}
 
 	public function log($key, ...$data)
@@ -53,7 +88,17 @@ class AppController
 			'body' => $body,
 			'foot' => '',
 			'scripts' => '',
+			'sources' => $this->getSources(),
         ]);
+	}
+
+	public function getSources()
+	{
+		/** @var DBLayerSQLite $db */
+		$db = $this->container->get(DBLayerSQLite::class);
+		$sources = Source::findAll($db, [], 'ORDER BY id');
+		//debug($sources);
+		return $sources;
 	}
 
 	public static function href(array $params)
@@ -63,6 +108,20 @@ class AppController
 			$plus = '?'.http_build_query($params);
 		}
 		return static::class.$plus;
+	}
+
+	public function getAction()
+	{
+		return $this->request->getTrim('action');
+	}
+
+	public function getValidAction()
+	{
+		$action = $this->getAction();
+		if (method_exists($this, $action)) {
+			return $action;
+		}
+		return null;
 	}
 
 }
