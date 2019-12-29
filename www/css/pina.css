@@ -19,10 +19,14 @@ dt:after {
 dd {
   text-align: left;
 }
-td figure.picWithCount {
+figure.picWithCount {
   position: relative;
 }
-td figure.picWithCount .count {
+figure.picWithCount img {
+  width: 100%;
+  object-fit: cover;
+}
+figure.picWithCount .count {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -35,7 +39,7 @@ td.active {
   position: relative;
   display: inline-block;
   cursor: pointer;
-  margin: 30px;
+  object-fit: cover;
 }
 .video-thumbnail:before {
   position: absolute;

@@ -51,24 +51,6 @@ class MetaForSQL extends Meta
 		return $this->path;
 	}
 
-	public function isImage()
-	{
-		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
-		$ext = strtolower($ext);
-		return in_array($ext, [
-			'gif', 'jpg', 'jpeg', 'bmp', 'webp',
-		]);
-	}
-
-	public function isVideo()
-	{
-		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
-		$ext = strtolower($ext);
-		return in_array($ext, [
-			'mov', 'mp4', 'mpeg', 'avi',
-		]);
-	}
-
 	public function getFilename()
 	{
 		return basename($this->getPath());

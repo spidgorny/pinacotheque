@@ -42,7 +42,9 @@
 		"count-thumbs": "ls -1 -R data | grep -v json | wc",
 		"count-nsa": "ls -1 -R ~/elements/PhotosNSA | wc",
 		"docker:redis": "",
-		"docker:run": "docker run --rm -it -v /c/Users/User/dev/pinacotheque:/app -w /app -p 80:80 php:7.3 php -S localhost:80 router.php"
+		"docker:run": "docker run --rm -it -v /c/Users/User/dev/pinacotheque:/app -w /app -p 80:80 php:7.3 php -S localhost:80 router.php",
+		"nginx:start": "c:\\tools\\nginx-1.17.7\\nginx",
+		"nginx:stop": "c:\\tools\\nginx-1.17.7\\nginx -s stop"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^7.5"

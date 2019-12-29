@@ -49,21 +49,56 @@ class Meta
 	{
 		$img = HTMLTag::img($this->getThumbnail($prefix), $attributes + [
 //			'width' => 256,
-			'height' => 256/2,
-			'style' => [
-				'max-height' => '128px',
-			],
-		]);
-		$content[] = $img;
+				'height' => 256 / 2,
+				'style' => [
+					'max-height' => '128px',
+				],
+			]);
+		if ($this->isVideo()) {
+			$img = HTMLTag::div($img, ['class' => "video-thumbnail"]);
+		}
+		return $img;
+	}
+
+	public function toHTMLClickable($prefix = '', array $attributes = [])
+	{
+		$img = $this->toHTML($prefix, $attributes);
+		$ahref = HTMLTag::a(ShowOriginal::href(['file' => $this->id]), $img, [], true);
+		return $ahref;
+	}
+
+	public function toHTMLWithI($prefix = '', array $attributes = [])
+	{
+		$ahref = $this->toHTMLClickable($prefix, $attributes);
+		$content[] = $ahref;
 
 		$span = new HTMLTag('span', [
 			'class' => 'tag meta',
 			'data-id' => 'md5-' . md5($this->getFilename()),
-		], 'i');
+		], '<i class="fa fa-info"></i>', true);
+
 		$content[] = '<div class="count">'.$span.'</div>';
 		return new HTMLTag('figure', [
 			'class' => 'picWithCount',
 		], $content, true);
+	}
+
+	public function isImage()
+	{
+		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
+		$ext = strtolower($ext);
+		return in_array($ext, [
+			'gif', 'jpg', 'jpeg', 'bmp', 'webp',
+		]);
+	}
+
+	public function isVideo()
+	{
+		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
+		$ext = strtolower($ext);
+		return in_array($ext, [
+			'mov', 'mp4', 'mpeg', 'avi',
+		]);
 	}
 
 	public function width()

@@ -21,20 +21,23 @@ dd {
 	text-align: left;
 }
 
-td {
-	figure.picWithCount {
-		position: relative;
+figure.picWithCount {
+	position: relative;
 
-		.count {
-			position: absolute;
-			right: 0;
-			bottom: 0;
-		}
+	img {
+		width: 100%;
+		object-fit: cover;
 	}
 
-	&.active {
-		background: silver;
+	.count {
+		position: absolute;
+		right: 0;
+		bottom: 0;
 	}
+}
+
+&.active {
+	background: silver;
 }
 
 //https://codepen.io/martinkrulltott/pen/xwrXwR
@@ -42,7 +45,7 @@ td {
 	position: relative;
 	display: inline-block;
 	cursor: pointer;
-	margin: 30px;
+	object-fit: cover;
 
 	&:before {
 		position:absolute;

@@ -62,7 +62,7 @@ class MonthTimeline
 
 			//$width = $this->getSetWidth($set);
 			$width = sizeof($set);
-			if ($width >= 4) {
+			if ($width >= 6) {
 				$sets[] = $set;
 				$set = [];
 			}
@@ -92,11 +92,15 @@ class MonthTimeline
 	{
 		$content = [];
 		$i = 0;
-		/** @var Meta[] $set */
+		/** @var MetaForSQL[] $set */
 		foreach ($sets as $set) {
-			$oneWidth = sizeof($set) == 3 ? 'is-4' : 'is-3';
+			$oneWidth = [
+				3 => 'is-4',
+				4 => 'is-3',
+				6 => 'is-2'
+			][sizeof($set)];
 			foreach ($set as &$meta) {
-				$img = $meta->toHTML($this->prefixURL, [
+				$img = $meta->toHTMLWithI($this->prefixURL, [
 					'class' => 'meta',
 				]);
 				$img->attr('data-index', $i);
@@ -108,7 +112,7 @@ class MonthTimeline
 				$i++;
 			}
 			$content[] = [
-				'<div class="tile is-parent">',
+				'<div class="tile">',
 				$set,
 				'</div>'
 			];
@@ -169,7 +173,7 @@ class MonthTimeline
 					'videosrc' => $meta->getOriginalURL(),
 //    vw: 1080,
 //    vh: 1920,
-    				'html' => '<video controls poster="'.$meta->getThumbnail(ShowThumb::href(['file' => ''])).'" >
+    				'html' => '<video controls autostart poster="'.$meta->getThumbnail(ShowThumb::href(['file' => ''])).'" style="width: 100%; height: 100%">
     				<source src="'.$meta->getOriginalURL().'" type="video/mp4">
     				</video>',
     				'title' => 'iPhone video file',

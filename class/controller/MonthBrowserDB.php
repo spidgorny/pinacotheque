@@ -58,7 +58,8 @@ class MonthBrowserDB extends AppController
 		$content[] = $this->monthTimeline->render($data->getData());
 
 		return $this->template($content, [
-			'head' => '<link rel="stylesheet" href="www/css/pina.css" />'
+			'head' => '<link rel="stylesheet" href="www/css/pina.css" />'.
+				'<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">'
 				. file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
 			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
 			'scripts' => $this->monthTimeline->getScripts(),
