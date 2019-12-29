@@ -5,6 +5,7 @@
  * @property int id
  * @property int source
  * @property string path
+ * @property int timestamp
  */
 class MetaForSQL extends Meta
 {
@@ -66,6 +67,16 @@ class MetaForSQL extends Meta
 		return in_array($ext, [
 			'mov', 'mp4', 'mpeg', 'avi',
 		]);
+	}
+
+	public function getFilename()
+	{
+		return basename($this->getPath());
+	}
+
+	public function yearMonth()
+	{
+		return date('Y-m', $this->timestamp);
 	}
 
 }

@@ -17,6 +17,14 @@ class MonthBrowserDB extends AppController
 
 	protected $month;
 
+	/**
+	 * @var MonthTimeline
+	 */
+	protected $monthTimeline;
+
+	/** @var FileProvider */
+	protected $provider;
+
 	public static function href2month($source, $year, $month)
 	{
 		return static::href([
@@ -28,8 +36,8 @@ class MonthBrowserDB extends AppController
 
 	public function __construct(DBLayerSQLite $db)
 	{
-		$this->db = $db;
 		parent::__construct();
+		$this->db = $db;
 	}
 
 	public function index(/** @noinspection PhpSignatureMismatchDuringInheritanceInspection */ $source, $year, $month)
@@ -37,7 +45,21 @@ class MonthBrowserDB extends AppController
 		$this->source = Source::findByID($this->db, $source);
 		$this->year = $year;
 		$this->month = $month;
-		return $this->template('asd' . $year . '-' . $month);
+
+		$this->provider = new FileProvider($this->db, $this->source);
+		$data = $this->provider->getFilesForMonth($this->year, $this->month);
+
+		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
+		$timelineService = new TimelineServiceForSQL($link2self);
+		$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
+		$content[] = $monthSelector->getMonthSelector($data->getData());
+
+		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::class . '?file=');
+		$content[] = $this->monthTimeline->render($data->getData());
+
+		return $this->template($content, [
+			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',
+		]);
 	}
 
 }

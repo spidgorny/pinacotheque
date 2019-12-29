@@ -98,7 +98,7 @@ class AppController
 		return $sources;
 	}
 
-	public static function href(array $params)
+	public static function href(array $params = [])
 	{
 		$plus = '';
 		if ($params) {
