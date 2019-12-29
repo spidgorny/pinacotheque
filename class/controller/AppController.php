@@ -46,13 +46,10 @@ class AppController
 	 */
 	public function __invoke()
 	{
-		$action = $this->getValidAction();
-		if ($action) {
-//			return $this->$action();
-			$delegator = new MarshalParams($this);
-			return $delegator->call($action);
-		}
-		return $this->index();
+		$action = $this->getValidAction() ?: 'index';
+//		return $this->$action();
+		$delegator = new MarshalParams($this);
+		return $delegator->call($action);
 	}
 
 	/**

@@ -1,11 +1,15 @@
 <?php
 
+use nadlib\HTTP\Session;
+
 class TimelineServiceForSQL extends TimelineService
 {
 
-	public function renderMonth($year, $month, ArrayPlus $byMonth)
-    {
-        return parent::renderMonth($year, $month, $byMonth);
-    }
+	public function getMonthBrowserLink($year, $month)
+	{
+		$session = new Session(Sources::class);
+		$source = $session->get('source');
+		return MonthBrowserDB::href2month($source, $year, $month);
+	}
 
 }

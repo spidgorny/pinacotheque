@@ -27,7 +27,7 @@ class MonthBrowser extends AppController
 
 	public static function href2month($year, $month)
 	{
-		return __CLASS__.'/'.$year.'/'.$month;
+		return __CLASS__ . '/' . $year . '/' . $month;
 	}
 
 	public static function route(ContainerInterface $c)
@@ -43,16 +43,16 @@ class MonthBrowser extends AppController
 
 	public function __construct(Filesystem $filesystem, MetaSet $metaSet, $year, $month)
 	{
-        parent::__construct();
-        $this->filesystem = $filesystem;
+		parent::__construct();
+		$this->filesystem = $filesystem;
 
 		if (!$year) {
-			throw new InvalidArgumentException('Year: '.$year);
+			throw new InvalidArgumentException('Year: ' . $year);
 		}
 		$this->year = $year;
 
 		if (!$month) {
-			throw new InvalidArgumentException('Month: '.$month);
+			throw new InvalidArgumentException('Month: ' . $month);
 		}
 		$this->month = $month;
 
@@ -63,14 +63,14 @@ class MonthBrowser extends AppController
 		);
 		$this->prefixURL = substr(
 			$this->prefix,
-			strlen($_SERVER['DOCUMENT_ROOT'])+1
+			strlen($_SERVER['DOCUMENT_ROOT']) + 1
 		);
 		$this->metaSet = $metaSet;
 	}
 
 	public function __invoke()
 	{
-		$data = $this->metaSet->filter(function (Meta $meta) {
+		$data = $this->metaSet->filter(static function (Meta $meta) {
 			return $meta->yearMonth()
 				== $this->year . '-' . $this->month;
 		});
@@ -123,7 +123,7 @@ class MonthBrowser extends AppController
 			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
 			'scripts' => "<script>
 				// build items array
-				var items = ".json_encode($items).";
+				var items = " . json_encode($items) . ";
 			</script>
 			<script src='/www/js/photoSwipe.js'></script>
 			"
@@ -133,14 +133,14 @@ class MonthBrowser extends AppController
 	public function getMonthSelector(array $set)
 	{
 		$timelineService = new TimelineService($this->prefixURL);
-		$timelineService->selected = $this->year.'-'.$this->month;
+		$timelineService->selected = $this->year . '-' . $this->month;
 		$table = $timelineService->getTable($set);
 		$table = [$this->year => $table[$this->year]];
 		$slTable = new slTable($table, [
 			'class' => 'table is-fullwidth'
 		]);
 		$slTable->generateThes();
-		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::class, 'Home').'';
+		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::class, 'Home') . '';
 		$content[] = $slTable;
 		$content[] = '<hr />';
 		return $content;
@@ -198,7 +198,7 @@ class MonthBrowser extends AppController
 				]);
 				$img->attr('data-index', $i);
 				$meta = [
-					'<div class="tile is-child '.$oneWidth.'">',
+					'<div class="tile is-child ' . $oneWidth . '">',
 					$img,
 					'</div>',
 				];
@@ -273,7 +273,7 @@ class MonthBrowser extends AppController
 		 */
 		foreach ($set as $path => $info) {
 			$info1 = $info->getFirst();
-			$content[] = '<li>'.$info1->getPath().'</li>';
+			$content[] = '<li>' . $info1->getPath() . '</li>';
 		}
 		$content[] = '<hr />';
 		return $content;

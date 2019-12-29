@@ -124,7 +124,7 @@ class TimelineService
 //					debug(first($images));
             /** @var Meta $meta */
             $meta = first($images);
-            $browser = MonthBrowser::href2month($year, $month);
+            $browser = $this->getMonthBrowserLink($year, $month);
             $selected = $this->selected == $key ? 'active' : '';
             $content = new HTMLTag('td', [
                 'class' => $selected
@@ -146,5 +146,10 @@ class TimelineService
         }
         return $content;
     }
+
+    public function getMonthBrowserLink($year, $month)
+	{
+		return MonthBrowser::href2month($year, $month);
+	}
 
 }
