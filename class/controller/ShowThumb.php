@@ -29,6 +29,8 @@ class ShowThumb extends AppController
 
 	public function index()
 	{
+//		debug($_REQUEST);
+//		exit;
 		$file = $this->request->getTrim('file');
 		if (!$file) {
 			header('Content-Type: image/png');
@@ -56,7 +58,9 @@ class ShowThumb extends AppController
 			$content[] = $e;
 		}
 
-		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]));
+		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
+			'border' => 1,
+		]);
 
 		$thumbPath = $thumb->getThumbPath();
 		if ($this->request->getBool('d') || !$thumb->exists()) {
@@ -64,6 +68,7 @@ class ShowThumb extends AppController
 		}
 
 		header('Content-Type: ' . mime_content_type($thumbPath));
+		$this->request->setCacheable();
 		readfile($thumbPath);
 	}
 

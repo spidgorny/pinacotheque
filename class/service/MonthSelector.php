@@ -19,7 +19,7 @@ class MonthSelector
 		$this->timelineService = $timelineService;
 	}
 
-	public function getMonthSelector(array $set)
+	public function getMonthSelector(array $set, $linkHome)
 	{
 		$this->timelineService->selected = $this->year . '-' . $this->month;
 		$table = $this->timelineService->getTable($set);
@@ -29,7 +29,7 @@ class MonthSelector
 			'class' => 'table is-fullwidth'
 		]);
 		$slTable->generateThes();
-		$slTable->thes['year'] = HTMLTag::a(PhotoTimeline::href(), 'Home') . '';
+		$slTable->thes['year'] = HTMLTag::a($linkHome, 'Home') . '';
 		$content[] = $slTable;
 		$content[] = '<hr />';
 		return $content;

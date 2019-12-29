@@ -1,0 +1,10 @@
+:2015
+
+root .
+startup "cmd /c start /b php-cgi -b 127.0.0.1:9000"
+fastcgi / 127.0.0.1:9000 php
+# rewrite .* /index.php
+rewrite {
+    to .* /router.php?uri={uri}
+}
+errors stderr

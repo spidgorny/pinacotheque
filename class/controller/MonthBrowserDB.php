@@ -49,16 +49,19 @@ class MonthBrowserDB extends AppController
 		$this->provider = new FileProvider($this->db, $this->source);
 		$data = $this->provider->getFilesForMonth($this->year, $this->month);
 
-		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
-		$timelineService = new TimelineServiceForSQL($link2self);
+//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
+		$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']));
 		$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
-		$content[] = $monthSelector->getMonthSelector($data->getData());
+		$content[] = $monthSelector->getMonthSelector($data->getData(), Sources::href());
 
-		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::class . '?file=');
+		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href( ['file' => '']));
 		$content[] = $this->monthTimeline->render($data->getData());
 
 		return $this->template($content, [
-			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',
+			'head' => '<link rel="stylesheet" href="www/css/pina.css" />'
+				. file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
+			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
+			'scripts' => $this->monthTimeline->getScripts(),
 		]);
 	}
 

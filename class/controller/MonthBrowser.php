@@ -98,8 +98,9 @@ class MonthBrowser extends AppController
 	 */
 	public function index()
 	{
-		$monthSelector = new MonthSelector($this->year, $this->month);
-		$content[] = $monthSelector->getMonthSelector($this->linearData);
+		$timelineService = new TimelineService('asd');
+		$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
+		$content[] = $monthSelector->getMonthSelector($this->linearData, PhotoTimeline::href());
 
 		$content[] = $this->monthTimeline->render($this->linearData);
 

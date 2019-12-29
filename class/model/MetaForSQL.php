@@ -79,4 +79,14 @@ class MetaForSQL extends Meta
 		return date('Y-m', $this->timestamp);
 	}
 
+	public function getOriginal()
+	{
+		return $this->getFullPath();
+	}
+
+	public function getOriginalURL()
+	{
+		return ShowOriginal::href(['file' => $this->id]);
+	}
+
 }

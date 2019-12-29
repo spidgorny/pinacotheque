@@ -76,7 +76,7 @@ class Meta
 		return $this->COMPUTED['Height'];
 	}
 
-	public function getOriginal()
+	public function getOriginalURL()
 	{
 		return ImgProxy::href2img($this);
 	}

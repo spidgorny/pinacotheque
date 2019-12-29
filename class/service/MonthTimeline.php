@@ -159,7 +159,7 @@ class MonthTimeline
 		foreach ($data as $i => $meta) {
 			$items[] = [
 //				'src' => $meta->getThumbnail($this->prefix->getURL()),
-				'src' => $meta->getOriginal(),
+				'src' => $meta->getOriginalURL(),
 				'w' => $meta->width(),
 				'h' => $meta->height(),
 			];

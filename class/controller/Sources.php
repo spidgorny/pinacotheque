@@ -40,7 +40,7 @@ class Sources extends AppController
 
 	public function index()
 	{
-		list('min' => $min, $max => $max) = $this->provider->getMinMax();
+		list('min' => $min, 'max' => $max) = $this->provider->getMinMax();
 		$timelineService = new TimelineServiceForSQL($this->prefixURL);
 		$timelineService->min = new Date();
 		$timelineService->min->setTimestamp($min);
@@ -52,10 +52,10 @@ class Sources extends AppController
 
 		$oneByMonth = $this->provider->getOneFilePerMonth();
 
-		$byMonth = $oneByMonth->map(static function (MetaForSQL $meta) {
-			$firstMetaRestCount = [$meta];
-			$firstMetaRestCount += array_fill(1, $meta->count, null);
-			return $firstMetaRestCount;
+		$byMonth = $oneByMonth->map(static function (array $metaList) {
+			$meta = first($metaList);
+			$metaList += array_fill(1, $meta->count, null);
+			return $metaList;
 		});
 
 		$table = $timelineService->renderTable($byMonth);
