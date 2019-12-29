@@ -49,6 +49,8 @@ class ShowOriginal extends AppController
 		}
 
 		header('Content-Type: ' . mime_content_type($filePath));
+		header('Content-Length: ' . filesize($filePath));
+		$this->request->setCacheable(60*60*24*365);
 		readfile($filePath);
 	}
 

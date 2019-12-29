@@ -150,19 +150,31 @@ class MonthTimeline
 
 	/**
 	 * AJAX?
-	 * @param Meta[] $data
+	 * @param MetaForSQL[] $data
 	 * @return array
 	 */
 	public function getOriginalImages(array $data)
 	{
 		$items = [];
 		foreach ($data as $i => $meta) {
-			$items[] = [
-//				'src' => $meta->getThumbnail($this->prefix->getURL()),
-				'src' => $meta->getOriginalURL(),
-				'w' => $meta->width(),
-				'h' => $meta->height(),
-			];
+			if ($meta->isImage()) {
+				$items[] = [
+					//				'src' => $meta->getThumbnail($this->prefix->getURL()),
+					'src' => $meta->getOriginalURL(),
+					'w' => $meta->width(),
+					'h' => $meta->height(),
+				];
+			} elseif ($meta->isVideo()) {
+				$items[] = [
+					'videosrc' => $meta->getOriginalURL(),
+//    vw: 1080,
+//    vh: 1920,
+    				'html' => '<video controls poster="'.$meta->getThumbnail(ShowThumb::href(['file' => ''])).'" >
+    				<source src="'.$meta->getOriginalURL().'" type="video/mp4">
+    				</video>',
+    				'title' => 'iPhone video file',
+				];
+			}
 		}
 		return $items;
 	}

@@ -35,7 +35,7 @@ class Sources extends AppController
 	public function setSource($id)
 	{
 		$this->session->set('source', $id);
-		$this->request->goBack();
+		$this->request->redirect(Sources::href());
 	}
 
 	public function index()

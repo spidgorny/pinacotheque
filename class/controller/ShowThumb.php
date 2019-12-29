@@ -68,7 +68,8 @@ class ShowThumb extends AppController
 		}
 
 		header('Content-Type: ' . mime_content_type($thumbPath));
-		$this->request->setCacheable();
+		header('Content-Length: ' . filesize($thumbPath));
+		$this->request->setCacheable(60*60*24*365);
 		readfile($thumbPath);
 	}
 
