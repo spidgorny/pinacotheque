@@ -18,11 +18,17 @@ class AppController
 	 */
 	protected $logger;
 
+	/**
+	 * @var Request
+	 */
+	protected $request;
+
 	public function __construct()
 	{
 		if (!$this->logger) {
 			$this->logger = new ErrorLogLogger();
 		}
+		$this->request = Request::getInstance();
 	}
 
 	public function log($key, ...$data)

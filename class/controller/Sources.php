@@ -34,7 +34,12 @@ class Sources extends AppController
 //		$content[] = 'max: ' . $timelineService->max->format('Y-m-d') . BR;
 
 		$YM = "strftime('%Y-%m', datetime(timestamp, 'unixepoch'))";
-		$imageFiles = $this->db->fetchAllSelectQuery('files', [], "GROUP BY ".$YM.' ORDER BY '.$YM, '*, '.$YM.' as YM');
+		$imageFiles = $this->db->fetchAllSelectQuery('files', [
+			'type' => 'file',
+		], "GROUP BY ".$YM.
+			' ORDER BY '.$YM,
+			'*, '.$YM.' as YM, count(*) as count'
+		);
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
 
@@ -43,12 +48,15 @@ class Sources extends AppController
 		});
 
 		$byMonth = $byMonth->map(static function ($el) {
-			$meta = new MetaForSQL($el[0] + [
-					'_path_' => dirname($el[0]['path']),
-					'FileName' => basename($el[0]['path']),
+			$row0 = $el[0];
+			$meta = new MetaForSQL($row0 + [
+					'_path_' => dirname($row0['path']),
+					'FileName' => basename($row0['path']),
 				]);
 //			debug($meta);
-			return [$meta];
+			$firstMetaRestCount = [$meta];
+			$firstMetaRestCount += array_fill(1, $row0['count'], null);
+			return $firstMetaRestCount;
 		});
 
 		$table = $timelineService->renderTable($byMonth);
@@ -57,7 +65,9 @@ class Sources extends AppController
 			'class' => 'table is-fullwidth'
 		]);
 
-		return $this->template($content);
+		return $this->template($content, [
+			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',
+		]);
 	}
 
 }
