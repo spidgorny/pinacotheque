@@ -14,13 +14,18 @@
         img {
             max-width: 100%;
             max-height: 100%;
-			background-size: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+			background-size: contain;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
         }
     </style>
 </head>
 <body>
 <img src="ShowOriginal?file=<?= $file1 ?>"
-     style="background: url(ShowThumb?file=<?= $file1 ?>);"
+     style="background-image: url(ShowThumb?file=<?= $file1 ?>);"
 />
 <script>
 	var images = <?= $images ?>;
@@ -65,8 +70,26 @@
 	function render() {
 	    const img = document.querySelector('img');
 	    console.log(index, images[index]);
-        img.style.background = 'url(ShowThumb?file=' + images[index].id;
+        img.style.backgroundImage = 'url(ShowThumb?file=' + images[index].id;
         img.src = images[index].src;
+        // TODO: add preload
+        preloadAround(index, 5);
+
+        const params = new URLSearchParams(document.location.search);
+        params.set('file', images[index].id);
+        const newURL = new URL(document.location);
+        newURL.search = params.toString();
+        window.history.pushState({}, document.title, newURL.toString());
+    }
+
+    function preloadAround(index, range) {
+	    for (let i = index - range; i < index + range; i++) {
+	        if (i >= 0 && i < images.length) {
+	            const img = document.createElement('img');
+	            img.src = images[i].src;
+	            // console.log('preloading', i);
+            }
+        }
     }
 </script>
 </body>
