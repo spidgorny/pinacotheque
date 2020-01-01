@@ -11,11 +11,14 @@ class MonthTimeline
 
 	public $prefixURL;
 
-	public function __construct($year, $month, $prefixURL = '')
+	public $linkPrefix;
+
+	public function __construct($year, $month, $prefixURL = '', $linkPrefix = '')
 	{
 		$this->year = $year;
 		$this->month = $month;
 		$this->prefixURL = $prefixURL;
+		$this->linkPrefix = $linkPrefix;
 	}
 
 	public function render(array $data)
@@ -102,7 +105,7 @@ class MonthTimeline
 			foreach ($set as &$meta) {
 				$img = $meta->toHTMLWithI($this->prefixURL, [
 					'class' => 'meta',
-				]);
+				], $this->linkPrefix);
 				$img->attr('data-index', $i);
 				$meta = [
 					'<div class="tile is-child ' . $oneWidth . '">',
@@ -163,6 +166,7 @@ class MonthTimeline
 		foreach ($data as $i => $meta) {
 			if ($meta->isImage()) {
 				$items[] = [
+					'id' => $meta->id,
 					//				'src' => $meta->getThumbnail($this->prefix->getURL()),
 					'src' => $meta->getOriginalURL(),
 					'w' => $meta->width(),
@@ -170,6 +174,7 @@ class MonthTimeline
 				];
 			} elseif ($meta->isVideo()) {
 				$items[] = [
+					'id' => $meta->id,
 					'videosrc' => $meta->getOriginalURL(),
 //    vw: 1080,
 //    vh: 1920,

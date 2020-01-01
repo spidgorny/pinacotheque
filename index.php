@@ -2,6 +2,8 @@
 
 require_once __DIR__.'/bootstrap.php';
 
+//debug($_SERVER);
+
 if (php_sapi_name() == 'cli') {
 	$c = $_SERVER['argv'][1];
 	if (!$c) {
@@ -13,12 +15,15 @@ if (php_sapi_name() == 'cli') {
 	error_log('Session loading: '.(microtime(true) - $start));
 	$pathInfo = ifsetor($_SERVER['PATH_INFO']);
 	$requestURI = ifsetor($_SERVER['REQUEST_URI']);
-//	error_log($pathInfo);
-	error_log($requestURI);
-	$c = $pathInfo ?: ($requestURI ?: PhotoTimeline::class);
+	error_log('pathInfo: ' . $pathInfo);
+	error_log('requestURI: ' . $requestURI);
+	$c = $pathInfo ?: $requestURI;
 	//debug($pathInfo, $requestURI, $c);
+	$parts = parse_url($c);
+//	debug($parts);
+	$c = $parts['path'];
 	$c = first(trimExplode('/', $c));
-	$c = $c ?: PhotoTimeline::class;
+	$c = $c ?: Sources::class;
 }
 
 /** @var AppController $o */

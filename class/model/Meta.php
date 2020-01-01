@@ -60,16 +60,16 @@ class Meta
 		return $img;
 	}
 
-	public function toHTMLClickable($prefix = '', array $attributes = [])
+	public function toHTMLClickable($prefix = '', array $attributes = [], $linkPrefix = '')
 	{
 		$img = $this->toHTML($prefix, $attributes);
-		$ahref = HTMLTag::a(ShowOriginal::href(['file' => $this->id]), $img, [], true);
+		$ahref = HTMLTag::a($linkPrefix . $this->id, $img, [], true);
 		return $ahref;
 	}
 
-	public function toHTMLWithI($prefix = '', array $attributes = [])
+	public function toHTMLWithI($prefix = '', array $attributes = [], $linkPrefix = '')
 	{
-		$ahref = $this->toHTMLClickable($prefix, $attributes);
+		$ahref = $this->toHTMLClickable($prefix, $attributes, $linkPrefix);
 		$content[] = $ahref;
 
 		$span = new HTMLTag('span', [

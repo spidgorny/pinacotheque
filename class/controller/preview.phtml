@@ -1,0 +1,73 @@
+<?php
+/** @var $file1 int */
+/** @var $images array */
+?>
+<!doctype html>
+<html>
+<head>
+    <style>
+        html, body {
+            height: 100%;
+            background: dimgrey;
+        }
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+			background-size: cover;
+        }
+    </style>
+</head>
+<body>
+<img src="ShowOriginal?file=<?= $file1 ?>"
+     style="background: url(ShowThumb?file=<?= $file1 ?>);"
+/>
+<script>
+	var images = <?= $images ?>;
+	const file = new URLSearchParams(document.location.search).get('file');
+	console.log('file', file);
+	let index;
+	for (let i in images) {
+	    if (images[i].id == file) {
+	        index = parseInt(i, 10);
+	        break;
+		}
+	}
+	console.log('index', index);
+	document.addEventListener('keyup', (e) => {
+	    // console.log(e);
+		if (e.key === 'ArrowRight') {
+            if (index < images.length) {
+                index += 1;
+            }
+		    render();
+		}
+		if (e.key === 'ArrowLeft') {
+		    if (index > 0) {
+                index -= 1;
+            }
+		    render();
+		}
+		if (e.key === 'ArrowUp') {
+		    if (index > 0) {
+                index += 1;
+            }
+		    render();
+		}
+		if (e.key === 'ArrowDown') {
+		    if (index < images.length) {
+                index += 1;
+            }
+		    render();
+		}
+	});
+
+	function render() {
+	    const img = document.querySelector('img');
+	    console.log(index, images[index]);
+        img.style.background = 'url(ShowThumb?file=' + images[index].id;
+        img.src = images[index].src;
+    }
+</script>
+</body>
+</html>
