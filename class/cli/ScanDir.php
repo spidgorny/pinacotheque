@@ -19,10 +19,13 @@ class ScanDir extends AppController
         $request = Request::getInstance();
 //        $dir = $request->importCLIparams()->get('dir');
 //        var_dump($request->getAll());
-        $dir = $_SERVER['argv'][2];
-        echo 'dir: ', $dir, PHP_EOL;
+        $sourceID = $_SERVER['argv'][2];
+		$source = \Source::findByID($this->db, $sourceID);
 
-        $scanner = new \App\Service\ScanDir($this->db, $dir);
+		$dir = $source->path;
+		echo 'dir: ', $dir, PHP_EOL;
+
+        $scanner = new \App\Service\ScanDir($this->db, $source);
         $scanner();
     }
 

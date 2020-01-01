@@ -10,23 +10,27 @@ use Source;
 class ScanDir
 {
 
-	protected $dir;
+	/**
+	 * @var \DBLayerSQLite
+	 */
+	protected $db;
+
+
+	protected $source;
 
 	/**
 	 * @var Filesystem
 	 */
 	protected $fileSystem;
 
-	/**
-	 * @var \DBLayerSQLite
-	 */
-	protected $db;
+	protected $dir;
 
-	public function __construct(DBLayerSQLite $db, $dir)
+	public function __construct(DBLayerSQLite $db, Source $source)
 	{
-		$this->dir = $dir;
-		$this->fileSystem = new Filesystem(new Local($this->dir));
 		$this->db = $db;
+		$this->source = $source;
+		$this->dir = $source->path;
+		$this->fileSystem = new Filesystem(new Local($this->dir));
 	}
 
 	public function log(...$msg)
@@ -36,9 +40,6 @@ class ScanDir
 
 	public function __invoke()
 	{
-		$source = \Source::findOne($this->db, [
-			'path' => $this->dir,
-		]);
 		$dirs = $this->scandir($this->dir);
 //        $dirs = array_map(static function (array $aFile) {
 //            return $aFile;

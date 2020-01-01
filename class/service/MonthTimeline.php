@@ -171,6 +171,7 @@ class MonthTimeline
 					'src' => $meta->getOriginalURL(),
 					'w' => $meta->width(),
 					'h' => $meta->height(),
+					'title' => $meta->getFilename(),
 				];
 			} elseif ($meta->isVideo()) {
 				$items[] = [
@@ -181,7 +182,7 @@ class MonthTimeline
     				'html' => '<video controls autostart poster="'.$meta->getThumbnail(ShowThumb::href(['file' => ''])).'" style="width: 100%; height: 100%">
     				<source src="'.$meta->getOriginalURL().'" type="video/mp4">
     				</video>',
-    				'title' => 'iPhone video file',
+					'title' => $meta->getFilename(),
 				];
 			}
 		}

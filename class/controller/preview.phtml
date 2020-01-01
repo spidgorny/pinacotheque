@@ -6,7 +6,7 @@
 <html>
 <head>
     <style>
-        html, body {
+        html, body, div#app {
             height: 100%;
             background: dimgrey;
         }
@@ -17,80 +17,96 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-			background-size: contain;
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: 50% 50%;
         }
     </style>
 </head>
 <body>
-<img src="ShowOriginal?file=<?= $file1 ?>"
-     style="background-image: url(ShowThumb?file=<?= $file1 ?>);"
-/>
+<div id="app">
+    <img src="ShowOriginal?file=<?= $file1 ?>"
+         style="background-image: url(ShowThumb?file=<?= $file1 ?>);"
+    />
+</div>
 <script>
 	var images = <?= $images ?>;
 	const file = new URLSearchParams(document.location.search).get('file');
 	console.log('file', file);
 	let index;
 	for (let i in images) {
-	    if (images[i].id == file) {
-	        index = parseInt(i, 10);
-	        break;
+		if (images[i].id == file) {
+			index = parseInt(i, 10);
+			break;
 		}
 	}
 	console.log('index', index);
 	document.addEventListener('keyup', (e) => {
-	    // console.log(e);
+		// console.log(e);
 		if (e.key === 'ArrowRight') {
-            if (index < images.length) {
-                index += 1;
-            }
-		    render();
+			if (index < images.length) {
+				index += 1;
+			}
+			render();
 		}
 		if (e.key === 'ArrowLeft') {
-		    if (index > 0) {
-                index -= 1;
-            }
-		    render();
+			if (index > 0) {
+				index -= 1;
+			}
+			render();
 		}
 		if (e.key === 'ArrowUp') {
-		    if (index > 0) {
-                index += 1;
-            }
-		    render();
+			if (index > 0) {
+				index += 1;
+			}
+			render();
 		}
 		if (e.key === 'ArrowDown') {
-		    if (index < images.length) {
-                index += 1;
-            }
-		    render();
+			if (index < images.length) {
+				index += 1;
+			}
+			render();
 		}
 	});
 
 	function render() {
-	    const img = document.querySelector('img');
-	    console.log(index, images[index]);
-        img.style.backgroundImage = 'url(ShowThumb?file=' + images[index].id;
-        img.src = images[index].src;
-        // TODO: add preload
-        preloadAround(index, 5);
+		console.log(images[index]);
+		if (images[index].videosrc) {
+			const app = document.querySelector('#app');
+			app.innerHTML = images[index].html;
+		} else {
+			const img = document.querySelector('img');
+			if (!img) {
+				const img = document.createElement('img');
+				const app = document.querySelector('#app');
+				app.innerHTML = img;
+			}
+			// console.log(index, images[index]);
+			img.style.backgroundImage = 'url(ShowThumb?file=' + images[index].id;
+			img.src = images[index].src;
+		}
 
-        const params = new URLSearchParams(document.location.search);
-        params.set('file', images[index].id);
-        const newURL = new URL(document.location);
-        newURL.search = params.toString();
-        window.history.pushState({}, document.title, newURL.toString());
-    }
+		preloadAround(index, 5);
+		updateURL();
+	}
 
-    function preloadAround(index, range) {
-	    for (let i = index - range; i < index + range; i++) {
-	        if (i >= 0 && i < images.length) {
-	            const img = document.createElement('img');
-	            img.src = images[i].src;
-	            // console.log('preloading', i);
-            }
-        }
-    }
+	function preloadAround(index, range) {
+		for (let i = index - range; i < index + range; i++) {
+			if (i >= 0 && i < images.length) {
+				const img = document.createElement('img');
+				img.src = images[i].src;
+				// console.log('preloading', i);
+			}
+		}
+	}
+
+	function updateURL() {
+		const params = new URLSearchParams(document.location.search);
+		params.set('file', images[index].id);
+		const newURL = new URL(document.location);
+		newURL.search = params.toString();
+		window.history.replaceState({}, document.title, newURL.toString());
+	}
 </script>
 </body>
 </html>
