@@ -54,7 +54,7 @@ return [
 		$short = $_SERVER['argv'][5];
 
 		// -------------------------------[2]----------------------[3]=file-------------[4]=data/project----[5]=jpg
-		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath,         $short);
+		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath, $short);
 	},
 	'ThirdParameter' => function (ContainerInterface $c) {
 		return $_SERVER['argv'][3];

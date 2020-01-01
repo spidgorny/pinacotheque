@@ -38,6 +38,12 @@ class ScanDir
 		echo implode(' ', $msg), PHP_EOL;
 	}
 
+	public function numFiles()
+	{
+		$dirs = $this->scandir($this->dir);
+		return sizeof($dirs);
+	}
+
 	public function __invoke()
 	{
 		$dirs = $this->scandir($this->dir);
@@ -47,7 +53,7 @@ class ScanDir
 		echo sizeof($dirs), PHP_EOL;
 //        print_r(first($dirs));
 
-		$sourceID = $source->id;
+		$sourceID = $this->source->id;
 		foreach ($dirs as $dir) {
 			echo $dir['path'], PHP_EOL;
 //			$query = "INSERT INTO files (source, type, path, timestamp) VALUES ('$sourceID', '${dir['type']}', '${dir['path']}', '${dir['timestamp']}')";
@@ -69,7 +75,7 @@ class ScanDir
 	public function scandir($dir)
 	{
 		$files = [];
-		$this->log('Scanning', $dir);
+//		$this->log('Scanning', $dir);
 		$dirWithoutPrefix = str_replace($this->dir, '', $dir);
 		try {
 			$files = $this->fileSystem->listContents($dirWithoutPrefix, true);

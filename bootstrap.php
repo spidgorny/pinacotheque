@@ -24,9 +24,9 @@ function __($a)
 	return $a;
 }
 
-function llog($msg)
+function llog(...$msg)
 {
-	error_log($msg);
+	error_log(implode(', ', $msg));
 }
 
 function getPathToThumbsFrom($index)
