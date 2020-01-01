@@ -20,7 +20,10 @@ class MetaFile
 		$fileName = $dirName . '/meta.json';
 		$this->jsonFile = $this->getDestinationFor($fileName);
 //		$this->log('jsonFile', $jsonFile);
+		echo 'Reading ', $this->jsonFile, PHP_EOL;
+//		$start = microtime(true);
 		$this->json = $this->getCachedJSONFrom($this->jsonFile);
+//		echo 'Read in ', number_format(microtime(true) - $start, 3), PHP_EOL;
 	}
 
 	/**
@@ -62,7 +65,8 @@ class MetaFile
 	public function has($file)
 	{
 		$baseName = basename($file);
-		if (isset($json->$baseName)) {
+		echo 'isset(', $baseName, '): ', isset($json->$baseName), PHP_EOL;
+		if (isset($this->json->$baseName)) {
 			return true;
 		}
 		return false;

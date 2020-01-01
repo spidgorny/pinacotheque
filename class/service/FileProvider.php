@@ -77,4 +77,18 @@ class FileProvider
 		return $imageFiles;
 	}
 
+	public function getUnscanned()
+	{
+		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', [
+			'source' => $this->source->id,
+			'type' => 'file',
+			'meta.id' => null,
+		], 'ORDER BY timestamp');
+//		$content[] = new slTable($imageFiles);
+//		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
+//		$imageFiles->setResult($res);
+		$imageFiles = $res;
+		return $imageFiles;
+	}
+
 }

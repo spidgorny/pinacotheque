@@ -31,7 +31,8 @@ class ImageScannerTest extends TestCase
 		$destinationRoot = path_plus($dataStorage, $source->thumbRoot);
 		$this->assertEquals(realpath(__DIR__.'/../data/stefan'), $destinationRoot);
 
-		$is = new ImageScanner($source, $file, $destinationRoot);
+		$metaFile = new MetaFile($destinationRoot, $file);
+		$is = new ImageScanner($source, $file, $destinationRoot, $metaFile);
 		$is();
 
 		$this->assertFileExists($destinationRoot . '/meta.json');

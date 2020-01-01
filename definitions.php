@@ -5,7 +5,7 @@ use League\Flysystem\Filesystem;
 use Predis\Client;
 use Psr\Container\ContainerInterface;
 
-require_once __DIR__.'/autoload.php';
+require_once __DIR__ . '/autoload.php';
 
 if (!function_exists('getFlySystem')) {
 	function getFlySystem($root = __DIR__ . '/data')
@@ -42,7 +42,7 @@ return [
 		return new PhotoGPS($c->get('PDO'));
 	},
 	PDO::class => function (ContainerInterface $c) {
-		$db = new PDO('sqlite:'.__DIR__.'/data/geodb.sqlite');
+		$db = new PDO('sqlite:' . __DIR__ . '/data/geodb.sqlite');
 		return $db;
 	},
 	ScanExif::class => function (ContainerInterface $c) {
@@ -79,16 +79,19 @@ return [
 		$_SESSION['MetaSet4Thumbs'] = $ms;
 		return $ms;
 	},
-    DBLayerSQLite::class => static function ($c) {
-        $db = new \DBLayerSQLite(__DIR__.'/data/database.sqlite');
-        $qb = new SQLBuilder($db);
-        $db->setQB($qb);
-        return $db;
-    },
-    Client::class => static function ($c) {
-        $predis = new Client('tcp://127.0.0.1', array(
-            'prefix' => 'bernard:',
-        ));
-        return $predis;
-    }
+	DBLayerSQLite::class => static function ($c) {
+		$db = new \DBLayerSQLite(__DIR__ . '/data/database.sqlite');
+		$qb = new SQLBuilder($db);
+		$db->setQB($qb);
+		return $db;
+	},
+	Client::class => static function ($c) {
+		$predis = new Client('tcp://127.0.0.1', array(
+			'prefix' => 'bernard:',
+		));
+		return $predis;
+	},
+	ScanEveryFileFromDB::class => static function ($c) {
+		return new ScanEveryFileFromDB($c->get(DBLayerSQLite::class));
+	},
 ];

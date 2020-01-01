@@ -9,34 +9,39 @@ class ImageScanner
 
 	public $file;
 
-	public $thumbsPath;	// root for thumbs
+	public $thumbsPath;    // root for thumbs
 
-	public function __construct(Source $source, $file, $thumbsPath)
+	/** @var MetaFile */
+	protected $metaFile;
+
+	public function __construct(Source $source, $file, $thumbsPath, MetaFile $metaFile)
 	{
 		$this->source = $source;
 		$this->file = $file;
 		$this->thumbsPath = $thumbsPath;
+		$this->metaFile = $metaFile;
 	}
 
 	public function __invoke()
 	{
 		try {
-			$image = $this->readImage();
-			$ip = new ImageParser($image);
-
-			$metaFile = new MetaFile($this->thumbsPath, $this->file);
 //			debug($metaFile);
-			if (!$metaFile->has($this->file)) {
+			if (!$this->metaFile->has($this->file)) {
+				echo 'Reading image ', $this->file, PHP_EOL;
+				$start = microtime(true);
+				$image = $this->readImage();
+				echo 'Read in ', number_format(microtime(true) - $start, 3), PHP_EOL;
+				$ip = new ImageParser($image);
 				$meta = $ip->getMeta();
 //				debug($meta);
 //				echo 'Meta has ', sizeof($meta), PHP_EOL;
-				$metaFile->set(basename($this->file), $meta);
-				//			$this->saveMetaToDB($meta);
-			}
+				$this->metaFile->set(basename($this->file), $meta);
+//				$this->saveMetaToDB($meta);
 
-			$destination = $metaFile->getDestinationFor($this->file);
-			if (!file_exists($destination)) {
-				$ip->saveThumbnailTo($destination);
+				$destination = $this->metaFile->getDestinationFor($this->file);
+				if (!file_exists($destination)) {
+					$ip->saveThumbnailTo($destination);
+				}
 			}
 
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
