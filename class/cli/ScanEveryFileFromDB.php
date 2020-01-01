@@ -27,8 +27,8 @@ class ScanEveryFileFromDB extends AppController
 			$file = new MetaForSQL($fileRow);
 			echo $file->path, PHP_EOL;
 			$metaFile = new MetaFile($thumbsPath, $file->path);
-			$is = new ImageScanner($source, $file->path, $thumbsPath, $metaFile);
-			$is();
+			$is = new ImageScanner($source, $file->path, $thumbsPath, $metaFile, $this->db);
+			$is($file->id);
 		}
 	}
 

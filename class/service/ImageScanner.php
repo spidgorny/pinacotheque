@@ -14,15 +14,18 @@ class ImageScanner
 	/** @var MetaFile */
 	protected $metaFile;
 
-	public function __construct(Source $source, $file, $thumbsPath, MetaFile $metaFile)
+	protected $db;
+
+	public function __construct(Source $source, $file, $thumbsPath, MetaFile $metaFile, DBLayerSQLite $db)
 	{
 		$this->source = $source;
 		$this->file = $file;
 		$this->thumbsPath = $thumbsPath;
 		$this->metaFile = $metaFile;
+		$this->db = $db;
 	}
 
-	public function __invoke()
+	public function __invoke($fileID)
 	{
 		try {
 //			debug($metaFile);
@@ -36,7 +39,7 @@ class ImageScanner
 //				debug($meta);
 //				echo 'Meta has ', sizeof($meta), PHP_EOL;
 				$this->metaFile->set(basename($this->file), $meta);
-//				$this->saveMetaToDB($meta);
+				$this->saveMetaToDB($meta, $fileID);
 
 				$destination = $this->metaFile->getDestinationFor($this->file);
 				if (!file_exists($destination)) {
@@ -65,6 +68,20 @@ class ImageScanner
 		};
 		$image = $imagePromise();
 		return $image;
+	}
+
+	public function saveMetaToDB($meta, $fileID)
+	{
+		foreach ($meta as $key => $val) {
+			$encoded = is_scalar($val) ? $val : json_encode($val);
+			/** @var SQLite3Result $row */
+			$row = MetaEntry::insert($this->db, [
+				'id_file' => $fileID,
+				'name' => $key,
+				'value' => $encoded,
+			]);
+//			echo $row->numColumns(), PHP_EOL;
+		}
 	}
 
 }
