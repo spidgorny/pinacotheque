@@ -7,7 +7,7 @@ class Source extends POPOBase
 {
 
 	use DatabaseMixin;
-//	use DatabaseManipulation;
+	use DatabaseManipulation;
 
 	public $id;
 	public $name;
@@ -19,6 +19,11 @@ class Source extends POPOBase
 		return 'source';
 	}
 
+	/**
+	 * Source constructor.
+	 * @param $set
+	 * @override
+	 */
 	public function __construct($set)
 	{
 		parent::__construct($set);

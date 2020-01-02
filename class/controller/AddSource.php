@@ -1,37 +1,30 @@
 <?php
 
-class EditSource extends SourceForm
+class AddSource extends SourceForm
 {
 
-	/**
-	 * @var DBLayerSQLite
-	 */
+	/** @var DBLayerSQLite */
 	protected $db;
-
-	/** @var Source */
-	protected $source;
 
 	public function __construct(DBLayerSQLite $db)
 	{
 		parent::__construct();
 		$this->db = $db;
-		$sourceID = $this->request->getIntRequired('source');
-		$this->source = Source::findByID($this->db, $sourceID);
 	}
 
 	public function index()
 	{
-	    $form = $this->getForm((array)$this->source);
-		$form->submit('Save', ['class' => 'button is-link']);
-		$form->hidden('action', 'save');
+	    $form = $this->getForm([]);
+		$form->submit('Add', ['class' => 'button is-link']);
+		$form->hidden('action', 'add');
 		$content[] = $form->getContent();
 //		$content[] = getDebug($form);
 		return $this->template($content);
 	}
 
-	public function save()
+	public function add()
 	{
-		$this->source->update([
+		Source::insert($this->db, [
 			'name' => $this->request->getTrim('name'),
 			'path' => $this->request->getTrim('path'),
 			'thumbRoot' => $this->request->getTrim('thumbRoot'),

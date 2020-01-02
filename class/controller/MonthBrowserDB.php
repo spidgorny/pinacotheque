@@ -40,33 +40,40 @@ class MonthBrowserDB extends AppController
 		$this->db = $db;
 	}
 
-	public function index(/** @noinspection PhpSignatureMismatchDuringInheritanceInspection */ $source, $year, $month)
+	public function index()
 	{
+		$content = [];
+		$scripts = null;
+		$source = $this->request->getIntRequired('source');
 		$this->source = Source::findByID($this->db, $source);
-		$this->year = $year;
-		$this->month = $month;
+		$this->year = $this->request->getIntRequired('year');
+		$this->month = $this->request->getTrimRequired('month');
 
 		$this->provider = new FileProvider($this->db, $this->source);
 		$data = $this->provider->getFilesForMonth($this->year, $this->month);
 
-//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
-		$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']));
-		$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
-		$content[] = $monthSelector->getMonthSelector($data->getData(), Sources::href());
+		if ($data->count()) {
+			//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
+			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']));
+			$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
+			$content[] = $monthSelector->getMonthSelector($data->getData(), Sources::href());
 
-		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href( ['file' => '']), Preview::href([
-			'source' => $this->source->id,
-			'year' => $this->year,
-			'month' => $this->month,
-			'file' => ''
-		]));
-		$content[] = $this->monthTimeline->render($data->getData());
+			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
+				'source' => $this->source->id,
+				'year' => $this->year,
+				'month' => $this->month,
+				'file' => ''
+			]));
+			$content[] = $this->monthTimeline->render($data->getData());
+
+			$scripts = $this->monthTimeline->getScripts();
+		}
 
 		return $this->template($content, [
-			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',
+			'head' => '',
 //				. file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
 //			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
-			'scripts' => $this->monthTimeline->getScripts(),
+			'scripts' => $scripts,
 		]);
 	}
 

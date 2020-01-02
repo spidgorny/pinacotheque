@@ -28,7 +28,7 @@ class Preview extends AppController
 			'file' => ''
 		]));
 
-		$content = View::getInstance(__DIR__.'/preview.phtml')->render([
+		$content = View::getInstance(__DIR__.'/../../template/preview.phtml')->render([
 			'file1' => $file,
 			'images' => json_encode($monthTimeline->getOriginalImages($data->getData())),
 		]);
