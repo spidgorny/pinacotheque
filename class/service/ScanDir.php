@@ -68,6 +68,8 @@ class ScanDir
 				]);
 			} catch (\DatabaseException $e) {
 				// most likely file is already in DB
+			} catch (\Exception $e) {
+				// most likely file is already in DB
 			}
 		}
 	}

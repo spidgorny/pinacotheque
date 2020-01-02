@@ -12,7 +12,12 @@
     <base href="<?= $this->baseHref ?>"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css"/>
     <title>Pinacotheque</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
 	<?= $head ?>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 </head>
 <body>
 <div class="columns">
@@ -29,17 +34,33 @@
                 Sources
             </p>
             <ul class="menu-list">
-                <?php foreach ($sources as $source): ?>
-                   <li><a href="Sources?action=setSource&id=<?= $source->id ?>"
-                       title="<?= $source->path ?>">
-                           <?= $source->name ?>
-                       </a></li>
-                <?php endforeach; ?>
+				<?php foreach ($sources as $source): ?>
+                    <li>
+                        <nav class="level">
+                            <!-- Left side -->
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <a href="Sources?action=setSource&id=<?= $source->id ?>"
+                                       title="<?= $source->path ?>">
+										<?= $source->name ?>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <p class="level-item">
+                                    <a href="EditSource?source=<?= $source->id ?>">
+                                        <i class="fa fa-cog"></i>
+                                    </a>
+                                </p>
+                            </div>
+                        </nav>
+                    </li>
+				<?php endforeach; ?>
             </ul>
         </aside>
     </div>
     <div class="column">
-        <?= $this->s($body) ?>
+		<?= $this->s($body) ?>
     </div>
 </div>
 <?= $foot ?>

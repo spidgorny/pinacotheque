@@ -16,9 +16,14 @@ class ScanEveryFileFromDB extends AppController
 	{
 		$sourceID = $_SERVER['argv'][2];
 		$source = Source::findByID($this->db, $sourceID);
+		debug($source);
+
+		$scanDir = new \App\Service\ScanDir($this->db, $source);
+		$scanDir();
+
 		$provider = new FileProvider($this->db, $source);
 		$filesToScan = $provider->getUnscanned();
-//		debug($filesToScan);
+		debug(count($filesToScan));
 
 		$thumbsPath = path_plus(getenv('DATA_STORAGE'), $source->thumbRoot);
 

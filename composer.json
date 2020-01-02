@@ -29,7 +29,8 @@
 	},
 	"autoload": {
 		"classmap": [
-			"class"
+			"class",
+			"vendor/spidgorny/nadlib"
 		]
 	},
 	"scripts": {
