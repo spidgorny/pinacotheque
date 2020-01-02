@@ -71,4 +71,12 @@ class MetaForSQL extends Meta
 		return ShowOriginal::href(['file' => $this->id]);
 	}
 
+	public function getMeta()
+	{
+		$metaRows = MetaEntry::findAll($this->db, [
+			'id_file' => $this->id,
+		]);
+		return $metaRows;
+	}
+
 }

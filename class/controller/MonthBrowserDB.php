@@ -73,7 +73,8 @@ class MonthBrowserDB extends AppController
 			'head' => '',
 //				. file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
 //			'foot' => file_get_contents(__DIR__ . '/../../template/photoswipe.foot.phtml'),
-			'scripts' => $scripts,
+			'scripts' => $scripts.
+			'<script src="www/js/metaTooltip.js"></script>',
 		]);
 	}
 

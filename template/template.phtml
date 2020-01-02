@@ -56,12 +56,12 @@
                             <div class="level-left">
                                 <div class="level-item">
                                     <a href="Sources?action=setSource&id=<?= $source->id ?>"
-                                       title="<?= $source->path ?>">
+                                       title="<?= $source->path ?>" style="overflow: hidden">
 										<?= $source->name ?>
                                     </a>
                                 </div>
                             </div>
-                            <div class="level-right">
+                            <div class="level-right" style="align-items: end">
                                 <p class="level-item">
                                     <a href="EditSource?source=<?= $source->id ?>">
                                         <i class="fa fa-cog"></i>
@@ -73,6 +73,9 @@
 				<?php endforeach; ?>
             </ul>
         </aside>
+        <div id="sidebar" style="position: sticky; top: 0;">
+
+        </div>
     </div>
     <div class="column">
 		<?= $this->s($body) ?>

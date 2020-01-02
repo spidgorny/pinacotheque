@@ -6,14 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 	if (json) {
 		const arrayOfLatLngs = json.map((info: any) => {
 			return [info.lat, info.lon];
-		})
-		var bounds = new L.LatLngBounds(arrayOfLatLngs);
+		});
+		const bounds = new L.LatLngBounds(arrayOfLatLngs);
 
-		var map = L.map("mapid");
+		const map = L.map("mapid");
 		//mymap.setView([51.505, -0.09], 13);
 		map.fitBounds(bounds);
 
-		var osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+		const osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 		L.tileLayer(osmUrl, {
 			maxZoom: 18,
 		}).addTo(map);

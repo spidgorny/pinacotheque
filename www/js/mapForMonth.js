@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 document.addEventListener("DOMContentLoaded", function () { return __awaiter(_this, void 0, void 0, function () {
-    var res, json, arrayOfLatLngs, bounds, map, osmUrl;
+    var res, json, arrayOfLatLngs, bounds, map_1, osmUrl;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, fetch(document.location.href + '?action=gps', {})];
@@ -51,15 +51,15 @@ document.addEventListener("DOMContentLoaded", function () { return __awaiter(_th
                         return [info.lat, info.lon];
                     });
                     bounds = new L.LatLngBounds(arrayOfLatLngs);
-                    map = L.map("mapid");
+                    map_1 = L.map("mapid");
                     //mymap.setView([51.505, -0.09], 13);
-                    map.fitBounds(bounds);
+                    map_1.fitBounds(bounds);
                     osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
                     L.tileLayer(osmUrl, {
                         maxZoom: 18,
-                    }).addTo(map);
+                    }).addTo(map_1);
                     json.map(function (info) {
-                        L.marker([info.lat, info.lon]).addTo(map);
+                        L.marker([info.lat, info.lon]).addTo(map_1);
                     });
                 }
                 return [2 /*return*/];

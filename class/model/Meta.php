@@ -12,6 +12,7 @@
  * @property array GPSLongitude
  * @property mixed DateTimeOriginal
  * @property mixed DateTime
+ * @property int id
  */
 class Meta
 {
@@ -74,7 +75,8 @@ class Meta
 		$ahref = $this->toHTMLClickable($prefix, $attributes, $linkPrefix);
 		$content[] = $ahref;
 
-		$span = new HTMLTag('span', [
+		$span = new HTMLTag('a', [
+			'href' => GetMetaInfo::href(['file' => $this->id]),
 			'class' => 'tag meta',
 			'data-id' => 'md5-' . md5($this->getFilename()),
 		], '<i class="fa fa-info"></i>', true);

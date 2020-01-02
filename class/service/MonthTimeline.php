@@ -153,8 +153,8 @@ class MonthTimeline
 				// build items array
 				var items = " . json_encode($items) . ";
 			</script>
-			<script src='/www/js/photoSwipe.js'></script>
 			";
+//			<script src='/www/js/photoSwipe.js'></script>
 	}
 
 	/**

@@ -1,3 +1,23 @@
+body {
+  background-color: #333;
+  color: lightgray;
+}
+body a {
+  color: silver;
+}
+table.table {
+  background-color: #333;
+}
+table.table thead th, td {
+  color: silver;
+}
+hr {
+  color: #888;
+  background-color: #888;
+}
+.menu-list a {
+  color: #888;
+}
 .tooltip {
   width: 75%;
   z-index: 1000;
@@ -21,6 +41,7 @@ dd {
 }
 figure.picWithCount {
   position: relative;
+  margin: 0 3px;
 }
 figure.picWithCount img {
   width: 100%;
@@ -63,3 +84,10 @@ table.htmlFormTable {
 table.htmlFormTable tbody {
   width: 100%;
 }
+.m-3 {
+  margin: 0.5em;
+}
+.mb-3 {
+  margin-bottom: 0.5em;
+}
+
