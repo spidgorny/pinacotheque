@@ -63,7 +63,9 @@ class Meta
 	public function toHTMLClickable($prefix = '', array $attributes = [], $linkPrefix = '')
 	{
 		$img = $this->toHTML($prefix, $attributes);
-		$ahref = HTMLTag::a($linkPrefix . $this->id, $img, [], true);
+		$ahref = HTMLTag::a($linkPrefix . $this->id, $img, [
+			'name' => $this->id,
+		], true);
 		return $ahref;
 	}
 

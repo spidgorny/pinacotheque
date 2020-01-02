@@ -3,6 +3,7 @@ var PreviewController = /** @class */ (function () {
         this.images = images;
         this.detectIndex();
         this.attachEvents();
+        this.render();
     }
     PreviewController.prototype.detectIndex = function () {
         var file = new URLSearchParams(document.location.search).get('file');
@@ -61,6 +62,7 @@ var PreviewController = /** @class */ (function () {
             // console.log(index, images[index]);
             img.style.backgroundImage = 'url(ShowThumb?file=' + this.images[this.index].id;
             img.src = this.images[this.index].src;
+            img.addEventListener('click', this.onClick.bind(this));
         }
         this.preloadAround(this.index, 5);
         this.updateURL();
@@ -82,6 +84,11 @@ var PreviewController = /** @class */ (function () {
         var newURL = new URL(document.location.href);
         newURL.search = params.toString();
         window.history.replaceState({}, document.title, newURL.toString());
+    };
+    PreviewController.prototype.onClick = function (e) {
+        var url = new URL(document.referrer);
+        url.hash = this.images[this.index].id;
+        document.location.href = url.toString();
     };
     return PreviewController;
 }());

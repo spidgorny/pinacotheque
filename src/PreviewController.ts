@@ -8,6 +8,7 @@ class PreviewController {
 		this.images = images;
 		this.detectIndex();
 		this.attachEvents();
+		this.render();
 	}
 
 	public detectIndex() {
@@ -69,6 +70,7 @@ class PreviewController {
 			// console.log(index, images[index]);
 			img.style.backgroundImage = 'url(ShowThumb?file=' + this.images[this.index].id;
 			img.src = this.images[this.index].src;
+			img.addEventListener('click', this.onClick.bind(this));
 		}
 
 		this.preloadAround(this.index, 5);
@@ -93,6 +95,12 @@ class PreviewController {
 		const newURL = new URL(document.location.href);
 		newURL.search = params.toString();
 		window.history.replaceState({}, document.title, newURL.toString());
+	}
+
+	public onClick(e) {
+		const url = new URL(document.referrer);
+		url.hash = this.images[this.index].id;
+		document.location.href = url.toString();
 	}
 
 }

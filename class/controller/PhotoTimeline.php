@@ -54,7 +54,7 @@ class PhotoTimeline extends AppController
 		$content[] = '<hr>';
 
 		$content[] = new HTMLTag('p', [], 'Total Files: ' . sizeof($imageFiles));
-		$totalSize = array_reduce($imageFiles, function ($acc, Meta $meta) {
+		$totalSize = array_reduce($imageFiles, static function ($acc, Meta $meta) {
 			return $acc + $meta->getSize();
 		}, 0);
 		$bytes = new Bytes($totalSize);
