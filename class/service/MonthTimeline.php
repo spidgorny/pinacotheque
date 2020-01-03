@@ -94,8 +94,8 @@ class MonthTimeline
 		/** @var MetaForSQL[] $set */
 		foreach ($sets as $set) {
 			$oneWidth = [
-				1 => 'is-12',
-				2 => 'is-6',
+				1 => 'is-4',	// 4 elements in a row
+				2 => 'is-4',
 				3 => 'is-4',
 				4 => 'is-3',
 				5 => 'is-2',

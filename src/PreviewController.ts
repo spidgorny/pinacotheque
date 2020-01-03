@@ -89,7 +89,7 @@ class PreviewController {
 
 	public render() {
 		console.log(this.current);
-		if ('videosrc' in this.current) {
+		if (this.current && 'videosrc' in this.current) {
 			const app = document.querySelector('#app');
 			app.innerHTML = this.current.html;
 			document.title = this.current.title;
@@ -135,6 +135,10 @@ class PreviewController {
 	}
 
 	public onClick(e) {
+		if (!document.referrer) {
+			document.location.href = document.location.href.replace('Preview', 'MonthBrowserDB');
+			return;
+		}
 		const url = new URL(document.referrer);
 		url.hash = this.current.id;
 		document.location.href = url.toString();

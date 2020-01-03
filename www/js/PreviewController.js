@@ -82,7 +82,7 @@ var PreviewController = /** @class */ (function () {
     PreviewController.prototype.render = function () {
         var _this = this;
         console.log(this.current);
-        if ('videosrc' in this.current) {
+        if (this.current && 'videosrc' in this.current) {
             var app = document.querySelector('#app');
             app.innerHTML = this.current.html;
             document.title = this.current.title;
@@ -125,6 +125,10 @@ var PreviewController = /** @class */ (function () {
         window.history.replaceState({}, document.title, newURL.toString());
     };
     PreviewController.prototype.onClick = function (e) {
+        if (!document.referrer) {
+            document.location.href = document.location.href.replace('Preview', 'MonthBrowserDB');
+            return;
+        }
         var url = new URL(document.referrer);
         url.hash = this.current.id;
         document.location.href = url.toString();

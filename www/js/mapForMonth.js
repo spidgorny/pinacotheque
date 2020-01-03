@@ -36,36 +36,69 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 document.addEventListener("DOMContentLoaded", function () { return __awaiter(_this, void 0, void 0, function () {
-    var url, res, json, arrayOfLatLngs, bounds, map_1, osmUrl;
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                url = new URL(document.location.href);
-                url.searchParams.set('action', 'gps');
-                return [4 /*yield*/, fetch(url.toString(), {})];
-            case 1:
-                res = _a.sent();
-                return [4 /*yield*/, res.json()];
-            case 2:
-                json = _a.sent();
-                console.log(json);
-                if (json) {
-                    arrayOfLatLngs = json.map(function (info) {
-                        return [info.lat, info.lon];
-                    });
-                    bounds = new L.LatLngBounds(arrayOfLatLngs);
-                    map_1 = L.map('mapid');
-                    //mymap.setView([51.505, -0.09], 13);
-                    map_1.fitBounds(bounds);
-                    osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-                    L.tileLayer(osmUrl, {
-                        maxZoom: 18,
-                    }).addTo(map_1);
-                    json.map(function (info) {
-                        L.marker([info.lat, info.lon]).addTo(map_1);
-                    });
-                }
-                return [2 /*return*/];
-        }
+        new MapManager();
+        return [2 /*return*/];
     });
 }); });
+var MapManager = /** @class */ (function () {
+    function MapManager() {
+        this.fetchGPSdata();
+    }
+    MapManager.prototype.fetchGPSdata = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var url, res, json;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        url = new URL(document.location.href);
+                        this.source = url.searchParams.get('source');
+                        this.year = url.searchParams.get('year');
+                        this.month = url.searchParams.get('month');
+                        url.searchParams.set('action', 'gps');
+                        return [4 /*yield*/, fetch(url.toString(), {})];
+                    case 1:
+                        res = _a.sent();
+                        return [4 /*yield*/, res.json()];
+                    case 2:
+                        json = _a.sent();
+                        console.log(json);
+                        if (json) {
+                            this.makeMap(json);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    MapManager.prototype.makeMap = function (json) {
+        var _this = this;
+        var arrayOfLatLngs = json.map(function (info) {
+            return [info.lat, info.lon];
+        });
+        var bounds = new L.LatLngBounds(arrayOfLatLngs);
+        var map = L.map('mapid');
+        //mymap.setView([51.505, -0.09], 13);
+        map.fitBounds(bounds);
+        var osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+        L.tileLayer(osmUrl, {
+            maxZoom: 18,
+        }).addTo(map);
+        json.map(function (info) {
+            var clickURL = "Preview?source=" + _this.source + "&year=" + _this.year + "&month=" + _this.month + "&file=" + info.id;
+            var imageURL = "ShowThumb?file=" + info.id;
+            L.marker([info.lat, info.lon], {
+                title: info.path,
+                riseOnHover: true,
+            }).addTo(map)
+                .bindPopup("\n\t\t\t\t\t<p>\n\t\t\t\t\t<a href=\"" + clickURL + "\">\n\t\t\t\t\t<img src=\"" + imageURL + "\" />\n\t\t\t\t\t</a>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>" + info.path + "</p>\n\t\t\t\t");
+        });
+        map.on('zoomend', function (e) {
+            console.log('zoom', e);
+        });
+        map.on('moveend', function (e) {
+            console.log('move', e);
+        });
+    };
+    return MapManager;
+}());
