@@ -91,8 +91,8 @@ class AppController
 
 	public function getSources()
 	{
-		/** @var DBLayerSQLite $db */
-		$db = $this->container->get(DBLayerSQLite::class);
+		/** @var DBInterface $db */
+		$db = $this->container->get(DBInterface::class);
 		$sources = Source::findAll($db, [], 'ORDER BY id');
 		//debug($sources);
 		return $sources;

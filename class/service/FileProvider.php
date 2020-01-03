@@ -4,22 +4,37 @@ class FileProvider
 {
 
 	/**
-	 * @var DBLayerSQLite
+	 * @var DBInterface
 	 */
 	protected $db;
 
 	protected $source;
 
-	public function __construct(DBLayerSQLite $db, Source $source)
+	protected $timestamp;
+
+	protected $strftime;
+
+	protected $strftimeYM;
+
+	public function __construct(DBInterface $db, Source $source)
 	{
 		$this->db = $db;
 		$this->source = $source;
+		$this->timestamp = 'datetime(timestamp, "unixepoch")';    // SQLite
+		$this->strftime = "strftime(\"%Y:%m:%d %H:%M:%S\", $this->timestamp)";
+		$this->strftimeYM = "strftime(\"%Y-%m\", $this->timestamp)";
+		if ($this->db instanceof DBLayerPDO) {
+			$this->timestamp = 'from_unixtime(timestamp)';
+			$this->strftime = "date_format($this->timestamp, '%Y:%m:%d %H:%i:%s')";
+			$this->strftimeYM = "date_format($this->timestamp, '%Y-%m')";
+		}
 	}
 
 	public function getMinMax()
 	{
 		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
-			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
+			'files LEFT OUTER JOIN meta 
+			ON (meta.id_file = files.id AND meta.name = "DateTime")', [
 			'source' => $this->source->id,
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
@@ -33,20 +48,25 @@ class FileProvider
 				'tiff',
 				'.tif',
 			]),
+			new SQLOr([
+				'(meta.value IS NULL)',
 				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
+			]),
 		], '',
-			'min(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as min, 
-			max(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as max');
-        //debug($this->db->getLastQuery().'');
+			"min(coalesce(meta.value, $this->strftime)) as min, 
+			max(coalesce(meta.value, $this->strftime)) as max");
+		//debug($this->db->getLastQuery().'');
 //        $content[] = 'min: ' . $min . BR;
 //        $content[] = 'max: ' . $max . BR;
+		llog($this->db->getLastQuery());
 		return ['min' => $min, 'max' => $max];
 	}
 
 	public function getOneFilePerMonth()
 	{
-		$YM = "CASE WHEN meta.value THEN strftime('%Y-%m', replace(substr(meta.value, 0, 11), ':', '-') || substr(meta.value, 11))
-            ELSE strftime('%Y-%m', datetime(timestamp, 'unixepoch'))
+		$YM = "CASE WHEN meta.value THEN 
+			replace(substr(meta.value, 0, 8), ':', '-')
+            ELSE $this->strftimeYM
     END";
 		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
 			'source' => $this->source->id,
@@ -64,9 +84,12 @@ class FileProvider
 			]),
 		], 'GROUP BY ' . $YM .
 			' ORDER BY ' . $YM,
-			'meta.*, files.*, ' . $YM . ' as YM, count(*) as count'
+			'min(files.id) as id, 
+			' . $YM . ' as YM, 
+			count(*) as count'
 		);
 		//debug($this->db->getLastQuery().'');
+		llog($this->db->getLastQuery() . '');
 
 		//		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
@@ -88,7 +111,7 @@ class FileProvider
 	public function getFilesForMonth($year, $month)
 	{
 		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), ':', '-')
-            ELSE strftime('%Y-%m', datetime(timestamp, 'unixepoch'))
+            ELSE $this->strftimeYM
     END";
 		$imageFiles = $this->db->fetchAllSelectQuery(
 			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
@@ -105,10 +128,10 @@ class FileProvider
 				'tiff',
 				'.tif',
 			]),
-			'YM' => $year . '-' . $month,
-		], 'ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), \':\', \'-\')
-            ELSE strftime(\'%Y-%m\', datetime(timestamp, \'unixepoch\'))
-    END',
+			$YM => $year . '-' . $month,
+		], "ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), ':', '-')
+            ELSE $this->strftimeYM
+    END",
 			'meta.*, files.*, ' . $YM . ' as YM'
 		);
 //		debug($this->db->getLastQuery().'');
@@ -125,6 +148,9 @@ class FileProvider
 		return $imageFiles;
 	}
 
+	/**
+	 * @return array[]
+	 */
 	public function getUnscanned()
 	{
 		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', [

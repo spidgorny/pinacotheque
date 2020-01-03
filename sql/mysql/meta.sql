@@ -6,3 +6,6 @@ CREATE TABLE meta
     value   TEXT,
     UNIQUE(id_file, name)
 );
+create index meta_name_index
+    on meta (name);
+

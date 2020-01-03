@@ -16,7 +16,7 @@ class ImageScanner
 
 	protected $db;
 
-	public function __construct(Source $source, $file, $thumbsPath, MetaFile $metaFile, DBLayerSQLite $db)
+	public function __construct(Source $source, $file, $thumbsPath, MetaFile $metaFile, DBInterface $db)
 	{
 		$this->source = $source;
 		$this->file = $file;

@@ -3,10 +3,10 @@
 class ScanEveryFileFromDB extends AppController
 {
 
-	/** @var DBLayerSQLite */
+	/** @var DBInterface */
 	protected $db;
 
-	public function __construct(DBLayerSQLite $db)
+	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
 		$this->db = $db;
@@ -16,7 +16,7 @@ class ScanEveryFileFromDB extends AppController
 	{
 		$sourceID = $_SERVER['argv'][2];
 		$source = Source::findByID($this->db, $sourceID);
-		debug($source);
+//		debug($source);
 
 		$scanDir = new \App\Service\ScanDir($this->db, $source);
 		$scanDir();

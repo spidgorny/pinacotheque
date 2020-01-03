@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use DBInterface;
 use DBLayerSQLite;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -25,7 +26,7 @@ class ScanDir
 
 	protected $dir;
 
-	public function __construct(DBLayerSQLite $db, Source $source)
+	public function __construct(DBInterface $db, Source $source)
 	{
 		$this->db = $db;
 		$this->source = $source;

@@ -6,7 +6,7 @@ class Sources extends AppController
 {
 
 	/**
-	 * @var DBLayerSQLite
+	 * @var DBInterface
 	 */
 	protected $db;
 
@@ -22,7 +22,7 @@ class Sources extends AppController
 	 */
 	protected $provider;
 
-	public function __construct(DBLayerSQLite $db)
+	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
 		$this->db = $db;

@@ -92,7 +92,7 @@ return [
 		return $predis;
 	},
 	ScanEveryFileFromDB::class => static function ($c) {
-		return new ScanEveryFileFromDB($c->get(DBLayerSQLite::class));
+		return new ScanEveryFileFromDB($c->get(DBInterface::class));
 	},
 	DBInterface::class => static function ($c) {
 		$m = new DBLayerPDO(getenv('mysql.db'), getenv('mysql'), getenv('mysql.user'), getenv('mysql.password'));

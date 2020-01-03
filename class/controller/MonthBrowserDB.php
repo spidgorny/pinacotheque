@@ -3,7 +3,7 @@
 class MonthBrowserDB extends AppController
 {
 
-	/** @var DBLayerSQLite */
+	/** @var DBInterface */
 	protected $db;
 
 	/**
@@ -32,7 +32,7 @@ class MonthBrowserDB extends AppController
 		]);
 	}
 
-	public function __construct(DBLayerSQLite $db)
+	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
 		$this->db = $db;
