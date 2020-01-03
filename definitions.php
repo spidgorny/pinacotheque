@@ -94,4 +94,9 @@ return [
 	ScanEveryFileFromDB::class => static function ($c) {
 		return new ScanEveryFileFromDB($c->get(DBLayerSQLite::class));
 	},
+	DBInterface::class => static function ($c) {
+		$m = new DBLayerPDO(getenv('mysql.db'), getenv('mysql'), getenv('mysql.user'), getenv('mysql.password'));
+		$m->setQB(new SQLBuilder($m));
+		return $m;
+	}
 ];
