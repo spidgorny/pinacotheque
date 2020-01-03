@@ -22,9 +22,6 @@ class MonthBrowserDB extends AppController
 	 */
 	protected $monthTimeline;
 
-	/** @var FileProvider */
-	protected $provider;
-
 	public static function href2month($source, $year, $month)
 	{
 		return static::href([
@@ -49,14 +46,16 @@ class MonthBrowserDB extends AppController
 		$this->year = $this->request->getIntRequired('year');
 		$this->month = $this->request->getTrimRequired('month');
 
-		$this->provider = new FileProvider($this->db, $this->source);
-		$data = $this->provider->getFilesForMonth($this->year, $this->month);
+		$provider = new FileProvider($this->db, $this->source);
+		$data = $provider->getFilesForMonth($this->year, $this->month);
+//		debug($data->getData());
 
 		if ($data->count()) {
 			//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
-			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']));
+			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']), $provider);
+
 			$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
-			$content[] = $monthSelector->getMonthSelector($data->getData(), Sources::href());
+			$content[] = $monthSelector->getMonthSelector(Sources::href());
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
 				'source' => $this->source->id,

@@ -18,12 +18,25 @@ class FileProvider
 
 	public function getMinMax()
 	{
-		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery('files', [
+		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
+			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
 			'source' => $this->source->id,
 			'type' => 'file',
+			'substr(path, -4)' => new SQLIn([
+				'jpeg',
+				'.jpg',
+				'.png',
+				'.gif',
+				'.mp4',
+				'.mov',
+				'.mkv',
+				'tiff',
+				'.tif',
+			]),
 		], '',
-			'min(timestamp) as min, max(timestamp) as max');
-//        $content[] = 'query: ' . $this->db->getLastQuery() . BR;
+			'min(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as min, 
+			max(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as max');
+        //debug($this->db->getLastQuery().'');
 //        $content[] = 'min: ' . $min . BR;
 //        $content[] = 'max: ' . $max . BR;
 		return ['min' => $min, 'max' => $max];
@@ -31,15 +44,30 @@ class FileProvider
 
 	public function getOneFilePerMonth()
 	{
-		$YM = "strftime('%Y-%m', datetime(timestamp, 'unixepoch'))";
-		$imageFiles = $this->db->fetchAllSelectQuery('files', [
+		$YM = "CASE WHEN meta.value THEN strftime('%Y-%m', replace(substr(meta.value, 0, 11), ':', '-') || substr(meta.value, 11))
+            ELSE strftime('%Y-%m', datetime(timestamp, 'unixepoch'))
+    END";
+		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
 			'source' => $this->source->id,
 			'type' => 'file',
-		], "GROUP BY " . $YM .
+			'substr(path, -4)' => new SQLIn([
+				'jpeg',
+				'.jpg',
+				'.png',
+				'.gif',
+				'.mp4',
+				'.mov',
+				'.mkv',
+				'tiff',
+				'.tif',
+			]),
+		], 'GROUP BY ' . $YM .
 			' ORDER BY ' . $YM,
-			'*, ' . $YM . ' as YM, count(*) as count'
+			'meta.*, files.*, ' . $YM . ' as YM, count(*) as count'
 		);
-//		$content[] = new slTable($imageFiles);
+		//debug($this->db->getLastQuery().'');
+
+		//		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
 
 		$byMonth = $imageFiles->reindex(static function ($key, array $row) {
@@ -58,14 +86,32 @@ class FileProvider
 
 	public function getFilesForMonth($year, $month)
 	{
-		$YM = "strftime('%Y-%m', datetime(timestamp, 'unixepoch'))";
-		$imageFiles = $this->db->fetchAllSelectQuery('files', [
+		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), ':', '-')
+            ELSE strftime('%Y-%m', datetime(timestamp, 'unixepoch'))
+    END";
+		$imageFiles = $this->db->fetchAllSelectQuery(
+			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
 			'source' => $this->source->id,
 			'type' => 'file',
+			'substr(path, -4)' => new SQLIn([
+				'jpeg',
+				'.jpg',
+				'.png',
+				'.gif',
+				'.mp4',
+				'.mov',
+				'.mkv',
+				'tiff',
+				'.tif',
+			]),
 			'YM' => $year . '-' . $month,
-		], ' ORDER BY timestamp ',
-			'*, ' . $YM . ' as YM'
+		], 'ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), \':\', \'-\')
+            ELSE strftime(\'%Y-%m\', datetime(timestamp, \'unixepoch\'))
+    END',
+			'meta.*, files.*, ' . $YM . ' as YM'
 		);
+//		debug($this->db->getLastQuery().'');
+
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
 
@@ -82,6 +128,17 @@ class FileProvider
 		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', [
 			'source' => $this->source->id,
 			'type' => 'file',
+			'substr(path, -4)' => new SQLIn([
+				'jpeg',
+				'.jpg',
+				'.png',
+				'.gif',
+				'.mp4',
+				'.mov',
+				'.mkv',
+				'tiff',
+				'.tif',
+			]),
 			'meta.id' => null,
 		], 'ORDER BY timestamp');
 //		$content[] = new slTable($imageFiles);

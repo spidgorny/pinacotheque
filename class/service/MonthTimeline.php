@@ -102,6 +102,7 @@ class MonthTimeline
 				2 => 'is-6',
 				3 => 'is-4',
 				4 => 'is-3',
+				5 => 'is-2',
 				6 => 'is-2'
 			][count($set)];
 			foreach ($set as &$meta) {

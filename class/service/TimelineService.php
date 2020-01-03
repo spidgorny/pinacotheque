@@ -30,7 +30,7 @@ class TimelineService
 		$linear = ArrayPlus::create($set);
 //		debug($linear->count());
 
-		$byMonth = $linear->reindex(function ($key, Meta $val) {
+		$byMonth = $linear->reindex(static function ($key, Meta $val) {
 			return $val->yearMonth();
 		});
 //		debug($byMonth->getData());
@@ -89,7 +89,7 @@ class TimelineService
         return $this->renderTable($byMonth);
     }
 
-    public function renderTable($byMonth)
+    public function renderTable(ArrayPlus $byMonth)
     {
 		$table = [];
 		for ($year = $this->min->getYear(); $year <= $this->max->getYear(); $year++) {

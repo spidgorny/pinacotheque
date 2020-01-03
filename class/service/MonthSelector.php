@@ -19,10 +19,10 @@ class MonthSelector
 		$this->timelineService = $timelineService;
 	}
 
-	public function getMonthSelector(array $set, $linkHome)
+	public function getMonthSelector($linkHome)
 	{
 		$this->timelineService->selected = $this->year . '-' . $this->month;
-		$table = $this->timelineService->getTable($set);
+		$table = $this->timelineService->renderTable($this->timelineService->byMonth);
 //		debug(count($set), array_keys($table));
 		$table = [$this->year => $table[$this->year]];
 		$slTable = new slTable($table, [
