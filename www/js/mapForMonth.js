@@ -57,6 +57,7 @@ var MapManager = /** @class */ (function () {
                         this.month = parseInt(this.url.searchParams.get('month'), 10);
                         url = new URL(this.url.toString());
                         url.searchParams.set('action', 'gps');
+                        url.searchParams.set('bounds', this.getBoundsFromURL);
                         return [4 /*yield*/, fetch(url.toString(), {})];
                     case 1:
                         res = _a.sent();
@@ -72,6 +73,13 @@ var MapManager = /** @class */ (function () {
             });
         });
     };
+    Object.defineProperty(MapManager.prototype, "getBoundsFromURL", {
+        get: function () {
+            return this.url.searchParams.get('bounds');
+        },
+        enumerable: true,
+        configurable: true
+    });
     MapManager.prototype.makeMap = function (json) {
         var _this = this;
         var arrayOfLatLngs = json.map(function (info) {
@@ -97,31 +105,41 @@ var MapManager = /** @class */ (function () {
         this.map.on('zoomend', function (e) {
             // console.log('zoom', e);
             _this.updateImageRows();
+            _this.updateURL();
         });
         this.map.on('moveend', function (e) {
             // console.log('move', e);
             _this.updateImageRows();
+            _this.updateURL();
         });
     };
+    Object.defineProperty(MapManager.prototype, "getBoundsJSON", {
+        get: function () {
+            var bounds = this.map.getBounds();
+            // console.log(bounds);
+            return JSON.stringify({
+                west: bounds.getWest(),
+                east: bounds.getEast(),
+                north: bounds.getNorth(),
+                south: bounds.getSouth(),
+            });
+        },
+        enumerable: true,
+        configurable: true
+    });
     MapManager.prototype.updateImageRows = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var bounds, ajaxURL, html;
+            var ajaxURL, html;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        bounds = this.map.getBounds();
                         ajaxURL = new URL(this.url.toString());
                         ajaxURL.pathname = 'MonthBrowserDB';
                         ajaxURL.searchParams.set('action', 'filterByGPS');
                         ajaxURL.searchParams.set('source', this.source.toString());
                         ajaxURL.searchParams.set('year', this.year.toString());
                         ajaxURL.searchParams.set('month', this.month.toString());
-                        ajaxURL.searchParams.set('bounds', JSON.stringify({
-                            west: bounds.getWest(),
-                            east: bounds.getEast(),
-                            north: bounds.getNorth(),
-                            south: bounds.getSouth(),
-                        }));
+                        ajaxURL.searchParams.set('bounds', this.getBoundsJSON);
                         return [4 /*yield*/, fetch(ajaxURL.toString())];
                     case 1: return [4 /*yield*/, (_a.sent()).text()];
                     case 2:
@@ -131,6 +149,11 @@ var MapManager = /** @class */ (function () {
                 }
             });
         });
+    };
+    MapManager.prototype.updateURL = function () {
+        var newURL = new URL(document.location.href);
+        newURL.searchParams.set('bounds', this.getBoundsJSON);
+        window.history.replaceState({}, document.title, newURL.toString());
     };
     return MapManager;
 }());

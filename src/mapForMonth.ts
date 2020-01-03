@@ -38,12 +38,17 @@ class MapManager {
 
 		const url = new URL(this.url.toString());
 		url.searchParams.set('action', 'gps');
+		url.searchParams.set('bounds', this.getBoundsFromURL);
 		const res = await fetch(url.toString(), {});
 		const json = await res.json();
 		console.log(json);
 		if (json) {
 			this.makeMap(json);
 		}
+	}
+
+	public get getBoundsFromURL() {
+		return this.url.searchParams.get('bounds');
 	}
 
 	public makeMap(json: ImageGPS[]) {
@@ -81,31 +86,44 @@ class MapManager {
 		this.map.on('zoomend', (e) => {
 			// console.log('zoom', e);
 			this.updateImageRows();
+			this.updateURL();
 		});
 		this.map.on('moveend', (e) => {
 			// console.log('move', e);
 			this.updateImageRows();
+			this.updateURL();
+		});
+	}
+
+	public get getBoundsJSON() {
+		const bounds = this.map.getBounds();
+		// console.log(bounds);
+		return JSON.stringify({
+			west: bounds.getWest(),
+			east: bounds.getEast(),
+			north: bounds.getNorth(),
+			south: bounds.getSouth(),
 		});
 	}
 
 	public async updateImageRows() {
-		const bounds = this.map.getBounds();
-		// console.log(bounds);
 		const ajaxURL = new URL(this.url.toString());
 		ajaxURL.pathname = 'MonthBrowserDB';
 		ajaxURL.searchParams.set('action', 'filterByGPS');
 		ajaxURL.searchParams.set('source', this.source.toString());
 		ajaxURL.searchParams.set('year', this.year.toString());
 		ajaxURL.searchParams.set('month', this.month.toString());
-		ajaxURL.searchParams.set('bounds', JSON.stringify({
-			west: bounds.getWest(),
-			east: bounds.getEast(),
-			north: bounds.getNorth(),
-			south: bounds.getSouth(),
-		}));
+		ajaxURL.searchParams.set('bounds', this.getBoundsJSON);
 		// console.log(ajaxURL);
 		const html = await (await fetch(ajaxURL.toString())).text();
 		document.querySelector('#imageRows').innerHTML = html;
+	}
+
+	public updateURL()
+	{
+		const newURL = new URL(document.location.href);
+		newURL.searchParams.set('bounds', this.getBoundsJSON);
+		window.history.replaceState({}, document.title, newURL.toString());
 	}
 
 }

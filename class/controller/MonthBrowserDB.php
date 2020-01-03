@@ -54,10 +54,11 @@ class MonthBrowserDB extends AppController
 		$content = [];
 		$scripts = null;
 		$this->init();
-		$data = $this->provider->getFilesForMonth($this->year, $this->month);
-//		debug($data->getData());
+		$images = $this->provider->getFilesForMonth($this->year, $this->month);
+//		debug($images->getData());
+		$images = $this->filterByBounds($images->getData());
 
-		if ($data->count()) {
+		if (count($images)) {
 			//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
 			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']), $this->provider);
 
@@ -65,7 +66,7 @@ class MonthBrowserDB extends AppController
 			$content[] = $monthSelector->getMonthSelector(Sources::href());
 
 			$ms = new MapService();
-			$content[] = $ms($data->getData());
+			$content[] = $ms($images);
 			$content[] = '<hr />';
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
@@ -74,7 +75,7 @@ class MonthBrowserDB extends AppController
 				'month' => $this->month,
 				'file' => ''
 			]));
-			$content[] = $this->monthTimeline->render($data->getData());
+			$content[] = $this->monthTimeline->render($images);
 
 			$scripts = $this->monthTimeline->getScripts();
 		}
@@ -95,23 +96,25 @@ class MonthBrowserDB extends AppController
 	public function gps()
 	{
 		$this->init();
-		$data = $this->provider->getFilesForMonth($this->year, $this->month);
+		$images = $this->provider->getFilesForMonth($this->year, $this->month);
 
-		$ma = new MetaArray($data->getData());
-		$places = $ma->getGps();
+		$placesInBounds = $this->filterByBounds($images->getData());
+//		debug(count($images), count($placesInBounds));
+
 		$places = array_map(static function (Meta $meta) {
 			return $meta->getAll();
-		}, $places);
+		}, $placesInBounds);
 		return json_encode($places, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 	}
 
-	/**
-	 * AJAX call from mapForMonth.ts
-	 */
-	public function filterByGPS()
+	public function filterByBounds(array $places)
 	{
-		$bounds = json_decode($this->request->getTrimRequired('bounds'), false, 512, JSON_THROW_ON_ERROR);
-		//debug($bounds);
+		$bounds = $this->request->getTrim('bounds');
+		if (!$bounds) {
+			return $places;	// return everything
+		}
+		$bounds = json_decode($bounds, false, 512, JSON_THROW_ON_ERROR);
+//		debug($bounds);
 
 		$southWest = new Geokit\LatLng($bounds->south, $bounds->west);
 		$northEast = new Geokit\LatLng($bounds->north, $bounds->east);
@@ -122,12 +125,8 @@ class MonthBrowserDB extends AppController
 //			'northeast' => $boundingBox->getNorthEast().'',
 //		]);
 
-		$this->init();
-//		debug($this->source, $this->year, $this->month);
-		$data = $this->provider->getFilesForMonth($this->year, $this->month);
-
-		$ma = new MetaArray($data->getData());
-		$places = $ma->getGps();
+		$ma = new MetaArray($places);
+		$places = $ma->getGps();	// only images with GPS
 //		debug($places);
 
 		// filtering
@@ -143,6 +142,19 @@ class MonthBrowserDB extends AppController
 			}
 		}
 //		debug(count($places), count($placesInBounds));
+		return $placesInBounds;
+	}
+
+	/**
+	 * AJAX call from mapForMonth.ts
+	 */
+	public function filterByGPS()
+	{
+		$this->init();
+//		debug($this->source, $this->year, $this->month);
+		$images = $this->provider->getFilesForMonth($this->year, $this->month);
+
+		$placesInBounds = $this->filterByBounds($images);
 
 		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
 			'source' => $this->source->id,
