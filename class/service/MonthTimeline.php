@@ -21,19 +21,15 @@ class MonthTimeline
 		$this->linkPrefix = $linkPrefix;
 	}
 
-	public function render(array $data)
+	public function render(array $data): array
 	{
 		$this->data = $data;
-
-		$ms = new MapService();
-		$content[] = $ms($data);
-		$content[] = '<hr />';
 
 		//debug($this->prefix.'', $this->prefix->getURL().'');
 		$sets = $this->splitIntoRows($data);
 		if (false) {
-			$setSize = array_map(function (array $set) {
-				return sizeof($set) . ' : ' . implode(', ', array_map(function ($item) {
+			$setSize = array_map(static function (array $set) {
+				return sizeof($set) . ' : ' . implode(', ', array_map(static function ($item) {
 						return get_class($item);
 					}, $set));
 			}, $sets);
@@ -163,7 +159,7 @@ class MonthTimeline
 	 * @param MetaForSQL[] $data
 	 * @return array
 	 */
-	public function getOriginalImages(array $data)
+	public function getOriginalImages(array $data): array
 	{
 		$items = [];
 		foreach ($data as $i => $meta) {

@@ -22,6 +22,9 @@ class MonthBrowserDB extends AppController
 	 */
 	protected $monthTimeline;
 
+	/** @var FileProvider */
+	protected $provider;
+
 	public static function href2month($source, $year, $month)
 	{
 		return static::href([
@@ -37,25 +40,34 @@ class MonthBrowserDB extends AppController
 		$this->db = $db;
 	}
 
-	public function index()
+	public function init()
 	{
-		$content = [];
-		$scripts = null;
 		$source = $this->request->getIntRequired('source');
 		$this->source = Source::findByID($this->db, $source);
 		$this->year = $this->request->getIntRequired('year');
 		$this->month = $this->request->getTrimRequired('month');
 
-		$provider = new FileProvider($this->db, $this->source);
-		$data = $provider->getFilesForMonth($this->year, $this->month);
+		$this->provider = new FileProvider($this->db, $this->source);
+	}
+
+	public function index()
+	{
+		$content = [];
+		$scripts = null;
+		$this->init();
+		$data = $this->provider->getFilesForMonth($this->year, $this->month);
 //		debug($data->getData());
 
 		if ($data->count()) {
 			//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
-			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']), $provider);
+			$timelineService = new TimelineServiceForSQL(ShowThumb::href(['file' => '']), $this->provider);
 
 			$monthSelector = new MonthSelector($this->year, $this->month, $timelineService);
 			$content[] = $monthSelector->getMonthSelector(Sources::href());
+
+			$ms = new MapService();
+			$content[] = $ms($data->getData());
+			$content[] = '<hr />';
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
 				'source' => $this->source->id,
@@ -75,6 +87,21 @@ class MonthBrowserDB extends AppController
 			'scripts' => $scripts.
 			'<script src="www/js/metaTooltip.js"></script>',
 		]);
+	}
+
+	/**
+	 * AJAX call from mapForMonth.ts
+	 * @param Meta[] $data
+	 * @return false|string
+	 */
+	public function gps()
+	{
+		$this->init();
+		$data = $this->provider->getFilesForMonth($this->year, $this->month);
+
+		$ma = new MetaArray($data->getData());
+		$places = $ma->getGps();
+		return json_encode($places, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 	}
 
 }

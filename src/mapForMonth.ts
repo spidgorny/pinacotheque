@@ -1,5 +1,9 @@
+declare var L: any;
+
 document.addEventListener("DOMContentLoaded", async () => {
-	const res = await fetch(document.location.href + '?action=gps', {
+	const url = new URL(document.location.href);
+	url.searchParams.set('action', 'gps');
+	const res = await fetch(url.toString(), {
 	});
 	const json = await res.json();
 	console.log(json);
@@ -9,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 		});
 		const bounds = new L.LatLngBounds(arrayOfLatLngs);
 
-		const map = L.map("mapid");
+		const map = L.map('mapid');
 		//mymap.setView([51.505, -0.09], 13);
 		map.fitBounds(bounds);
 

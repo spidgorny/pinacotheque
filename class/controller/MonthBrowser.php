@@ -134,6 +134,7 @@ class MonthBrowser extends AppController
 	}
 
 	/**
+	 * AJAX call from mapForMonth.ts
 	 * @param Meta[] $data
 	 * @return false|string
 	 */

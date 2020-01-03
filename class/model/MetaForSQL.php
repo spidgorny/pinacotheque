@@ -13,8 +13,6 @@ class MetaForSQL extends Meta
 	use DatabaseMixin;
 	use DatabaseManipulation;
 
-	protected $db;
-
 	public static function getTableName()
 	{
 		return 'files';
@@ -23,6 +21,11 @@ class MetaForSQL extends Meta
 	public function __construct(array $meta)
 	{
 		parent::__construct($meta);
+	}
+
+	public function injectDB(DBInterface $db)
+	{
+		$this->db = $db;
 	}
 
 	public function getThumbnail($prefix = '')
@@ -71,12 +74,41 @@ class MetaForSQL extends Meta
 		return ShowOriginal::href(['file' => $this->id]);
 	}
 
-	public function getMeta()
+	/**
+	 * @return MetaEntry[]
+	 */
+	public function getMeta(): array
 	{
 		$metaRows = MetaEntry::findAll($this->db, [
 			'id_file' => $this->id,
 		]);
 		return $metaRows;
+	}
+
+	public function getMetaData(): array
+	{
+		$assoc = [];
+		foreach ($this->getMeta() as $entry) {
+			$value = $entry->value;
+			if ($value[0] === '{' || $value[0] === '[') {
+				$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
+				if ($try) {
+					$value = $try;
+				}
+			}
+			$assoc[$entry->name] = $value;
+		}
+		return $assoc;
+	}
+
+	public function getLocation()
+	{
+		$metaData = (object)$this->getMetaData();
+		$this->GPSLatitudeRef = ifsetor($metaData->GPSLatitudeRef);
+		$this->GPSLatitude = ifsetor($metaData->GPSLatitude);
+		$this->GPSLongitudeRef = ifsetor($metaData->GPSLongitudeRef);
+		$this->GPSLongitude = ifsetor($metaData->GPSLongitude);
+		return parent::getLocation();
 	}
 
 }

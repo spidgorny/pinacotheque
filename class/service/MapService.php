@@ -21,6 +21,8 @@ class MapService
 			$content[] = '<div id="mapid"></div>';
 			$content[] = '<style>#mapid { height: 748px}</style>';
 			$content[] = '<script src="www/js/mapForMonth.js"></script>';
+		} else {
+			$content[] = 'No GPS info in images';
 		}
 		return $content;
 	}

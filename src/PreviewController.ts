@@ -1,14 +1,20 @@
+function clamp(num, min, max) {
+	return num <= min ? min : num >= max ? max : num;
+}
+
 class PreviewController {
 
 	protected images: any[];
 
 	protected index;
 
+	protected transparent = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
 	constructor(images: any[]) {
 		this.images = images;
 		this.detectIndex();
 		this.attachEvents();
-		this.render();
+		this.render();	// maybe it's video
 	}
 
 	public detectIndex() {
@@ -32,34 +38,61 @@ class PreviewController {
 		if (e.key === 'ArrowRight') {
 			if (this.index < this.images.length - 1) {
 				this.index += 1;
+				this.render();
 			}
-			this.render();
 		}
 		if (e.key === 'ArrowLeft') {
 			if (this.index > 0) {
 				this.index -= 1;
+				this.render();
 			}
-			this.render();
 		}
 		if (e.key === 'ArrowUp') {
 			if (this.index > 0) {
-				this.index += 1;
+				this.index -= 1;
+				this.render();
 			}
-			this.render();
 		}
 		if (e.key === 'ArrowDown') {
 			if (this.index < this.images.length - 1) {
 				this.index += 1;
+				this.render();
 			}
+		}
+		if (e.key === 'Escape') {
+			this.onClick(new MouseEvent('click'));
+		}
+		if (e.key === 'PageUp') {
+			this.index = clamp(this.index - 6, 0, this.images.length - 1);
 			this.render();
+		}
+		if (e.key === 'PageDown') {
+			this.index = clamp(this.index + 6, 0, this.images.length - 1);
+			this.render();
+		}
+		if (e.key === 'Home') {
+			this.index = 0;
+			this.render();
+		}
+		if (e.key === 'End') {
+			this.index = this.images.length - 1;
+			this.render();
+		}
+		if (e.key === 'Enter') {
+			this.onClick(new MouseEvent('click'));
 		}
 	}
 
+	get current() {
+		return this.images[this.index];
+	}
+
 	public render() {
-		console.log(this.images[this.index]);
-		if ('videosrc' in this.images[this.index]) {
+		console.log(this.current);
+		if ('videosrc' in this.current) {
 			const app = document.querySelector('#app');
-			app.innerHTML = this.images[this.index].html;
+			app.innerHTML = this.current.html;
+			document.title = this.current.title;
 		} else {
 			const img = document.querySelector('img');
 			if (!img) {
@@ -68,9 +101,13 @@ class PreviewController {
 				app.innerHTML = img.toString();
 			}
 			// console.log(index, images[index]);
-			img.style.backgroundImage = 'url(ShowThumb?file=' + this.images[this.index].id;
-			img.src = this.images[this.index].src;
+			img.style.backgroundImage = 'url(ShowThumb?file=' + this.current.id;
+			img.src = this.transparent;	// show bg
+			setTimeout(() => {
+				img.src = this.current.src;
+			}, 1);
 			img.addEventListener('click', this.onClick.bind(this));
+			document.title = this.current.title;
 		}
 
 		this.preloadAround(this.index, 5);
@@ -83,15 +120,15 @@ class PreviewController {
 				const thumb = document.createElement('img');
 				thumb.src = 'ShowThumb?file=' + this.images[i].id;
 				// console.log('preloading', i);
-				// const img = document.createElement('img');
-				// img.src = this.images[i].src;
+				const img = document.createElement('img');
+				img.src = this.images[i].src;
 			}
 		}
 	}
 
 	public updateURL() {
 		const params = new URLSearchParams(document.location.search);
-		params.set('file', this.images[this.index].id);
+		params.set('file', this.current.id);
 		const newURL = new URL(document.location.href);
 		newURL.search = params.toString();
 		window.history.replaceState({}, document.title, newURL.toString());
@@ -99,7 +136,7 @@ class PreviewController {
 
 	public onClick(e) {
 		const url = new URL(document.referrer);
-		url.hash = this.images[this.index].id;
+		url.hash = this.current.id;
 		document.location.href = url.toString();
 	}
 

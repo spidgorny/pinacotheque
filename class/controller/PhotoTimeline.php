@@ -5,6 +5,9 @@ use League\Flysystem\Filesystem;
 /**
  * Class PhotoTimeline
  * @see https://www.soas.ac.uk/centenary/timeline/full97626.jpg
+ * This is the original approach where metadata for all images in a folder
+ * is stored in meta.json. Not working anymore, not sure if this needs to be fixed.
+ * @deprecated
  */
 class PhotoTimeline extends AppController
 {

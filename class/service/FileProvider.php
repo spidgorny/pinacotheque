@@ -33,6 +33,7 @@ class FileProvider
 				'tiff',
 				'.tif',
 			]),
+				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
 		], '',
 			'min(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as min, 
 			max(coalesce(meta.value, strftime("%Y:%m:%d %H:%M:%S", datetime(timestamp, "unixepoch")))) as max');
@@ -115,8 +116,9 @@ class FileProvider
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
 
-		$imageFiles = $imageFiles->map(static function (array $row) {
+		$imageFiles = $imageFiles->map(function (array $row) {
 			$meta = new MetaForSQL($row);
+			$meta->injectDB($this->db);
 //			debug($meta);
 			return $meta;
 		});
