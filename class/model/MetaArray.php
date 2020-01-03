@@ -17,10 +17,9 @@ class MetaArray
 		foreach ($this->data as $meta) {
 			$loc = $meta->getLocation();
 			if ($loc) {
-				$places[] = $meta->getAll() + [
-						'lat' => $loc[0],
-						'lon' => $loc[1],
-					];
+				$meta->lat = $loc[0];
+				$meta->lon = $loc[1];
+				$places[] = $meta;
 			}
 		}
 		return $places;
@@ -44,7 +43,7 @@ class MetaArray
 	public function containsYearMonth($year, $month)
 	{
 		return array_reduce($this->data, function ($bool, Meta $meta) use ($year, $month) {
-			return $bool ?: $meta->getYearMonth() == $year .'-'.$month;
+			return $bool ?: $meta->getYearMonth() === $year .'-'.$month;
 		}, false);
 	}
 

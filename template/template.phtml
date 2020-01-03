@@ -12,9 +12,9 @@
     <base href="<?= $this->baseHref ?>"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css"/>
     <title>Pinacotheque</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="www/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="www/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="www/favicon/favicon-16x16.png">
 	<?= $head ?>
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
           integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
@@ -25,30 +25,30 @@
     <div class="column is-one-fifth">
         <aside class="menu">
             <p class="menu-label">
-                Menu
+                <img src="www/favicon/favicon-32x32.png" align="absmiddle"/>
+                &nbsp;
+                Pinacotheque
             </p>
             <ul class="menu-list">
-                <li><a href=".">Year/Month</a></li>
+                <!--                <li><a href="PhotoTimeline">Photo Timeline</a></li>-->
                 <li><a href="Sources">Browse DB</a></li>
-            </ul>
-            <div class="menu-label">
-                <div class="level">
-                    <!-- Left side -->
-                    <div class="level-left">
-                        <div class="level-item">
-                            Sources
+                <li>
+                    <div class="level">
+                        <!-- Left side -->
+                        <div class="level-left">
+                            <div class="level-item">
+                                Sources
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <p class="level-item">
+                                <a href="AddSource">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </p>
                         </div>
                     </div>
-                    <div class="level-right">
-                        <p class="level-item">
-                            <a href="AddSource">
-                                <i class="fa fa-plus"></i>
-                            </a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <ul class="menu-list">
+                </li>
 				<?php foreach ($sources as $source): ?>
                     <li>
                         <nav class="level">
@@ -71,6 +71,7 @@
                         </nav>
                     </li>
 				<?php endforeach; ?>
+                <li><a href="About">About</a></li>
             </ul>
         </aside>
         <div id="sidebar" style="position: sticky; top: 0;">

@@ -21,19 +21,19 @@ class MonthTimeline
 		$this->linkPrefix = $linkPrefix;
 	}
 
-	public function render(array $data)
+	/**
+	 * @param Meta[] $data
+	 * @return array
+	 */
+	public function render(array $data): array
 	{
 		$this->data = $data;
-
-		$ms = new MapService();
-		$content[] = $ms($data);
-		$content[] = '<hr />';
 
 		//debug($this->prefix.'', $this->prefix->getURL().'');
 		$sets = $this->splitIntoRows($data);
 		if (false) {
-			$setSize = array_map(function (array $set) {
-				return sizeof($set) . ' : ' . implode(', ', array_map(function ($item) {
+			$setSize = array_map(static function (array $set) {
+				return sizeof($set) . ' : ' . implode(', ', array_map(static function ($item) {
 						return get_class($item);
 					}, $set));
 			}, $sets);
@@ -45,7 +45,7 @@ class MonthTimeline
 			'</div>'
 		]; // is-ancestor
 
-		$content = ['<div class="container">', $content, '</div>'];
+		$content = ['<div class="container" id="imageRows">', $content, '</div>'];
 
 		$content[] = $this->getTooltipForMeta($data);
 
@@ -98,10 +98,11 @@ class MonthTimeline
 		/** @var MetaForSQL[] $set */
 		foreach ($sets as $set) {
 			$oneWidth = [
-				1 => 'is-12',
-				2 => 'is-6',
+				1 => 'is-4',	// 4 elements in a row
+				2 => 'is-4',
 				3 => 'is-4',
 				4 => 'is-3',
+				5 => 'is-2',
 				6 => 'is-2'
 			][count($set)];
 			foreach ($set as &$meta) {
@@ -162,7 +163,7 @@ class MonthTimeline
 	 * @param MetaForSQL[] $data
 	 * @return array
 	 */
-	public function getOriginalImages(array $data)
+	public function getOriginalImages(array $data): array
 	{
 		$items = [];
 		foreach ($data as $i => $meta) {

@@ -40,25 +40,8 @@ class Sources extends AppController
 
 	public function index()
 	{
-		list('min' => $min, 'max' => $max) = $this->provider->getMinMax();
-		$timelineService = new TimelineServiceForSQL($this->prefixURL);
-		$timelineService->min = new Date();
-		$timelineService->min->setTimestamp($min);
-		$timelineService->max = new Date();
-		$timelineService->max->setTimestamp($max);
-
-//		$content[] = 'min: ' . $timelineService->min->format('Y-m-d') . BR;
-//		$content[] = 'max: ' . $timelineService->max->format('Y-m-d') . BR;
-
-		$oneByMonth = $this->provider->getOneFilePerMonth();
-
-		$byMonth = $oneByMonth->map(static function (array $metaList) {
-			$meta = first($metaList);
-			$metaList += array_fill(1, $meta->count, null);
-			return $metaList;
-		});
-
-		$table = $timelineService->renderTable($byMonth);
+		$timelineService = new TimelineServiceForSQL($this->prefixURL, $this->provider);
+		$table = $timelineService->renderTable($timelineService->byMonth);
 
 		$content[] = new slTable($table, [
 			'class' => 'table is-fullwidth'
@@ -67,7 +50,6 @@ class Sources extends AppController
 //		$content[] = getDebug($oneByMonth);
 
 		return $this->template($content, [
-			'head' => '<link rel="stylesheet" href="www/css/pina.css" />',
 		]);
 	}
 
