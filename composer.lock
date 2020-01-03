@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "983cda9a8b5dff05497844fea78499c4",
+    "content-hash": "ba75cb14cdfd2ee739c5466f80e0f1ba",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -360,6 +360,54 @@
                 "parser"
             ],
             "time": "2019-12-30T22:54:17+00:00"
+        },
+        {
+            "name": "geokit/geokit",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jsor/geokit.git",
+                "reference": "844c215eb4061a3ef4d9beaedf04b623ddddb08b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jsor/geokit/zipball/844c215eb4061a3ef4d9beaedf04b623ddddb08b",
+                "reference": "844c215eb4061a3ef4d9beaedf04b623ddddb08b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Geokit\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jan Sorgalla",
+                    "email": "jsorgalla@gmail.com",
+                    "homepage": "http://sorgalla.com"
+                }
+            ],
+            "description": "Geo-Toolkit for PHP",
+            "homepage": "https://github.com/jsor/geokit",
+            "keywords": [
+                "geo",
+                "geography",
+                "geometry"
+            ],
+            "time": "2016-07-11T12:26:49+00:00"
         },
         {
             "name": "graze/console-diff-renderer",

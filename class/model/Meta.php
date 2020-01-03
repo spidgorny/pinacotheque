@@ -29,6 +29,16 @@ class Meta
 		return ifsetor($this->props[$key]);
 	}
 
+	public function __set($key, $val)
+	{
+		$this->props[$key] = $val;
+	}
+
+	public function __isset($key)
+	{
+		return isset($this->props);
+	}
+
 	public function getFilename()
 	{
 		if (isset($this->FileName)) {

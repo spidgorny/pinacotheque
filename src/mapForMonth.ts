@@ -20,20 +20,23 @@ interface ImageGPS {
 
 class MapManager {
 
-	protected source;
-	protected year;
-	protected month;
+	protected url: URL;
+	protected source: number;
+	protected year: number;
+	protected month: number;
+	protected map: any;
 
 	constructor() {
 		this.fetchGPSdata();
 	}
 
 	public async fetchGPSdata() {
-		const url = new URL(document.location.href);
-		this.source = url.searchParams.get('source');
-		this.year = url.searchParams.get('year');
-		this.month = url.searchParams.get('month');
+		this.url = new URL(document.location.href);
+		this.source = parseInt(this.url.searchParams.get('source'), 10);
+		this.year = parseInt(this.url.searchParams.get('year'), 10);
+		this.month = parseInt(this.url.searchParams.get('month'), 10);
 
+		const url = new URL(this.url.toString());
 		url.searchParams.set('action', 'gps');
 		const res = await fetch(url.toString(), {});
 		const json = await res.json();
@@ -49,14 +52,14 @@ class MapManager {
 		});
 		const bounds = new L.LatLngBounds(arrayOfLatLngs);
 
-		const map = L.map('mapid');
+		this.map = L.map('mapid');
 		//mymap.setView([51.505, -0.09], 13);
-		map.fitBounds(bounds);
+		this.map.fitBounds(bounds);
 
 		const osmUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 		L.tileLayer(osmUrl, {
 			maxZoom: 18,
-		}).addTo(map);
+		}).addTo(this.map);
 
 		json.map((info: any) => {
 			const clickURL = `Preview?source=${this.source}&year=${this.year}&month=${this.month}&file=${info.id}`;
@@ -64,7 +67,7 @@ class MapManager {
 			L.marker([info.lat, info.lon], {
 				title: info.path,
 				riseOnHover: true,
-			}).addTo(map)
+			}).addTo(this.map)
 				.bindPopup(`
 					<p>
 					<a href="${clickURL}">
@@ -75,12 +78,35 @@ class MapManager {
 				`);
 		});
 
-		map.on('zoomend', (e) => {
-			console.log('zoom', e);
+		this.map.on('zoomend', (e) => {
+			// console.log('zoom', e);
+			this.updateImageRows();
 		});
-		map.on('moveend', (e) => {
-			console.log('move', e);
+		this.map.on('moveend', (e) => {
+			// console.log('move', e);
+			this.updateImageRows();
 		});
 	}
+
+	public async updateImageRows() {
+		const bounds = this.map.getBounds();
+		// console.log(bounds);
+		const ajaxURL = new URL(this.url.toString());
+		ajaxURL.pathname = 'MonthBrowserDB';
+		ajaxURL.searchParams.set('action', 'filterByGPS');
+		ajaxURL.searchParams.set('source', this.source.toString());
+		ajaxURL.searchParams.set('year', this.year.toString());
+		ajaxURL.searchParams.set('month', this.month.toString());
+		ajaxURL.searchParams.set('bounds', JSON.stringify({
+			west: bounds.getWest(),
+			east: bounds.getEast(),
+			north: bounds.getNorth(),
+			south: bounds.getSouth(),
+		}));
+		// console.log(ajaxURL);
+		const html = await (await fetch(ajaxURL.toString())).text();
+		document.querySelector('#imageRows').innerHTML = html;
+	}
+
 }
 

@@ -21,6 +21,10 @@ class MonthTimeline
 		$this->linkPrefix = $linkPrefix;
 	}
 
+	/**
+	 * @param Meta[] $data
+	 * @return array
+	 */
 	public function render(array $data): array
 	{
 		$this->data = $data;
@@ -41,7 +45,7 @@ class MonthTimeline
 			'</div>'
 		]; // is-ancestor
 
-		$content = ['<div class="container">', $content, '</div>'];
+		$content = ['<div class="container" id="imageRows">', $content, '</div>'];
 
 		$content[] = $this->getTooltipForMeta($data);
 

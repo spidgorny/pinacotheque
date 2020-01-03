@@ -4,7 +4,7 @@ require_once __DIR__.'/bootstrap.php';
 
 //debug($_SERVER);
 
-if (php_sapi_name() == 'cli') {
+if (php_sapi_name() === 'cli') {
 	$c = $_SERVER['argv'][1];
 	if (!$c) {
 		throw new RuntimeException('Usage: php index.php <Controller>');
@@ -30,7 +30,5 @@ if (php_sapi_name() == 'cli') {
 $o = $container->get($c);
 $o->setContainer($container);
 $content = $o();
-if (is_array($content)) {
-	$content = implode(PHP_EOL, $content);
-}
+$content = MergedContent::mergeStringArrayRecursive($content);
 echo $content;
