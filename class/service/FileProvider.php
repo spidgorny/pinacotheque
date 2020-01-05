@@ -65,7 +65,7 @@ class FileProvider
 	public function getOneFilePerMonth()
 	{
 		$YM = "CASE WHEN meta.value THEN 
-			replace(substr(meta.value, 0, 8), ':', '-')
+			replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     END";
 		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
@@ -110,7 +110,7 @@ class FileProvider
 
 	public function getFilesForMonth($year, $month)
 	{
-		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), ':', '-')
+		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     END";
 		$imageFiles = $this->db->fetchAllSelectQuery(
@@ -129,12 +129,12 @@ class FileProvider
 				'.tif',
 			]),
 			$YM => $year . '-' . $month,
-		], "ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 0, 8), ':', '-')
+		], "ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     END",
 			'meta.*, files.*, ' . $YM . ' as YM'
 		);
-//		debug($this->db->getLastQuery().'');
+		llog($this->db->getLastQuery().'');
 
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);

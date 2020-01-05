@@ -6,21 +6,21 @@ class TimelineService
 	var $prefixURL;
 
 	/**
-	 * @var string $year-$month
+	 * @var string $year -$month
 	 */
 	public $selected;
 
 	/**
-     * @var Date
-     */
-    public $min;
+	 * @var Date
+	 */
+	public $min;
 
 	/**
-     * @var Date
-     */
-    public $max;
+	 * @var Date
+	 */
+	public $max;
 
-    public function __construct($prefixURL = null)
+	public function __construct($prefixURL = null)
 	{
 		$this->prefixURL = $prefixURL;
 	}
@@ -76,21 +76,21 @@ class TimelineService
 	 * @return array
 	 */
 	public function getTable(array $set)
-    {
-        $byMonth = $this->groupByDate($set);
-        $dates = array_keys($byMonth->getData());
-        $dates = array_filter($dates);
+	{
+		$byMonth = $this->groupByDate($set);
+		$dates = array_keys($byMonth->getData());
+		$dates = array_filter($dates);
 //		debug($dates);
 //		debug($byDate->countEach());
 
-        $this->min = new Date(min($dates));
-        $this->max = new Date(max($dates));
+		$this->min = new Date(min($dates));
+		$this->max = new Date(max($dates));
 
-        return $this->renderTable($byMonth);
-    }
+		return $this->renderTable($byMonth);
+	}
 
-    public function renderTable(ArrayPlus $byMonth)
-    {
+	public function renderTable(ArrayPlus $byMonth)
+	{
 		$table = [];
 		for ($year = $this->min->getYear(); $year <= $this->max->getYear(); $year++) {
 			$table[$year]['year'] = $year;
@@ -116,38 +116,38 @@ class TimelineService
 	}
 
 	public function renderMonth($year, $month, ArrayPlus $byMonth)
-    {
-        $content = null;
-        $key = $year . '-' . $month;
-        $images = ifsetor($byMonth[$key], []);
-        if ($images) {
+	{
+		$content = null;
+		$key = $year . '-' . $month;
+		$images = ifsetor($byMonth[$key], []);
+		if ($images) {
 //					debug(first($images));
-            /** @var Meta $meta */
-            $meta = first($images);
-            $browser = $this->getMonthBrowserLink($year, $month);
-            $selected = $this->selected == $key ? 'active' : '';
-            $content = new HTMLTag('td', [
-                'class' => $selected
-            ],
-                new htmlString([
-                    '<figure class="picWithCount">',
-                    '<a href="' . $browser . '">',
-                    $meta->toHTML($this->prefixURL, [
-                        'class' => '',
-                    ]),
-                    '</a>',
-                    '<div class="count">
+			/** @var Meta $meta */
+			$meta = first($images);
+			$browser = $this->getMonthBrowserLink($year, $month);
+			$selected = $this->selected == $key ? 'active' : '';
+			$content = new HTMLTag('td', [
+				'class' => $selected
+			],
+				new htmlString([
+					'<figure class="picWithCount">',
+					'<a href="' . $browser . '">',
+					$meta->toHTML($this->prefixURL, [
+						'class' => '',
+					]),
+					'<div class="count">
 							<span class="tag is-info">
   ' . sizeof($images) . '
 </span>
 </div>',
-                    '</figure>'
-                ]));
-        }
-        return $content;
-    }
+					'</a>',
+					'</figure>'
+				]));
+		}
+		return $content;
+	}
 
-    public function getMonthBrowserLink($year, $month)
+	public function getMonthBrowserLink($year, $month)
 	{
 		return MonthBrowser::href2month($year, $month);
 	}

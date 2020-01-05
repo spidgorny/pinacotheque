@@ -21,33 +21,40 @@ var PreviewController = /** @class */ (function () {
         console.log('index', this.index);
     };
     PreviewController.prototype.attachEvents = function () {
+        var _this = this;
         document.addEventListener('keyup', this.onKeyUp.bind(this));
+        document.addEventListener('swiped-left', function (e) {
+            _this.moveNext();
+        });
+        document.addEventListener('swiped-right', function (e) {
+            _this.movePrev();
+        });
+    };
+    PreviewController.prototype.moveNext = function () {
+        if (this.index < this.images.length - 1) {
+            this.index += 1;
+            this.render();
+        }
+    };
+    PreviewController.prototype.movePrev = function () {
+        if (this.index > 0) {
+            this.index -= 1;
+            this.render();
+        }
     };
     PreviewController.prototype.onKeyUp = function (e) {
         // console.log(e);
         if (e.key === 'ArrowRight') {
-            if (this.index < this.images.length - 1) {
-                this.index += 1;
-                this.render();
-            }
+            this.moveNext();
         }
         if (e.key === 'ArrowLeft') {
-            if (this.index > 0) {
-                this.index -= 1;
-                this.render();
-            }
+            this.movePrev();
         }
         if (e.key === 'ArrowUp') {
-            if (this.index > 0) {
-                this.index -= 1;
-                this.render();
-            }
+            this.movePrev();
         }
         if (e.key === 'ArrowDown') {
-            if (this.index < this.images.length - 1) {
-                this.index += 1;
-                this.render();
-            }
+            this.moveNext();
         }
         if (e.key === 'Escape') {
             this.onClick(new MouseEvent('click'));

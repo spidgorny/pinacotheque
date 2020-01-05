@@ -31,33 +31,41 @@ class PreviewController {
 
 	public attachEvents() {
 		document.addEventListener('keyup', this.onKeyUp.bind(this));
+		document.addEventListener('swiped-left', (e) => {
+			this.moveNext();
+		});
+		document.addEventListener('swiped-right', (e) => {
+			this.movePrev();
+		});
+	}
+
+	public moveNext() {
+		if (this.index < this.images.length - 1) {
+			this.index += 1;
+			this.render();
+		}
+	}
+
+	public movePrev() {
+		if (this.index > 0) {
+			this.index -= 1;
+			this.render();
+		}
 	}
 
 	public onKeyUp(e) {
 		// console.log(e);
 		if (e.key === 'ArrowRight') {
-			if (this.index < this.images.length - 1) {
-				this.index += 1;
-				this.render();
-			}
+			this.moveNext();
 		}
 		if (e.key === 'ArrowLeft') {
-			if (this.index > 0) {
-				this.index -= 1;
-				this.render();
-			}
+			this.movePrev();
 		}
 		if (e.key === 'ArrowUp') {
-			if (this.index > 0) {
-				this.index -= 1;
-				this.render();
-			}
+			this.movePrev()
 		}
 		if (e.key === 'ArrowDown') {
-			if (this.index < this.images.length - 1) {
-				this.index += 1;
-				this.render();
-			}
+			this.moveNext();
 		}
 		if (e.key === 'Escape') {
 			this.onClick(new MouseEvent('click'));

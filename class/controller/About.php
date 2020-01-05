@@ -17,7 +17,7 @@ class About	extends AppController
 		/** @var Source[] $sources */
 		$sources = Source::findAll($this->db, []);
 		foreach ($sources as $source) {
-			$content[] = $source->name . ' [' . $source->getFilesCount() . ']';
+			$content[] = '<p>'.$source->name . ' [' . $source->getFilesCount() . ']</p>';
 		}
 
 		$Parsedown = new Parsedown();

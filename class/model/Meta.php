@@ -71,27 +71,36 @@ class Meta
 		return $img;
 	}
 
-	public function toHTMLClickable($prefix = '', array $attributes = [], $linkPrefix = '')
+	public function toHTMLClickable($prefix = '', array $attributes = [], $linkPrefix = '', $append = '')
 	{
-		$img = $this->toHTML($prefix, $attributes);
+		$img = $this->toHTML($prefix, $attributes) . $append;
 		$ahref = HTMLTag::a($linkPrefix . $this->id, $img, [
 			'name' => $this->id,
 		], true);
 		return $ahref;
 	}
 
+	/**
+	 * Only used in single month view
+	 * @see TimelineService->renderMonth()
+	 * @param string $prefix
+	 * @param array $attributes
+	 * @param string $linkPrefix
+	 * @return HTMLTag
+	 */
 	public function toHTMLWithI($prefix = '', array $attributes = [], $linkPrefix = '')
 	{
-		$ahref = $this->toHTMLClickable($prefix, $attributes, $linkPrefix);
-		$content[] = $ahref;
-
 		$span = new HTMLTag('a', [
 			'href' => GetMetaInfo::href(['file' => $this->id]),
 			'class' => 'tag meta',
 			'data-id' => 'md5-' . md5($this->getFilename()),
 		], '<i class="fa fa-info"></i>', true);
 
-		$content[] = '<div class="count">'.$span.'</div>';
+		$spanI = '<div class="count">'.$span.'</div>';
+
+		$ahref = $this->toHTMLClickable($prefix, $attributes, $linkPrefix, $spanI);
+		$content[] = $ahref;
+
 		return new HTMLTag('figure', [
 			'class' => 'picWithCount',
 		], $content, true);
