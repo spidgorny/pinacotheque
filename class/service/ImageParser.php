@@ -23,14 +23,14 @@ class ImageParser
 
 	public function saveThumbnailTo($destination)
 	{
-		echo 'Saving thumbnail to ', $destination, PHP_EOL;
+//		echo 'Saving thumbnail to ', $destination, PHP_EOL;
 		$start = microtime(true);
 		$this->image->resize(256, null, function (Constraint $constraint) {
 			$constraint->aspectRatio();
 		});
 
 		$this->image->save($destination);
-		echo 'Saved in ', number_format(microtime(true) - $start, 3), PHP_EOL;
+//		echo 'Saved in ', number_format(microtime(true) - $start, 3), PHP_EOL;
 	}
 
 }

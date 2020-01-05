@@ -18,22 +18,24 @@ class ScanEveryFileFromDB extends AppController
 		$source = Source::findByID($this->db, $sourceID);
 //		debug($source);
 
-		$scanDir = new \App\Service\ScanDir($this->db, $source);
-		$scanDir();
+		$skipScan = ifsetor($_SERVER['argv'][3]) === '--skipScan';
+		if (!$skipScan) {
+			$scanDir = new \App\Service\ScanDir($this->db, $source);
+			$scanDir();
+		}
 
 		$provider = new FileProvider($this->db, $source);
 		$filesToScan = $provider->getUnscanned();
 		debug(count($filesToScan));
 
-		$thumbsPath = path_plus(getenv('DATA_STORAGE'), $source->thumbRoot);
-
 		/** @var MetaForSQL $fileRow */
-		foreach ($filesToScan as $fileRow) {
+		foreach ($filesToScan as $i => $fileRow) {
 			$file = new MetaForSQL($fileRow);
-			echo $file->path, PHP_EOL;
-			$metaFile = new MetaFile($thumbsPath, $file->path);
-			$is = new ImageScanner($source, $file->path, $thumbsPath, $metaFile, $this->db);
-			$is($file->id);
+			$file->injectDB($this->db);
+			echo count($filesToScan) - $i, TAB, $file->getPath(), PHP_EOL;
+//			$metaFile = new MetaFile($thumbsPath, $file->getPath());
+			$is = new ImageScanner($file, $this->db);
+			$is();
 		}
 	}
 

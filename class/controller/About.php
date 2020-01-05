@@ -3,10 +3,24 @@
 class About	extends AppController
 {
 
+	/** @var DBInterface */
+	protected $db;
+
+	public function __construct(DBInterface $db)
+	{
+		parent::__construct();
+		$this->db = $db;
+	}
+
 	public function index()
 	{
-		$Parsedown = new Parsedown();
+		/** @var Source[] $sources */
+		$sources = Source::findAll($this->db, []);
+		foreach ($sources as $source) {
+			$content[] = $source->name . ' [' . $source->getFilesCount() . ']';
+		}
 
+		$Parsedown = new Parsedown();
 		$md = file_get_contents(__DIR__ . '/../../README.md');
 		$content[] = '<div class="content">';
 		$content[] = $Parsedown->text($md);

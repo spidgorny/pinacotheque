@@ -29,4 +29,12 @@ class Source extends POPOBase
 		parent::__construct($set);
 	}
 
+	public function getFilesCount()
+	{
+		$files = $this->db->fetchOneSelectQuery('files', [
+			'source' => $this->id,
+		], '', 'count(*) as count');
+		return $files['count'];
+	}
+
 }

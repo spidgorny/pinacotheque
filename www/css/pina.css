@@ -1,31 +1,38 @@
-html {
-  background-color: #333;
-  color: lightgray;
-}
+html,
 body {
   background-color: #333;
-  color: lightgray;
-  margin: 1em;
+  color: silver;
+  margin: 0.25em;
 }
-body a {
+html a,
+body a,
+html th,
+body th,
+html td,
+body td {
   color: silver;
 }
-.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
   color: #888;
 }
-
 table.table {
   background-color: #333;
 }
-table.table thead th, td {
+table.table thead th,
+table.table td {
   color: silver;
 }
-.table td, .table th {
+table.table td,
+table.table th {
   padding: 0;
 }
 hr {
   color: #888;
-  background-color: #888;
 }
 .menu-list a {
   color: #888;
@@ -64,10 +71,9 @@ figure.picWithCount .count {
   right: 0;
   bottom: 0;
 }
-td.active {
+.active {
   background: silver;
 }
-
 .video-thumbnail {
   position: relative;
   display: inline-block;
@@ -102,4 +108,10 @@ table.htmlFormTable tbody {
 .mb-3 {
   margin-bottom: 0.5em;
 }
-
+@media screen and (min-width: 769px), print {
+  .column.is-one-sixth,
+  .column.is-one-sixth-tablet {
+    flex: none;
+    width: 16.66666667%;
+  }
+}

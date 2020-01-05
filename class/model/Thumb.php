@@ -18,6 +18,8 @@ class Thumb
 	 */
 	protected $meta;
 
+	protected $log = [];
+
 	public function __construct(MetaForSQL $meta)
 	{
 		$this->meta = $meta;
@@ -62,13 +64,10 @@ class Thumb
 	{
 		$manager = new ImageManager();
 		$image = $manager->make($this->meta->getFullPath());
-		$image->resize(256, null, function (Constraint $constraint) {
-			$constraint->aspectRatio();
-		});
+		$parser = new ImageParser($image);
 
 		$thumbPath = $this->getThumbPath();
-		$this->prepareForSaving();
-		$image->save($thumbPath);
+		$parser->saveThumbnailTo($thumbPath);
 	}
 
 	public function prepareForSaving()
@@ -83,9 +82,16 @@ class Thumb
 	public function makeVideoThumb()
 	{
 		$this->prepareForSaving();
+		// ffprobe -v quiet -print_format json -show_format -show_streams d:\PhotosNSA\BurnCD\OnePlus3T\2018-08\VID_20180807_222639.mp4
+		$time = '00:00:01.000';
+		$probe = $this->probe();
+		if ($probe->format->duration < 1) {
+			$time = '00:00:00.000';
+		}
 		$ffmpeg = getenv('ffmpeg');
 		$thumbPath = $this->getThumbPath();
-		$cmd = [$ffmpeg, '-i', $this->meta->getFullPath(), '-ss', '00:00:01.000', '-vframes', '1', $thumbPath];
+		$cmd = [$ffmpeg, '-i', $this->meta->getFullPath(), '-ss', $time, '-vframes', '1', '-vf', 'scale=256:-1', $thumbPath];
+		$this->log($cmd);
 		$p = new Process($cmd);
 		$p->run();
 		if ($p->getExitCode()) {
@@ -95,12 +101,30 @@ class Thumb
 		}
 	}
 
+	public function probe()
+	{
+		$ffmpeg = getenv('ffmpeg');
+		$ffprobe = str_replace('ffmpeg.exe', 'ffprobe.exe', $ffmpeg);
+		$thumbPath = $this->getThumbPath();
+		$cmd = [$ffprobe, '-v', 'quiet', '-print_format', 'json',  '-show_format', '-show_streams', $this->meta->getFullPath()];
+		$this->log($cmd);
+		$p = new Process($cmd);
+		$p->run();
+		return json_decode($p->getOutput());
+	}
+
 	public function __debugInfo()
 	{
 		return [
 			'getThumbPath' => $this->getThumbPath(),
 			'exists' => $this->exists(),
+			'log' => $this->log,
 		];
+	}
+
+	public function log($something)
+	{
+		$this->log[] = $something;
 	}
 
 }

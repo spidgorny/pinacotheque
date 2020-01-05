@@ -102,7 +102,7 @@ class Meta
 		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
 		$ext = strtolower($ext);
 		return in_array($ext, [
-			'gif', 'jpg', 'jpeg', 'bmp', 'webp',
+			'gif', 'jpg', 'jpeg', 'bmp', 'webp', 'tif', 'tiff',
 		]);
 	}
 

@@ -4,14 +4,14 @@ class EditSource extends SourceForm
 {
 
 	/**
-	 * @var DBLayerSQLite
+	 * @var DBInterface
 	 */
 	protected $db;
 
 	/** @var Source */
 	protected $source;
 
-	public function __construct(DBLayerSQLite $db)
+	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
 		$this->db = $db;

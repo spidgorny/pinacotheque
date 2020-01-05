@@ -47,4 +47,13 @@ class ImageScannerTest extends TestCase
 		$this->assertEquals(171, $size[1]);
 	}
 
+	public function test_isVideo()
+	{
+		$source = Source::findByID($this->db, 2);
+		$metaFile = new MetaFile($destinationRoot, $file);
+		$is = new ImageScanner($source, $file, $destinationRoot, $metaFile, $this->db);
+		$is(1);
+
+	}
+
 }

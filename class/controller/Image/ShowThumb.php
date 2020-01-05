@@ -39,6 +39,10 @@ class ShowThumb extends AppController
 
 		$meta = MetaForSQL::findByID($this->db, $file);
 		$content[] = getDebug($meta);
+		$content[] = getDebug([
+			'isImage' => $meta->isImage(),
+			'isVideo' => $meta->isVideo(),
+		]);
 
 		if (!$meta->id) {
 			debug($this->db->getLastQuery());
@@ -46,17 +50,24 @@ class ShowThumb extends AppController
 		}
 
 		$filePath = $meta->getFullPath();
-		$content[] = 'File: ' . $filePath . BR;
-		$content[] = 'Exists: ' . filesize($filePath) . BR;
+		$content[] = getDebug([
+			'File' => $filePath,
+			'Exists' => filesize($filePath),
+			'ffmpeg' => getenv('ffmpeg'),
+			'exists' => is_file(getenv('ffmpeg')),
+		]);
 
 		$thumb = new Thumb($meta);
-		$content[] = getDebug($thumb);
 
 		try {
 			$thumb->getThumb();    // make it if doesn't exist
 		} catch (NotReadableException $e) {
 			$content[] = $e;
 		}
+		$content[] = getDebug($thumb);
+		$content[] = getDebug([
+			'exists' => $thumb->exists(),
+		]);
 
 		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
 			'border' => 1,
@@ -69,7 +80,7 @@ class ShowThumb extends AppController
 
 		header('Content-Type: ' . mime_content_type($thumbPath));
 		header('Content-Length: ' . filesize($thumbPath));
-		$this->request->setCacheable(60*60*24*365);
+		$this->request->setCacheable(60 * 60 * 24 * 365);
 		readfile($thumbPath);
 	}
 
