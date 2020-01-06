@@ -92,7 +92,6 @@ var PreviewController = /** @class */ (function () {
         if (this.current && 'videosrc' in this.current) {
             var app = document.querySelector('#app');
             app.innerHTML = this.current.html;
-            document.title = this.current.title;
         }
         else {
             var img_1 = document.querySelector('img');
@@ -108,8 +107,12 @@ var PreviewController = /** @class */ (function () {
                 img_1.src = _this.current.src;
             }, 1);
             img_1.addEventListener('click', this.onClick.bind(this));
-            document.title = this.current.title;
         }
+        document.title = this.current.title;
+        var headImage = document.head.querySelector('meta[property="og:image"]');
+        var absShowThumb = new URL(document.location.href);
+        absShowThumb.pathname = 'ShowThumb';
+        headImage.setAttribute('content', absShowThumb.toString());
         this.preloadAround(this.index, 5);
         this.updateURL();
     };

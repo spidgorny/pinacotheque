@@ -100,7 +100,6 @@ class PreviewController {
 		if (this.current && 'videosrc' in this.current) {
 			const app = document.querySelector('#app');
 			app.innerHTML = this.current.html;
-			document.title = this.current.title;
 		} else {
 			const img = document.querySelector('img');
 			if (!img) {
@@ -115,8 +114,14 @@ class PreviewController {
 				img.src = this.current.src;
 			}, 1);
 			img.addEventListener('click', this.onClick.bind(this));
-			document.title = this.current.title;
 		}
+
+		document.title = this.current.title;
+
+		const headImage = document.head.querySelector('meta[property="og:image"]');
+		const absShowThumb = new URL(document.location.href);
+		absShowThumb.pathname = 'ShowThumb';
+		headImage.setAttribute('content', absShowThumb.toString());
 
 		this.preloadAround(this.index, 5);
 		this.updateURL();

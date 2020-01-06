@@ -94,9 +94,13 @@ class MetaForSQL extends Meta
 		foreach ($this->getMeta() as $entry) {
 			$value = $entry->value;
 			if ($value[0] === '{' || $value[0] === '[') {
-				$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
-				if ($try) {
-					$value = $try;
+				try {
+					$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
+					if ($try) {
+						$value = $try;
+					}
+				} catch (JsonException $e) {
+					// $value = $value
 				}
 			}
 			$assoc[$entry->name] = $value;

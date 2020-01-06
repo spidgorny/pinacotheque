@@ -80,6 +80,7 @@ class MonthBrowserDB extends AppController
 			$scripts = $this->monthTimeline->getScripts();
 		}
 
+		$this->request->setCacheable(60 * 60);
 		return $this->template($content, [
 			'head' => '',
 //				. file_get_contents(__DIR__ . '/../../template/photoswipe.head.phtml'),
