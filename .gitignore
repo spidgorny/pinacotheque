@@ -7,3 +7,6 @@ www/bundle.js
 /vendor/
 .env
 /cache/
+/test/exif-samles/
+/test/flickr/
+/test/ThomasGasson

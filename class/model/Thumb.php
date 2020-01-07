@@ -28,7 +28,8 @@ class Thumb
 
 	public function getThumbPath()
 	{
-		$thumbPath = __DIR__ . '/../../data/' . $this->source->thumbRoot . '/' . $this->meta->getPath();
+		$dataStorage = getenv('DATA_STORAGE');
+		$thumbPath = path_plus($dataStorage, $this->source->thumbRoot, $this->meta->getPath());
 		if ($this->meta->isVideo()) {
 			$ext = pathinfo($thumbPath, PATHINFO_EXTENSION);
 			$thumbPath = str_replace($ext, 'png', $thumbPath);
@@ -62,10 +63,8 @@ class Thumb
 
 	public function makeImageThumb()
 	{
-		$manager = new ImageManager();
-		$image = $manager->make($this->meta->getFullPath());
-		$parser = new ImageParser($image);
-
+		$this->prepareForSaving();
+		$parser = ImageParser::fromFile($this->meta->getFullPath());
 		$thumbPath = $this->getThumbPath();
 		$parser->saveThumbnailTo($thumbPath);
 	}
@@ -75,41 +74,16 @@ class Thumb
 		$thumbPath = $this->getThumbPath();
 		$dirName = dirname($thumbPath);
 		if (!is_dir($dirName)) {
-			mkdir($dirName, 0777, true);
+			@mkdir($dirName, 0777, true);
 		}
 	}
 
 	public function makeVideoThumb()
 	{
 		$this->prepareForSaving();
-		$time = '00:00:01.000';
-		$probe = $this->probe();
-		if ($probe->format->duration < 1) {
-			$time = '00:00:00.000';
-		}
-		$ffmpeg = getenv('ffmpeg');
+		$parser = VideoParser::fromFile($this->meta->getFullPath());
 		$thumbPath = $this->getThumbPath();
-		$cmd = [$ffmpeg, '-i', $this->meta->getFullPath(), '-ss', $time, '-vframes', '1', '-vf', 'scale=256:-1', $thumbPath];
-		$this->log($cmd);
-		$p = new Process($cmd);
-		$p->run();
-		if ($p->getExitCode()) {
-			$error = $p->getErrorOutput();
-			debug($cmd);
-			debug($error);
-		}
-	}
-
-	public function probe()
-	{
-		$ffmpeg = getenv('ffmpeg');
-		$ffprobe = str_replace('ffmpeg.exe', 'ffprobe.exe', $ffmpeg);
-		$thumbPath = $this->getThumbPath();
-		$cmd = [$ffprobe, '-v', 'quiet', '-print_format', 'json',  '-show_format', '-show_streams', $this->meta->getFullPath()];
-		$this->log(implode(' ', $cmd));
-		$p = new Process($cmd);
-		$p->run();
-		return json_decode($p->getOutput());
+		$parser->saveThumbnailTo($thumbPath);
 	}
 
 	public function __debugInfo()

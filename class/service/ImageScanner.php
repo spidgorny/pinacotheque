@@ -30,16 +30,19 @@ class ImageScanner
 		try {
 //			debug($metaFile);
 			if (!$this->file->hasMeta()) {
+				$path = path_plus($this->source->path, $this->file->getPath());
 				if ($this->file->isImage()) {
-					$image = $this->readImage();
-					$ip = new ImageParser($image);
+					$ip = ImageParser::fromFile($path);
 					$meta = $ip->getMeta();
-					//				debug($meta);
-					//				echo 'Meta has ', sizeof($meta), PHP_EOL;
+					//	debug($meta);
+					//	echo 'Meta has ', sizeof($meta), PHP_EOL;
 //					$this->metaFile->set(basename($this->file->getPath()), $meta);
 					$this->saveMetaToDB($meta, $this->file->id);
 				} elseif ($this->file->isVideo()) {
 					// TODO process video metadata
+					$vp = VideoParser::fromFile($path);
+					$meta = $vp->getMeta();
+					$this->saveMetaToDB($meta, $this->file->id);
 				}
 			}
 			// thumbnail
@@ -57,19 +60,11 @@ class ImageScanner
 		}
 	}
 
-	public function readImage()
-	{
-		$manager = new ImageManager();
-		$path = path_plus($this->source->path, $this->file->getPath());
-		$image = $manager->make($path);
-		return $image;
-	}
-
 	public function saveMetaToDB($meta, $fileID)
 	{
 		$this->db->transaction();
 		foreach ($meta as $key => $val) {
-			$encoded = is_scalar($val) ? $val : json_encode($val);
+			$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
 			try {
 				/** @var SQLite3Result $row */
 				$row = MetaEntry::insert($this->db, [

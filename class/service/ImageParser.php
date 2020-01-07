@@ -2,12 +2,20 @@
 
 use Intervention\Image\Constraint;
 use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 
 class ImageParser
 {
 
 	/** @var Image $image */
 	protected $image;
+
+	public static function fromFile($filePath): ImageParser
+	{
+		$manager = new ImageManager();
+		$image = $manager->make($filePath);
+		return new static($image);
+	}
 
 	public function __construct(Image $image)
 	{
