@@ -28,10 +28,10 @@ class TimelineServiceForSQL extends TimelineService
 			$metaList += array_fill(1, $meta->count-1, null);
 			return $metaList;
 		});
-
+		// results in "1980-01" keys
 	}
 
-	public function getMonthBrowserLink($year, $month)
+	public function getMonthBrowserLink($year, $month): string
 	{
 		$session = new Session(Sources::class);
 		$source = $session->get('source');

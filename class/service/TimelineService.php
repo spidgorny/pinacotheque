@@ -86,10 +86,18 @@ class TimelineService
 		$this->min = new Date(min($dates));
 		$this->max = new Date(max($dates));
 
-		return $this->renderTable($byMonth);
+		$table = $this->renderTable($byMonth);
+		$table = $this->filterEmptyRows($table);
+		return $table;
 	}
 
-	public function renderTable(ArrayPlus $byMonth)
+	/**
+	 * Converts 2D array with keys like "1980-01" into
+	 * 2D array with keys [1980][01, 02, 03...]
+	 * @param array $byMonth
+	 * @return array
+	 */
+	public function renderTable(array $byMonth)
 	{
 		$table = [];
 		for ($year = $this->min->getYear(); $year <= $this->max->getYear(); $year++) {
@@ -101,10 +109,10 @@ class TimelineService
 
 	/**
 	 * @param string $year
-	 * @param ArrayPlus $byMonth
+	 * @param array $byMonth
 	 * @return array
 	 */
-	public function getMonthRow(string $year, ArrayPlus $byMonth): array
+	public function getMonthRow(string $year, array $byMonth): array
 	{
 		$row = [];
 		$months = range(1, 12);
@@ -115,13 +123,13 @@ class TimelineService
 		return $row;
 	}
 
-	public function renderMonth($year, $month, ArrayPlus $byMonth)
+	public function renderMonth($year, $month, array $byMonth)
 	{
 		$content = null;
 		$key = $year . '-' . $month;
 		$images = ifsetor($byMonth[$key], []);
 		if ($images) {
-//					debug(first($images));
+//			debug(first($images));
 			/** @var Meta $meta */
 			$meta = first($images);
 			$browser = $this->getMonthBrowserLink($year, $month);
@@ -150,6 +158,23 @@ class TimelineService
 	public function getMonthBrowserLink($year, $month)
 	{
 		return MonthBrowser::href2month($year, $month);
+	}
+
+	public function filterEmptyRows(array $table)
+	{
+		foreach ($table as $key => $row) {
+			foreach ($row as $col => $cell) {
+				if ($col === 'year') {
+					continue;
+				}
+				if ($cell) {
+//					llog($cell);
+					continue 2;
+				}
+			}
+			unset($table[$key]);
+		}
+		return $table;
 	}
 
 }

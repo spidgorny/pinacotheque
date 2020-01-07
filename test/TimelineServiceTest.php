@@ -1,23 +1,7 @@
 <?php
 
-
-use DI\ContainerBuilder;
-
-class TimelineServiceTest extends PHPUnit\Framework\TestCase
+class TimelineServiceTest extends MyTestCase
 {
-
-	var $container;
-
-	public function setUp() {
-		$builder = new ContainerBuilder();
-		$builder->useAnnotations(true);
-		$builder->addDefinitions(__DIR__.'/../definitions.php');
-		$this->container = $builder->build();
-
-		$this->container->injectOn($this);
-
-		parent::setUp();
-	}
 
 	public function test_TimelineService()
 	{
@@ -45,6 +29,18 @@ class TimelineServiceTest extends PHPUnit\Framework\TestCase
 		$from = first($years);
 		echo 'From ', $from, PHP_EOL;
 		$this->assertGreaterThan(2000, $from);
+	}
+
+	public function test_filterEmptyRows()
+	{
+		$ts = new TimelineService('');
+		$table = [
+			['a', 'b', 'c'],
+			[],
+			['d', 'e', 'f'],
+		];
+		$result = $ts->filterEmptyRows($table);
+		$this->assertCount(2, $result);
 	}
 
 }

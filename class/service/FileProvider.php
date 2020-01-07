@@ -98,9 +98,10 @@ class FileProvider
 			return $row['YM'];
 		});
 
-		$byMonth = $byMonth->map(static function ($el) {
+		$byMonth = $byMonth->map(function ($el) {
 			$row0 = $el[0];
 			$meta = new MetaForSQL($row0);
+			$meta->injectDB($this->db);
 //			debug($meta);
 			$firstMetaRestCount = [$meta];
 			return $firstMetaRestCount;
@@ -112,9 +113,8 @@ class FileProvider
 	{
 		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
-    END";
-		$imageFiles = $this->db->fetchAllSelectQuery(
-			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
+    	END";
+		$where = [
 			'source' => $this->source->id,
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
@@ -128,13 +128,23 @@ class FileProvider
 				'tiff',
 				'.tif',
 			]),
-			$YM => $year . '-' . $month,
-		], "ORDER BY CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
-            ELSE $this->strftimeYM
-    END",
+		];
+		if ($this->db instanceof DBLayerPDO) {
+			$where += [$YM => $year . '-' . $month];
+		} else {
+			$where += ['YM' => $year . '-' . $month];	// SQLite only column names
+		}
+		$query = $this->db->getSelectQuery(
+			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")',
+			$where,
+			$this->db instanceof DBLayerPDO
+			? 'ORDER BY ' . $YM
+			: 'ORDER BY YM',    // SQLite only column names can be used
 			'meta.*, files.*, ' . $YM . ' as YM'
 		);
-		llog($this->db->getLastQuery().'');
+		llog($query . '');
+		$imageFiles = $this->db->fetchAll($query);
+		llog($this->db->getLastQuery() . '');
 
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);

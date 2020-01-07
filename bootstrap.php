@@ -26,7 +26,11 @@ function __($a)
 
 function llog(...$msg)
 {
-	error_log(implode(', ', $msg));
+	if (count($msg) === 1 && is_scalar($msg[0])) {
+		error_log(implode(', ', $msg));
+	} else {
+		error_log(json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR));
+	}
 }
 
 function getPathToThumbsFrom($index)

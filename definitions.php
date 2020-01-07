@@ -19,50 +19,50 @@ if (!function_exists('getFlySystem')) {
 //error_log(__FILE__);
 
 return [
-	Filesystem::class => function (ContainerInterface $c) {
+	Filesystem::class => static function (ContainerInterface $c) {
 		error_log(Filesystem::class);
 		return getFlySystem($_SERVER['argv'][2]);
 	},
-	'FlyThumbs' => function (ContainerInterface $c) {
+	'FlyThumbs' => static function (ContainerInterface $c) {
 		error_log('FlyThumbs');
 		return getFlySystem(getenv('DATA_STORAGE'));
 	},
-	Cameras::class => function (ContainerInterface $c) {
+	Cameras::class => static function (ContainerInterface $c) {
 		return new Cameras($c->get('FlyThumbs'));
 	},
-	PhotoTimeline::class => function (ContainerInterface $c) {
+	PhotoTimeline::class => static function (ContainerInterface $c) {
 		error_log(PhotoTimeline::class);
 		return new PhotoTimeline($c->get('FlyThumbs'), $c->get('MetaSet4Thumbs'));
 	},
-	MonthBrowser::class => function (ContainerInterface $c) {
+	MonthBrowser::class => static function (ContainerInterface $c) {
 		error_log(MonthBrowser::class);
 		return MonthBrowser::route($c);
 	},
-	PhotoGPS::class => function (ContainerInterface $c) {
+	PhotoGPS::class => static function (ContainerInterface $c) {
 		return new PhotoGPS($c->get('PDO'));
 	},
-	PDO::class => function (ContainerInterface $c) {
+	PDO::class => static function (ContainerInterface $c) {
 		$db = new PDO('sqlite:' . __DIR__ . '/data/geodb.sqlite');
 		return $db;
 	},
-	ScanExif::class => function (ContainerInterface $c) {
+	ScanExif::class => static function (ContainerInterface $c) {
 		$thumbsPath = getPathToThumbsFrom(3);
 		return new ScanExif($c->get(Filesystem::class), $thumbsPath);
 	},
-	ScanOneFile::class => function (ContainerInterface $c) {
+	ScanOneFile::class => static function (ContainerInterface $c) {
 		$thumbsPath = getPathToThumbsFrom(4);
 		$short = $_SERVER['argv'][5];
 
 		// -------------------------------[2]----------------------[3]=file-------------[4]=data/project----[5]=jpg
 		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath, $short);
 	},
-	'ThirdParameter' => function (ContainerInterface $c) {
+	'ThirdParameter' => static function (ContainerInterface $c) {
 		return $_SERVER['argv'][3];
 	},
-	ImgProxy::class => function (ContainerInterface $c) {
+	ImgProxy::class => static function (ContainerInterface $c) {
 		return new ImgProxy(getenv('DATA_STORAGE'));
 	},
-	'MetaSet4Thumbs' => function (ContainerInterface $c) {
+	'MetaSet4Thumbs' => static function (ContainerInterface $c) {
 		if (ifsetor($_SESSION['MetaSet4Thumbs'])) {
 			return $_SESSION['MetaSet4Thumbs'];
 		}
@@ -95,8 +95,12 @@ return [
 		return new ScanEveryFileFromDB($c->get(DBInterface::class));
 	},
 	DBInterface::class => static function ($c) {
-		$m = new DBLayerPDO(getenv('mysql.db'), getenv('mysql'), getenv('mysql.user'), getenv('mysql.password'));
-		$m->setQB(new SQLBuilder($m));
-		return $m;
+		if (getenv('mysql')) {
+			$m = new DBLayerPDO(getenv('mysql.db'), getenv('mysql'), getenv('mysql.user'), getenv('mysql.password'));
+			$m->setQB(new SQLBuilder($m));
+			return $m;
+		} else {
+			return $c->get(DBLayerSQLite::class);
+		}
 	}
 ];

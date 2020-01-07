@@ -14,7 +14,7 @@ class Sources extends AppController
 
 	protected $session;
 
-	/** @var Source  */
+	/** @var Source */
 	protected $source;
 
 	/**
@@ -35,13 +35,21 @@ class Sources extends AppController
 	public function setSource($id)
 	{
 		$this->session->set('source', $id);
-		$this->request->redirect(Sources::href());
+		$this->request->redirect(self::href());
 	}
 
 	public function index()
 	{
 		$timelineService = new TimelineServiceForSQL($this->prefixURL, $this->provider);
-		$table = $timelineService->renderTable($timelineService->byMonth);
+		$table = $timelineService->byMonth->getData();
+//		llog(count($table));
+//		llog(array_keys($table));
+		$table = $timelineService->renderTable($table);
+//		llog(count($table));
+//		llog(array_keys($table));
+		$table = $timelineService->filterEmptyRows($table);
+//		llog(count($table));
+//		llog(array_keys($table));
 
 		$content[] = new slTable($table, [
 			'class' => 'table is-fullwidth'

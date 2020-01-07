@@ -5,10 +5,11 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;
 use Psr\Container\ContainerInterface;
 
-if (php_sapi_name() != 'cli') {
+if (php_sapi_name() !== 'cli') {
 	ini_set('error_prepend_string', '<pre style="white-space: pre-wrap">');
 	ini_set('error_append_string', '</pre>');
 	ini_set('html_errors', true);
+	ini_set('log_errors_max_len', 0);
 }
 
 require_once __DIR__ . '/vendor/autoload.php';
