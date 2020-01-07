@@ -102,7 +102,7 @@ class MetaForSQL extends Meta implements IMetaData
 		$assoc = [];
 		foreach ($this->getMeta() as $entry) {
 			$value = $entry->value;
-			if ($value[0] === '{' || $value[0] === '[') {
+			if (strlen($value) && ($value[0] === '{' || $value[0] === '[')) {
 				try {
 					$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
 					if ($try) {
