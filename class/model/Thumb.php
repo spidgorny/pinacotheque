@@ -18,7 +18,7 @@ class Thumb
 	 */
 	protected $meta;
 
-	protected $log = [];
+	public $log = [];
 
 	public function __construct(MetaForSQL $meta)
 	{
@@ -82,7 +82,6 @@ class Thumb
 	public function makeVideoThumb()
 	{
 		$this->prepareForSaving();
-		// ffprobe -v quiet -print_format json -show_format -show_streams d:\PhotosNSA\BurnCD\OnePlus3T\2018-08\VID_20180807_222639.mp4
 		$time = '00:00:01.000';
 		$probe = $this->probe();
 		if ($probe->format->duration < 1) {
@@ -107,7 +106,7 @@ class Thumb
 		$ffprobe = str_replace('ffmpeg.exe', 'ffprobe.exe', $ffmpeg);
 		$thumbPath = $this->getThumbPath();
 		$cmd = [$ffprobe, '-v', 'quiet', '-print_format', 'json',  '-show_format', '-show_streams', $this->meta->getFullPath()];
-		$this->log($cmd);
+		$this->log(implode(' ', $cmd));
 		$p = new Process($cmd);
 		$p->run();
 		return json_decode($p->getOutput());

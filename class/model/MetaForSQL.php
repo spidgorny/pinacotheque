@@ -13,6 +13,11 @@ class MetaForSQL extends Meta
 	use DatabaseMixin;
 	use DatabaseManipulation;
 
+	/**
+	 * @var Source
+	 */
+	public $sourceInstance;
+
 	public static function getTableName()
 	{
 		return 'files';
@@ -42,10 +47,14 @@ class MetaForSQL extends Meta
 
 	public function getSource()
 	{
+		if ($this->sourceInstance) {
+			return $this->sourceInstance;
+		}
 		$source = Source::findByID($this->db, $this->source);
 //		$content[] = getDebug($source);
 //		debug($this->db->getLastQuery());
 		//debug($this->source, $this->props, $source);
+		$this->sourceInstance = $source;
 		return $source;
 	}
 
