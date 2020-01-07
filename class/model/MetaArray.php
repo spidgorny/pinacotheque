@@ -42,7 +42,7 @@ class MetaArray
 
 	public function containsYearMonth($year, $month)
 	{
-		return array_reduce($this->data, function ($bool, Meta $meta) use ($year, $month) {
+		return array_reduce($this->data, static function ($bool, Meta $meta) use ($year, $month) {
 			return $bool ?: $meta->getYearMonth() === $year .'-'.$month;
 		}, false);
 	}

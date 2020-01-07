@@ -12,11 +12,11 @@ if (php_sapi_name() === 'cli') {
 } else {
 	$start = microtime(true);
 	session_start();
-	error_log('Session loading: '.(microtime(true) - $start));
+//	error_log('Session loading: '.(microtime(true) - $start));
 	$pathInfo = ifsetor($_SERVER['PATH_INFO']);
 	$requestURI = ifsetor($_SERVER['REQUEST_URI']);
-	error_log('pathInfo: ' . $pathInfo);
-	error_log('requestURI: ' . $requestURI);
+//	error_log('pathInfo: ' . $pathInfo);
+//	error_log('requestURI: ' . $requestURI);
 	$c = $pathInfo ?: $requestURI;
 	//debug($pathInfo, $requestURI, $c);
 	$parts = parse_url($c);

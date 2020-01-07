@@ -1,5 +1,7 @@
 <?php
 
+use nadlib\HTTP\Session;
+
 class AppController
 {
 
@@ -80,12 +82,17 @@ class AppController
 //		$base = $base->up()->up();
 		$view->baseHref = cap($base->getURL());
 //		debug($base.'', $base->getURL().'');
+
+		$s = new Session(Sources::class);
+		$iSource = (int)$s->get('source', 1);
+
 		return $view->render($params + [
 			'head' => '',
 			'body' => $body,
 			'foot' => '',
 			'scripts' => '',
 			'sources' => $this->getSources(),
+			'iSource' => $iSource,
         ]);
 	}
 
@@ -94,7 +101,7 @@ class AppController
 		/** @var DBInterface $db */
 		$db = $this->container->get(DBInterface::class);
 		$sources = Source::findAll($db, [], 'ORDER BY id');
-		//debug($sources);
+//		debug($sources);
 		return $sources;
 	}
 

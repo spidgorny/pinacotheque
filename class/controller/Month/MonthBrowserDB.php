@@ -56,7 +56,12 @@ class MonthBrowserDB extends AppController
 		$this->init();
 		$images = $this->provider->getFilesForMonth($this->year, $this->month);
 //		debug($images->getData());
-		$images = $this->filterByBounds($images->getData());
+
+		$bounds = $this->request->getTrim('bounds');
+		if ($bounds) {
+			// don't filter, if bounds unspecified, because it will hide all images without GPS
+			$images = $this->filterByBounds($images->getData());
+		}
 
 		if (count($images)) {
 			//		$link2self = MonthBrowserDB::href2month($this->source->id, $this->year, $this->month);
@@ -66,7 +71,7 @@ class MonthBrowserDB extends AppController
 			$content[] = $monthSelector->getMonthSelector(Sources::href());
 
 			$ms = new MapService();
-			$content[] = $ms($images);
+			$content[] = $ms($images->getData());
 			$content[] = '<hr />';
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
@@ -75,9 +80,9 @@ class MonthBrowserDB extends AppController
 				'month' => $this->month,
 				'file' => ''
 			]));
-			$content[] = $this->monthTimeline->render($images);
+			$content[] = $this->monthTimeline->render($images->getData());
 
-			$scripts = $this->monthTimeline->getScripts();
+//			$scripts = $this->monthTimeline->getScripts();
 		}
 
 		$this->request->setCacheable(60 * 60);
@@ -110,6 +115,11 @@ class MonthBrowserDB extends AppController
 
 	public function filterByBounds(array $places)
 	{
+		// filter only images with GPS info first, before return below
+		$ma = new MetaArray($places);
+		$places = $ma->getGps();	// only images with GPS
+//		debug($places);
+
 		$bounds = $this->request->getTrim('bounds');
 		if (!$bounds) {
 			return $places;	// return everything
@@ -125,10 +135,6 @@ class MonthBrowserDB extends AppController
 //			'southwest' => $boundingBox->getSouthWest().'',
 //			'northeast' => $boundingBox->getNorthEast().'',
 //		]);
-
-		$ma = new MetaArray($places);
-		$places = $ma->getGps();	// only images with GPS
-//		debug($places);
 
 		// filtering
 		$placesInBounds = [];
@@ -155,7 +161,7 @@ class MonthBrowserDB extends AppController
 //		debug($this->source, $this->year, $this->month);
 		$images = $this->provider->getFilesForMonth($this->year, $this->month);
 
-		$placesInBounds = $this->filterByBounds($images);
+		$placesInBounds = $this->filterByBounds($images->getData());
 
 		$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
 			'source' => $this->source->id,

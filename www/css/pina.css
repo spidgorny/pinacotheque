@@ -2,7 +2,7 @@ html,
 body {
   background-color: #333;
   color: silver;
-  margin: .25em;
+  margin: 0.25em;
 }
 html a,
 body a,
@@ -90,7 +90,7 @@ figure.picWithCount .count {
   font-family: FontAwesome;
   font-size: 100px;
   color: #fff;
-  opacity: .3;
+  opacity: 0.3;
   text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5);
 }
 .video-thumbnail:hover:before {
@@ -114,4 +114,14 @@ table.htmlFormTable tbody {
     flex: none;
     width: 16.66666667%;
   }
+}
+ul.menu-list li .menu-link {
+  overflow: hidden;
+}
+ul.menu-list li .menu-link:hover {
+  background: inherit;
+}
+ul.menu-list li:hover {
+  background: #888;
+  color: #333;
 }

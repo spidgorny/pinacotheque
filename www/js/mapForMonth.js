@@ -57,7 +57,7 @@ var MapManager = /** @class */ (function () {
                         this.month = parseInt(this.url.searchParams.get('month'), 10);
                         url = new URL(this.url.toString());
                         url.searchParams.set('action', 'gps');
-                        url.searchParams.set('bounds', this.getBoundsFromURL);
+                        url.searchParams.set('bounds', this.getBoundsFromURL ? this.getBoundsFromURL : '');
                         return [4 /*yield*/, fetch(url.toString(), {})];
                     case 1:
                         res = _a.sent();
@@ -100,7 +100,7 @@ var MapManager = /** @class */ (function () {
                 title: info.path,
                 riseOnHover: true,
             }).addTo(_this.map)
-                .bindPopup("\n\t\t\t\t\t<p>\n\t\t\t\t\t<a href=\"" + clickURL + "\">\n\t\t\t\t\t<img src=\"" + imageURL + "\" />\n\t\t\t\t\t</a>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>" + info.path + "</p>\n\t\t\t\t");
+                .bindPopup("\n\t\t\t\t\t<p>\n\t\t\t\t\t<a href=\"" + clickURL + "\">\n\t\t\t\t\t<img src=\"" + imageURL + "\"  alt=\"Photo\"/>\n\t\t\t\t\t</a>\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>" + info.path + "</p>\n\t\t\t\t");
         });
         this.map.on('zoomend', function (e) {
             // console.log('zoom', e);

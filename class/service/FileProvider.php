@@ -58,7 +58,7 @@ class FileProvider
 		//debug($this->db->getLastQuery().'');
 //        $content[] = 'min: ' . $min . BR;
 //        $content[] = 'max: ' . $max . BR;
-		llog($this->db->getLastQuery());
+//		llog($this->db->getLastQuery());
 		return ['min' => $min, 'max' => $max];
 	}
 
@@ -89,7 +89,7 @@ class FileProvider
 			count(*) as count'
 		);
 		//debug($this->db->getLastQuery().'');
-		llog($this->db->getLastQuery() . '');
+//		llog($this->db->getLastQuery() . '');
 
 		//		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);
@@ -109,7 +109,7 @@ class FileProvider
 		return $byMonth;
 	}
 
-	public function getFilesForMonth($year, $month)
+	public function getFilesForMonth($year, $month): ArrayPlus
 	{
 		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
@@ -142,9 +142,9 @@ class FileProvider
 			: 'ORDER BY YM',    // SQLite only column names can be used
 			'meta.*, files.*, ' . $YM . ' as YM'
 		);
-		llog($query . '');
+//		llog($query . '');
 		$imageFiles = $this->db->fetchAll($query);
-		llog($this->db->getLastQuery() . '');
+//		llog($this->db->getLastQuery() . '');
 
 //		$content[] = new slTable($imageFiles);
 		$imageFiles = ArrayPlus::create($imageFiles);

@@ -28,7 +28,8 @@ class Sources extends AppController
 		$this->db = $db;
 		$this->prefixURL = ShowThumb::class . '?file=';
 		$this->session = new Session(__CLASS__);
-		$this->source = Source::findByID($this->db, $this->session->get('source', 1));
+		$sourceID = (int)$this->session->get('source', 1);
+		$this->source = Source::findByID($this->db, $sourceID);
 		$this->provider = new FileProvider($this->db, $this->source);
 	}
 

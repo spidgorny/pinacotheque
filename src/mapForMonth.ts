@@ -38,7 +38,7 @@ class MapManager {
 
 		const url = new URL(this.url.toString());
 		url.searchParams.set('action', 'gps');
-		url.searchParams.set('bounds', this.getBoundsFromURL);
+		url.searchParams.set('bounds', this.getBoundsFromURL ? this.getBoundsFromURL : '');
 		const res = await fetch(url.toString(), {});
 		const json = await res.json();
 		console.log(json);
@@ -76,7 +76,7 @@ class MapManager {
 				.bindPopup(`
 					<p>
 					<a href="${clickURL}">
-					<img src="${imageURL}" />
+					<img src="${imageURL}"  alt="Photo"/>
 					</a>
 					</p>
 					<p>${info.path}</p>

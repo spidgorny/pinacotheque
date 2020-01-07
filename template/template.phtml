@@ -4,6 +4,7 @@
 /** @var $body string */
 /** @var $foot string */
 /** @var $scripts string */
+/** @var $iSource int */
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +38,7 @@
                         <!-- Left side -->
                         <div class="level-left">
                             <div class="level-item">
-                                Sources
+                                Sources [<?= $iSource ?>]
                             </div>
                         </div>
                         <div class="level-right">
@@ -50,13 +51,13 @@
                     </div>
                 </li>
 				<?php foreach ($sources as $source): ?>
-                    <li>
+                    <li <?= $source->id === $iSource ? 'class="active"' : '' ?>>
                         <nav class="level">
                             <!-- Left side -->
                             <div class="level-left">
                                 <div class="level-item">
                                     <a href="Sources?action=setSource&id=<?= $source->id ?>"
-                                       title="<?= $source->path ?>" style="overflow: hidden">
+                                       title="<?= $source->path ?>" class="menu-link">
 										<?= $source->name ?>
                                     </a>
                                 </div>

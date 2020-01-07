@@ -10,7 +10,7 @@ $requestURI = trimExplode('?', $requestURI, 2);
 $_REQUEST += parse_query($requestURI[1]);
 $requestURI = first($requestURI);	// no params
 $requestURI = trim($requestURI, '/');
-error_log('ru: ' . $requestURI);
+//error_log('ru: ' . $requestURI);
 if (file_exists(__DIR__ . '/' . $requestURI)) {
 //	debug($_SERVER);
 	if (str_contains($_SERVER['SERVER_SOFTWARE'], 'Caddy')) {
@@ -39,7 +39,7 @@ function debug_path()
 		$path = implode('/', $pathParts);
 		$isDir = is_dir($path);
 		$isFile = is_file($path);
-		echo $path, ': ', $isDir ? 'DIR' : ($isFile ? 'FILE' : ''), PHP_EOL;
+//		echo $path, ': ', $isDir ? 'DIR' : ($isFile ? 'FILE' : ''), PHP_EOL;
 		if (!$isDir && !$isFile) {
 			break;
 		}

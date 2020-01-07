@@ -22,7 +22,7 @@ class MonthSelector
 	public function getMonthSelector($linkHome)
 	{
 		$this->timelineService->selected = $this->year . '-' . $this->month;
-		$table = $this->timelineService->renderTable($this->timelineService->byMonth);
+		$table = $this->timelineService->renderTable($this->timelineService->byMonth->getData());
 //		debug(count($set), array_keys($table));
 		$table = [$this->year => $table[$this->year]];
 		$slTable = new slTable($table, [
