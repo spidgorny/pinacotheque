@@ -6,9 +6,10 @@
  * Time: 00:52
  */
 
-class BaseController {
+class BaseController extends AppController
+{
 
-	public function log(...$messages)
+	public function log($class, ...$messages)
 	{
 		static $stamp;
 		if (!$stamp) {
@@ -16,7 +17,18 @@ class BaseController {
 		}
 		$now = microtime(true);
 		$since = number_format($now - $stamp, 3);
-		echo '+', $since, ' ms', TAB, implode(TAB, $messages), PHP_EOL;
+
+		if (count($messages) === 1) {
+			if (is_scalar($messages[0])) {
+				$data = $messages[0];
+			} else {
+				$data = json_encode($messages[0], JSON_THROW_ON_ERROR);
+			}
+		} else {
+			$data = implode(TAB, $messages);
+		}
+
+		echo '+', $since, ' ms', TAB, $class, TAB, $data, PHP_EOL;
 		$stamp = $now;
 	}
 

@@ -6,8 +6,6 @@ use Intervention\Image\ImageManager;
 class ImageScanner
 {
 
-	protected $source;
-
 	/**
 	 * @var MetaForSQL
 	 */
@@ -18,10 +16,9 @@ class ImageScanner
 	 */
 	protected $db;
 
-	public function __construct(MetaForSQL $file, DBInterface $db)
+	public function __construct(IMetaData $file, DBInterface $db)
 	{
 		$this->file = $file;
-		$this->source = $file->getSource();
 		$this->db = $db;
 	}
 
@@ -30,16 +27,12 @@ class ImageScanner
 		try {
 //			debug($metaFile);
 			if (!$this->file->hasMeta()) {
-				$path = path_plus($this->source->path, $this->file->getPath());
+				$path = $this->file->getFullPath();
 				if ($this->file->isImage()) {
 					$ip = ImageParser::fromFile($path);
 					$meta = $ip->getMeta();
-					//	debug($meta);
-					//	echo 'Meta has ', sizeof($meta), PHP_EOL;
-//					$this->metaFile->set(basename($this->file->getPath()), $meta);
 					$this->saveMetaToDB($meta, $this->file->id);
 				} elseif ($this->file->isVideo()) {
-					// TODO process video metadata
 					$vp = VideoParser::fromFile($path);
 					$meta = $vp->getMeta();
 					$this->saveMetaToDB($meta, $this->file->id);

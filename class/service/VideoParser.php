@@ -11,6 +11,9 @@ class VideoParser
 
 	public static function fromFile($filePath): VideoParser
 	{
+		if (!$filePath) {
+			throw new InvalidArgumentException(__METHOD__ . ' called with empty $filePath');
+		}
 		return new static($filePath);
 	}
 
@@ -43,12 +46,12 @@ class VideoParser
 		}
 		$ffmpeg = getenv('ffmpeg');
 		$cmd = [$ffmpeg, '-i', $this->filePath, '-ss', $time, '-vframes', '1', '-vf', 'scale=256:-1', $destination];
-		$this->log($cmd);
+		$this->log(implode(' ', $cmd));
 		$p = new Process($cmd);
 		$p->run();
 		if ($p->getExitCode()) {
 			$error = $p->getErrorOutput();
-			debug($cmd);
+			debug(implode(' ', $cmd));
 			debug($error);
 		}
 	}

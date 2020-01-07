@@ -7,7 +7,7 @@
  * @property string path
  * @property int timestamp
  */
-class MetaForSQL extends Meta
+class MetaForSQL extends Meta implements IMetaData
 {
 
 	use DatabaseMixin;
@@ -131,22 +131,6 @@ class MetaForSQL extends Meta
 	{
 		$metaRows = $this->getMeta();
 		return count($metaRows);
-	}
-
-	/**
-	 * /data/thumbs/PrefixMerged/folder/path/file.jpg
-	 * @return bool|string
-	 */
-	public function getDestination()
-	{
-		$absRoot = path_plus(getenv('DATA_STORAGE'), $this->getSource()->thumbRoot);
-		$destination = path_plus($absRoot, $this->getPath());
-		@mkdir(dirname($destination), 0777, true);
-		$real = realpath($destination);    // after mkdir()
-		if ($real) {
-			$destination = $real;
-		}
-		return $destination;
 	}
 
 }

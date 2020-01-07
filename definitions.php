@@ -49,16 +49,6 @@ return [
 		$thumbsPath = getPathToThumbsFrom(3);
 		return new ScanExif($c->get(Filesystem::class), $thumbsPath);
 	},
-	ScanOneFile::class => static function (ContainerInterface $c) {
-		$thumbsPath = getPathToThumbsFrom(4);
-		$short = $_SERVER['argv'][5];
-
-		// -------------------------------[2]----------------------[3]=file-------------[4]=data/project----[5]=jpg
-		return new ScanOneFile($c->get(Filesystem::class), $c->get('ThirdParameter'), $thumbsPath, $short);
-	},
-	'ThirdParameter' => static function (ContainerInterface $c) {
-		return $_SERVER['argv'][3];
-	},
 	ImgProxy::class => static function (ContainerInterface $c) {
 		return new ImgProxy(getenv('DATA_STORAGE'));
 	},

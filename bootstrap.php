@@ -39,7 +39,7 @@ function getPathToThumbsFrom($index)
 	if (!$storageFolder) {
 		throw new RuntimeException('php ScanOneFile /path/to/source <project name>');
 	}
-	if ($storageFolder[0] != '/') {
+	if ($storageFolder[0] !== '/') {
 		$DATA_STORAGE = getenv('DATA_STORAGE');
 		if (!$DATA_STORAGE) {
 			throw new RuntimeException('Make .env with DATA_STORAGE=' . getcwd());

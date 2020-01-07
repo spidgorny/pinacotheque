@@ -15,52 +15,54 @@ class ScanOneFile extends BaseController
 	 */
 	protected $fileSystem;
 
-	protected $file;
-
 	protected $prefix;
 
-	protected $shortened;
-
-	/**
-	 * @var string
-	 */
-	protected $thumbsPath;
+	/** @var DBInterface */
+	protected $db;
 
 	/**
 	 * ScanOneFile constructor.
 	 *
 	 * @param Filesystem $fileSystem
-	 * @param string $file
-	 * @param string $thumbsPath
-	 * @param string $shortened
+	 * @param DBInterface $db
 	 */
-	public function __construct(Filesystem $fileSystem, $file, $thumbsPath, $shortened)
+	public function __construct(Filesystem $fileSystem, DBInterface $db)
 	{
+		parent::__construct();
 //		debug($_SERVER['argv']);
 		$this->fileSystem = $fileSystem;
 		/** @var Local $adapter */
 		$adapter = $this->fileSystem->getAdapter();
 		$this->prefix = realpath($adapter->getPathPrefix());
+		$this->log('Prefix', $this->prefix);
 
-		$this->file = $file;
-		if (!is_file($this->file)) {
-			throw new InvalidArgumentException($this->file . ' not found');
-		}
-
-		$this->thumbsPath = $thumbsPath;
-		$this->shortened = $shortened;
+		$this->db = $db;
 	}
 
 	public function __invoke()
 	{
-		$this->log($this->file);
-//		$this->log('Prefix', $this->prefix);
-//		$this->log('Thumbs path', $this->thumbsPath);
-//		$this->log('Shortened', $this->shortened);
-//		$this->log('Destination', $this->getDestinationFor($this->shortened));
-//		$this->log('Destination: ', $this->getDestinationFor(''));
-//		$this->log('Done');
-		$is = new ImageScanner($this->file, $this->thumbsPath);
+		$file = $_SERVER['argv'][3];
+		$this->log('File', $file);
+
+		if (!is_file($file)) {
+			throw new InvalidArgumentException($file . ' not found');
+		}
+
+		$meta = new Meta([
+			'_path_' => $file,
+		]);
+		$meta->sourcePath = basename($this->prefix);	// .../data/[thumbRoot]/
+		$this->scan($meta);
+	}
+
+	public function scan(IMetaData $file)
+	{
+		$this->log($file);
+		$this->log('Source', $file->getSource());
+//		$this->log();
+		$destination = $file->getDestination();
+		$this->log('Destination', $destination);
+		$is = new ImageScanner($file, $this->db);
 		$is();
 	}
 

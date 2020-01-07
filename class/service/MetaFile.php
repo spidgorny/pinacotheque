@@ -12,6 +12,12 @@ class MetaFile
 
 	public $json;
 
+	public static function fromPath($thumbsFolder, $fileName)
+	{
+		$thumbsPath = path_plus(getenv('DATA_STORAGE'), $thumbsFolder);
+		return new static($thumbsPath, $fileName);
+	}
+
 	public function __construct($thumbsPath, $fileName)
 	{
 		$this->thumbsPath = $thumbsPath;	// root for this Source
@@ -47,13 +53,13 @@ class MetaFile
 		static $jsonPath;
 		static $jsonData = [];
 
-		if ($jsonFile == $jsonPath && $jsonData) {
+		if ($jsonFile === $jsonPath && $jsonData) {
 			return $jsonData;
 		}
 
 		if (file_exists($jsonFile)) {
 			$fileContent = file_get_contents($jsonFile);
-			$jsonData = json_decode($fileContent);
+			$jsonData = json_decode($fileContent, false, 512, JSON_THROW_ON_ERROR);
 		} else {
 			$jsonData = [];
 		}

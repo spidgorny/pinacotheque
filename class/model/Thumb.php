@@ -1,10 +1,5 @@
 <?php
 
-use Intervention\Image\Constraint;
-use Intervention\Image\Exception\NotReadableException;
-use Intervention\Image\ImageManager;
-use Symfony\Component\Process\Process;
-
 class Thumb
 {
 
@@ -14,13 +9,13 @@ class Thumb
 	protected $source;
 
 	/**
-	 * @var MetaForSQL
+	 * @var IMetaData
 	 */
 	protected $meta;
 
 	public $log = [];
 
-	public function __construct(MetaForSQL $meta)
+	public function __construct(IMetaData $meta)
 	{
 		$this->meta = $meta;
 		$this->source = $meta->getSource();
@@ -32,7 +27,7 @@ class Thumb
 		$thumbPath = path_plus($dataStorage, $this->source->thumbRoot, $this->meta->getPath());
 		if ($this->meta->isVideo()) {
 			$ext = pathinfo($thumbPath, PATHINFO_EXTENSION);
-			$thumbPath = str_replace($ext, 'png', $thumbPath);
+			$thumbPath = str_replace_once('.' . $ext, '.png', $thumbPath);
 		}
 		return $thumbPath;
 	}

@@ -14,10 +14,13 @@
  * @property mixed DateTime
  * @property int id
  */
-class Meta
+class Meta implements IMetaData
 {
 
 	protected $props = [];
+
+	/** @var string for debugging when used directly (not MetaForSQL) */
+	public $sourcePath;
 
 	public function __construct(array $meta)
 	{
@@ -39,21 +42,71 @@ class Meta
 		return isset($this->props);
 	}
 
+	/**
+	 * Filename without path
+	 * @return string
+	 */
 	public function getFilename()
 	{
 		if (isset($this->FileName)) {
 			return $this->FileName;
 		}
 
-		$id = $this->props['id'];
-		$secret = $this->props['flickr_secret'];
-		return $id.'_'.$secret.'.jpg';
+		if ($this->props['flickr_secret']) {
+			$id = $this->props['id'];
+			$secret = $this->props['flickr_secret'];
+			return $id . '_' . $secret . '.jpg';
+		}
+
+		return $this->getPath();
+	}
+
+	/**
+	 * Get path relative to the root
+	 * @return string
+	 */
+	public function getFullPath()
+	{
+		return $this->getPath();
 	}
 
 	public function getThumbnail($prefix = '')
 	{
 		$src = $prefix . '/' . $this->_path_ . '/' . $this->getFilename();
 		return $src;
+	}
+
+	public function getPath()
+	{
+		return $this->_path_;
+	}
+
+	/**
+	 * For compatibility.
+	 * @see next function getDestination()
+	 * @return object
+	 */
+	public function getSource()
+	{
+		return (object)[
+			'thumbRoot' => $this->sourcePath,
+		];
+	}
+
+	/**
+	 * /data/thumbs/PrefixMerged/folder/path/file.jpg
+	 * @return bool|string
+	 */
+	public function getDestination()
+	{
+		$absRoot = path_plus(getenv('DATA_STORAGE'), $this->getSource()->thumbRoot);
+		$destination = path_plus($absRoot, $this->getPath());
+		@mkdir(dirname($destination), 0777, true);
+		$real = realpath($destination);    // after mkdir()
+		if ($real) {
+			$destination = $real;
+		}
+		return $destination;
 	}
 
 	public function toHTML($prefix = '', array $attributes = [])
@@ -230,11 +283,6 @@ class Meta
 			: $key;
 	}
 
-	public function getPath()
-	{
-		return $this->_path_;
-	}
-
 	public function getYearMonth()
 	{
 		return $this->yearMonth();
@@ -243,6 +291,17 @@ class Meta
 	public function getSize()
 	{
 		return ifsetor($this->props['FileSize'], 0);
+	}
+
+	public function hasMeta()
+	{
+		$metaFile = MetaFile::fromPath($this->sourcePath, $this->getPath());
+		return $metaFile->has($this->getPath());
+	}
+
+	public function __toString()
+	{
+		return '[Meta: '.json_encode($this->__debugInfo(), JSON_THROW_ON_ERROR).']';
 	}
 
 }

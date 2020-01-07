@@ -26,7 +26,7 @@ class ScanEveryFileFromDB extends AppController
 
 		$provider = new FileProvider($this->db, $source);
 		$filesToScan = $provider->getUnscanned();
-		debug(count($filesToScan));
+//		debug(count($filesToScan));
 
 		/** @var MetaForSQL $fileRow */
 		foreach ($filesToScan as $i => $fileRow) {
