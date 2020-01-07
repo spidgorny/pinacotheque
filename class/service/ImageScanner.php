@@ -1,10 +1,11 @@
 <?php
 
 use Intervention\Image\Exception\NotReadableException;
-use Intervention\Image\ImageManager;
 
 class ImageScanner
 {
+
+	use LogTrait;
 
 	/**
 	 * @var MetaForSQL
@@ -28,15 +29,18 @@ class ImageScanner
 //			debug($metaFile);
 			if (!$this->file->hasMeta()) {
 				$path = $this->file->getFullPath();
+				$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image?');
+				$ok = false;
 				if ($this->file->isImage()) {
 					$ip = ImageParser::fromFile($path);
 					$meta = $ip->getMeta();
-					$this->saveMetaToDB($meta, $this->file->id);
+					$ok = $this->saveMetaToDB($meta, $this->file->id);
 				} elseif ($this->file->isVideo()) {
 					$vp = VideoParser::fromFile($path);
 					$meta = $vp->getMeta();
-					$this->saveMetaToDB($meta, $this->file->id);
+					$ok = $this->saveMetaToDB($meta, $this->file->id);
 				}
+				$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
 			}
 			// thumbnail
 			$destination = $this->file->getDestination();
@@ -44,8 +48,12 @@ class ImageScanner
 				$thumb = new Thumb($this->file);
 				try {
 					$thumb->getThumb();    // make it if doesn't exist
+					$this->log(TAB . 'Thumb', 'OK');
+					$this->log('Thumb->log', $thumb->log);
 				} catch (NotReadableException $e) {
 					$content[] = $e;
+					$this->log(TAB . 'Thumb', '*** FAIL ***');
+					$this->log('Thumb->log', $thumb->log);
 				}
 			}
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
@@ -70,7 +78,7 @@ class ImageScanner
 			}
 //			echo $row->numColumns(), PHP_EOL;
 		}
-		$this->db->commit();
+		return $this->db->commit();
 	}
 
 }

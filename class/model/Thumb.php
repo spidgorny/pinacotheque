@@ -61,7 +61,9 @@ class Thumb
 		$this->prepareForSaving();
 		$parser = ImageParser::fromFile($this->meta->getFullPath());
 		$thumbPath = $this->getThumbPath();
-		$parser->saveThumbnailTo($thumbPath);
+		$ok = $parser->saveThumbnailTo($thumbPath);
+		$this->log($parser->log);
+		return $ok;
 	}
 
 	public function prepareForSaving()
@@ -78,7 +80,9 @@ class Thumb
 		$this->prepareForSaving();
 		$parser = VideoParser::fromFile($this->meta->getFullPath());
 		$thumbPath = $this->getThumbPath();
-		$parser->saveThumbnailTo($thumbPath);
+		$ok = $parser->saveThumbnailTo($thumbPath);
+		$this->log($parser->log);
+		return $ok;
 	}
 
 	public function __debugInfo()

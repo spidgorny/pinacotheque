@@ -41,19 +41,23 @@ class VideoParser
 	{
 		$time = '00:00:01.000';
 		$probe = $this->probe();
-		if ($probe->format->duration < 1) {
+		$this->log('duration' . $probe->format->duration);
+		if ($probe->format->duration < 2) {	// 1.045 is not enough
 			$time = '00:00:00.000';
 		}
 		$ffmpeg = getenv('ffmpeg');
 		$cmd = [$ffmpeg, '-i', $this->filePath, '-ss', $time, '-vframes', '1', '-vf', 'scale=256:-1', $destination];
 		$this->log(implode(' ', $cmd));
 		$p = new Process($cmd);
-		$p->run();
+		$ok = $p->run();
+		$this->log($p->getErrorOutput());
+		$this->log($p->getOutput());
 		if ($p->getExitCode()) {
 			$error = $p->getErrorOutput();
 			debug(implode(' ', $cmd));
 			debug($error);
 		}
+		return !$ok;	// 0 = OK
 	}
 
 	public function probe()
