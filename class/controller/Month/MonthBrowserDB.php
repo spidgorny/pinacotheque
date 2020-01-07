@@ -54,13 +54,13 @@ class MonthBrowserDB extends AppController
 		$content = [];
 		$scripts = null;
 		$this->init();
-		$images = $this->provider->getFilesForMonth($this->year, $this->month);
+		$images = $this->provider->getFilesForMonth($this->year, $this->month)->getData();
 //		debug($images->getData());
 
 		$bounds = $this->request->getTrim('bounds');
 		if ($bounds) {
 			// don't filter, if bounds unspecified, because it will hide all images without GPS
-			$images = $this->filterByBounds($images->getData());
+			$images = $this->filterByBounds($images);
 		}
 
 		if (count($images)) {
@@ -71,7 +71,7 @@ class MonthBrowserDB extends AppController
 			$content[] = $monthSelector->getMonthSelector(Sources::href());
 
 			$ms = new MapService();
-			$content[] = $ms($images->getData());
+			$content[] = $ms($images);
 			$content[] = '<hr />';
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
@@ -80,7 +80,7 @@ class MonthBrowserDB extends AppController
 				'month' => $this->month,
 				'file' => ''
 			]));
-			$content[] = $this->monthTimeline->render($images->getData());
+			$content[] = $this->monthTimeline->render($images);
 
 //			$scripts = $this->monthTimeline->getScripts();
 		}

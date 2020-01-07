@@ -41,17 +41,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 document.addEventListener("DOMContentLoaded", function () {
     var refDom = document.querySelectorAll('a.meta');
     var refArray = Array.from(refDom);
-    for (var _i = 0, refArray_1 = refArray; _i < refArray_1.length; _i++) {
-        var reference = refArray_1[_i];
-        reference.addEventListener('click', onMetaClick);
+    if (refArray.length) {
+        // for (let reference of refArray) {
+        document.addEventListener('click', onMetaClick);
+        // }
     }
 });
 function onMetaClick(e) {
     return __awaiter(this, void 0, void 0, function () {
-        var reference, link, href, html, sidebar;
+        var closestA, reference, link, href, html, sidebar;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    closestA = e.target.closest('a');
+                    if (!(closestA && closestA.matches('a.meta'))) return [3 /*break*/, 3];
                     e.preventDefault();
                     reference = e.target;
                     link = reference.closest('a');
@@ -62,7 +65,8 @@ function onMetaClick(e) {
                     html = _a.sent();
                     sidebar = document.querySelector('#sidebar');
                     sidebar.innerHTML = html;
-                    return [2 /*return*/];
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     });
