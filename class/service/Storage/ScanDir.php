@@ -55,8 +55,8 @@ class ScanDir
 //        print_r(first($dirs));
 
 		$sourceID = $this->source->id;
-		foreach ($dirs as $dir) {
-			echo $dir['path'], PHP_EOL;
+		foreach ($dirs as $i => $dir) {
+			echo count($dirs) - $i, TAB, $dir['path'], PHP_EOL;
 //			$query = "INSERT INTO files (source, type, path, timestamp) VALUES ('$sourceID', '${dir['type']}', '${dir['path']}', '${dir['timestamp']}')";
 			//echo $query, PHP_EOL;
 //			$this->db->perform($query);

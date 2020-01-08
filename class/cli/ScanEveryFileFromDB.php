@@ -14,11 +14,14 @@ class ScanEveryFileFromDB extends AppController
 
 	public function __invoke()
 	{
-		$sourceID = $_SERVER['argv'][2];
-		$source = Source::findByID($this->db, $sourceID);
-//		debug($source);
+		$source = null;
+		$sourceID = (int)$_SERVER['argv'][2];
+		if ($sourceID) {
+			$source = Source::findByID($this->db, $sourceID);
+//			debug($source);
+		}
 
-		$skipScan = ifsetor($_SERVER['argv'][3]) === '--skipScan';
+		$skipScan = in_array('--skipScan', $_SERVER['argv']);
 		if (!$skipScan) {
 			$scanDir = new \App\Service\ScanDir($this->db, $source);
 			$scanDir();
@@ -32,7 +35,8 @@ class ScanEveryFileFromDB extends AppController
 		foreach ($filesToScan as $i => $fileRow) {
 			$file = new MetaForSQL($fileRow);
 			$file->injectDB($this->db);
-			echo count($filesToScan) - $i, TAB, $file->getPath(), PHP_EOL;
+			echo count($filesToScan) - $i, TAB, $file->getPath(),
+			' [', $file->id, ']', PHP_EOL;
 //			$metaFile = new MetaFile($thumbsPath, $file->getPath());
 			$is = new ImageScanner($file, $this->db);
 			$is();

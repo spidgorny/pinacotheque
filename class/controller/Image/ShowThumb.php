@@ -1,6 +1,7 @@
 <?php
 
 use Intervention\Image\Exception\NotReadableException;
+use Intervention\Image\Exception\NotWritableException;
 
 class ShowThumb extends AppController
 {
@@ -55,6 +56,8 @@ class ShowThumb extends AppController
 			'Exists' => filesize($filePath),
 			'ffmpeg' => getenv('ffmpeg'),
 			'exists' => is_file(getenv('ffmpeg')),
+			'DATA_STORAGE' => getenv('DATA_STORAGE'),
+			'destination' => $meta->getDestination(),
 		]);
 
 		$thumb = new Thumb($meta);
@@ -63,10 +66,20 @@ class ShowThumb extends AppController
 			$thumb->getThumb();    // make it if doesn't exist
 		} catch (NotReadableException $e) {
 			$content[] = $e;
+		} catch (NotWritableException $e) {
+			$content[] = $e;
 		}
 		$content[] = getDebug($thumb);
+		$dirDestination = dirname($meta->getDestination());
+//		$parent = dirname($dirDestination);
 		$content[] = getDebug([
 			'exists' => $thumb->exists(),
+			'dirname' => $dirDestination,
+			'dir exist' => is_dir($dirDestination),
+//			'scandir' => scandir($dirDestination),
+//			'parent' => $parent,
+//			'scandir dir ' => scandir($parent),
+//			'scandir O:' => scandir('o:\\'),
 		]);
 
 		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [

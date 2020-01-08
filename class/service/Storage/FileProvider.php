@@ -8,6 +8,7 @@ class FileProvider
 	 */
 	protected $db;
 
+	/** @var Source|null */
 	protected $source;
 
 	protected $timestamp;
@@ -16,7 +17,7 @@ class FileProvider
 
 	protected $strftimeYM;
 
-	public function __construct(DBInterface $db, Source $source)
+	public function __construct(DBInterface $db, Source $source = null)
 	{
 		$this->db = $db;
 		$this->source = $source;
@@ -32,10 +33,7 @@ class FileProvider
 
 	public function getMinMax()
 	{
-		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
-			'files LEFT OUTER JOIN meta 
-			ON (meta.id_file = files.id AND meta.name = "DateTime")', [
-			'source' => $this->source->id,
+		$where = [
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
 				'jpeg',
@@ -52,7 +50,15 @@ class FileProvider
 				'(meta.value IS NULL)',
 				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
 			]),
-		], '',
+		];
+		if ($this->source) {
+			$where += [
+				'source' => $this->source->id,
+			];
+		}
+		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
+			'files LEFT OUTER JOIN meta 
+			ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, '',
 			"min(coalesce(meta.value, $this->strftime)) as min, 
 			max(coalesce(meta.value, $this->strftime)) as max");
 		//debug($this->db->getLastQuery().'');
@@ -68,8 +74,7 @@ class FileProvider
 			replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     END";
-		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', [
-			'source' => $this->source->id,
+		$where = [
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
 				'jpeg',
@@ -82,7 +87,13 @@ class FileProvider
 				'tiff',
 				'.tif',
 			]),
-		], 'GROUP BY ' . $YM .
+		];
+		if ($this->source) {
+			$where += [
+				'source' => $this->source->id,
+			];
+		}
+		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, 'GROUP BY ' . $YM .
 			' ORDER BY ' . $YM,
 			'min(files.id) as id, 
 			' . $YM . ' as YM, 
@@ -115,7 +126,6 @@ class FileProvider
             ELSE $this->strftimeYM
     	END";
 		$where = [
-			'source' => $this->source->id,
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
 				'jpeg',
@@ -129,6 +139,11 @@ class FileProvider
 				'.tif',
 			]),
 		];
+		if ($this->source) {
+			$where += [
+				'source' => $this->source->id,
+			];
+		}
 		if ($this->db instanceof DBLayerPDO) {
 			$where += [$YM => $year . '-' . $month];
 		} else {
@@ -163,8 +178,7 @@ class FileProvider
 	 */
 	public function getUnscanned()
 	{
-		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', [
-			'source' => $this->source->id,
+		$where = [
 			'type' => 'file',
 			'substr(path, -4)' => new SQLIn([
 				'jpeg',
@@ -178,7 +192,13 @@ class FileProvider
 				'.tif',
 			]),
 			'meta.id' => null,
-		], 'ORDER BY timestamp');
+		];
+		if ($this->source) {
+			$where += [
+				'source' => $this->source->id,
+			];
+		}
+		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', $where, 'ORDER BY timestamp');
 //		$content[] = new slTable($imageFiles);
 //		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 //		$imageFiles->setResult($res);

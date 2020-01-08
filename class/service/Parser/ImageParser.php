@@ -10,6 +10,8 @@ class ImageParser
 	/** @var Image $image */
 	protected $image;
 
+	public $log = [];
+
 	public static function fromFile($filePath): ImageParser
 	{
 		$manager = new ImageManager();
@@ -20,6 +22,11 @@ class ImageParser
 	public function __construct(Image $image)
 	{
 		$this->image = $image;
+	}
+
+	public function log($message)
+	{
+		$this->log[] = $message;
 	}
 
 	public function getMeta()

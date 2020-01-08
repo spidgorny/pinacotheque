@@ -71,7 +71,11 @@ class Thumb
 		$thumbPath = $this->getThumbPath();
 		$dirName = dirname($thumbPath);
 		if (!is_dir($dirName)) {
-			@mkdir($dirName, 0777, true);
+			$this->log('mkdir: ' . $dirName);
+			$ok = mkdir($dirName, 0777, true);
+			if (!$ok) {
+				$this->log('mkdir failed ' . $ok);
+			}
 		}
 	}
 
