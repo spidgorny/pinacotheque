@@ -10,7 +10,7 @@ class TimelineServiceForSQL extends TimelineService
 
 	public $byMonth;
 
-	public function __construct($prefixURL, FileProvider $provider)
+	public function __construct($prefixURL, FileProviderDenormalized $provider)
 	{
 		parent::__construct($prefixURL);
 		$this->provider = $provider;

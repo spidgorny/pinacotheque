@@ -20,7 +20,7 @@ class ShowThumb extends AppController
 	{
 		session_write_close();
 		try {
-			return $this->index();
+			return parent::__invoke();
 		} catch (Exception $e) {
 			return $this->template([
 				HTMLTag::div($e, ['class' => 'is-danger']),
@@ -82,11 +82,17 @@ class ShowThumb extends AppController
 //			'scandir O:' => scandir('o:\\'),
 		]);
 
+		$content[] = '<p>' . new HTMLTag('a', [
+				'href' => $this->request->getURL()
+					->setParam('action', 'deleteThumb')
+					->setParam('file', $file),
+			], 'Delete Thumb') . '</p>';
+
 		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
 			'border' => 1,
 		]);
 
-		$thumbPath = $thumb->getThumbPath();
+		$thumbPath = $meta->getDestination();
 		if ($this->request->getBool('d') || !$thumb->exists()) {
 			return $content;
 		}
@@ -95,6 +101,14 @@ class ShowThumb extends AppController
 		header('Content-Length: ' . filesize($thumbPath));
 		$this->request->setCacheable(60 * 60 * 24 * 365);
 		readfile($thumbPath);
+	}
+
+	public function deleteThumb()
+	{
+		$file = $this->request->getIntRequired('file');
+		$meta = MetaForSQL::findByID($this->db, $file);
+		unlink($meta->getDestination());
+		$this->request->goBack();
 	}
 
 }

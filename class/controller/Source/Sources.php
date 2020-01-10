@@ -32,7 +32,7 @@ class Sources extends AppController
 		if ($sourceID) {
 			$this->source = Source::findByID($this->db, $sourceID);
 		}
-		$this->provider = new FileProvider($this->db, $this->source);
+		$this->provider = new FileProviderDenormalized($this->db, $this->source);
 	}
 
 	/// AJAX

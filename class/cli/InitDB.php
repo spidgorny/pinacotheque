@@ -1,26 +1,45 @@
 <?php
 
+/**
+ * Class InitDB
+ * Querying meta data every time is slow.
+ * We need to denormalize the data and store DateTime in 'files'
+ */
 class InitDB extends AppController
 {
 
+	use LogTrait;
+
 	/**
-	 * @var PDO
+	 * @var DBInterface
 	 */
 	protected $db;
 
-	public function __construct(PDO $pdo)
+	public function __construct(DBInterface $pdo)
 	{
+		parent::__construct();
 		$this->db = $pdo;
 	}
 
 	function __invoke()
 	{
-		$res = $this->db->query('SELECT * FROM photo');
-		if (!$res) {
-			throw new Exception($this->db->errorInfo()[2]);
-		}
-		foreach ($res as $row) {
-			echo $row;
+//		$res = $this->db->runSelectQuery('SELECT * FROM file WHERE DateTime is NULL');
+		$iterator = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
+		$iterator->perform("
+		SELECT * FROM files 
+		WHERE type = 'file' 
+		AND DateTime is NULL");
+		$amount = $iterator->count();
+		/** @var MetaForSQL $meta */
+		foreach ($iterator as $i => $meta) {
+			$this->log($amount - $i, $meta->getPath());
+			$meta->injectDB($this->db);
+			$metaData = $meta->getMetaData();
+			if (isset($metaData['DateTime'])) {
+				$meta->update([
+					'DateTime' => $metaData['DateTime'],
+				]);
+			}
 		}
 	}
 

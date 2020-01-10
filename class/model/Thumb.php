@@ -21,6 +21,11 @@ class Thumb
 		$this->source = $meta->getSource();
 	}
 
+	/**
+	 * @return string
+	 * @deprecated
+	 * @use $meta->getDestination()
+	 */
 	public function getThumbPath()
 	{
 		$dataStorage = getenv('DATA_STORAGE');
@@ -34,7 +39,7 @@ class Thumb
 
 	public function exists()
 	{
-		$thumbPath = $this->getThumbPath();
+		$thumbPath = $this->meta->getDestination();
 		return file_exists($thumbPath);
 	}
 
@@ -43,7 +48,7 @@ class Thumb
 		if (!$this->exists()) {
 			$this->makeThumb();
 		}
-		$thumbPath = $this->getThumbPath();
+		$thumbPath = $this->meta->getDestination();
 		return $thumbPath;
 	}
 
@@ -60,7 +65,7 @@ class Thumb
 	{
 		$this->prepareForSaving();
 		$parser = ImageParser::fromFile($this->meta->getFullPath());
-		$thumbPath = $this->getThumbPath();
+		$thumbPath = $this->meta->getDestination();
 		$ok = $parser->saveThumbnailTo($thumbPath);
 		$this->log($parser->log);
 		return $ok;
@@ -68,7 +73,7 @@ class Thumb
 
 	public function prepareForSaving()
 	{
-		$thumbPath = $this->getThumbPath();
+		$thumbPath = $this->meta->getDestination();
 		$dirName = dirname($thumbPath);
 		if (!is_dir($dirName)) {
 			$this->log('mkdir: ' . $dirName);
@@ -83,7 +88,7 @@ class Thumb
 	{
 		$this->prepareForSaving();
 		$parser = VideoParser::fromFile($this->meta->getFullPath());
-		$thumbPath = $this->getThumbPath();
+		$thumbPath = $this->meta->getDestination();
 		$ok = $parser->saveThumbnailTo($thumbPath);
 		$this->log($parser->log);
 		return $ok;
@@ -92,7 +97,7 @@ class Thumb
 	public function __debugInfo()
 	{
 		return [
-			'getThumbPath' => $this->getThumbPath(),
+			'getThumbPath' => $this->meta->getDestination(),
 			'exists' => $this->exists(),
 			'log' => $this->log,
 		];

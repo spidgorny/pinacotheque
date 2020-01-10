@@ -100,7 +100,14 @@ class Meta implements IMetaData
 	public function getDestination()
 	{
 		$absRoot = path_plus(getenv('DATA_STORAGE'), $this->getSource()->thumbRoot);
-		$destination = path_plus($absRoot, $this->getPath());
+
+		$thumbPath = $this->getPath();
+		if ($this->isVideo()) {
+			$ext = pathinfo($thumbPath, PATHINFO_EXTENSION);
+			$thumbPath = str_replace_once('.' . $ext, '.png', $thumbPath);
+		}
+		$destination = path_plus($absRoot, $thumbPath);
+
 		@mkdir(dirname($destination), 0777, true);
 		$real = realpath($destination);    // after mkdir()
 		if ($real) {
