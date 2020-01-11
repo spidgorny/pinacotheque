@@ -22,7 +22,7 @@ class Preview extends AppController
 		if ($source) {
 			$source = Source::findByID($this->db, $source);
 		}
-		$provider = new FileProvider($this->db, $source);
+		$provider = new FileProviderDenormalized($this->db, $source);
 		$data = $provider->getFilesForMonth($year, $month);
 		$monthTimeline = new MonthTimeline($year, $month, ShowThumb::href( ['file' => '']), Preview::href([
 			'year' => $year,
