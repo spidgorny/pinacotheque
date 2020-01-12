@@ -44,11 +44,13 @@ class ImageScanner
 			$ok = false;
 			if ($this->file->isImage()) {
 				$ip = ImageParser::fromFile($path);
-				$meta = $ip->getMeta();
-				$ok = $this->saveMetaToDB($meta, $this->file->id);
+				$meta = (array)$ip->getMeta();
+				if ($meta) {
+					$ok = $this->saveMetaToDB($meta, $this->file->id);
+				}
 			} elseif ($this->file->isVideo()) {
 				$vp = VideoParser::fromFile($path);
-				$meta = $vp->getMeta();
+				$meta = (array)$vp->getMeta();
 				$ok = $this->saveMetaToDB($meta, $this->file->id);
 			}
 			$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
@@ -57,7 +59,7 @@ class ImageScanner
 		}
 	}
 
-	public function saveMetaToDB($meta, $fileID)
+	public function saveMetaToDB(array $meta, $fileID)
 	{
 		$this->db->transaction();
 		foreach ($meta as $key => $val) {

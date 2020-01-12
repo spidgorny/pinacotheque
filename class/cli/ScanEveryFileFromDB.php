@@ -35,7 +35,7 @@ class ScanEveryFileFromDB extends AppController
 		foreach ($filesToScan as $i => $fileRow) {
 			$file = new MetaForSQL($fileRow);
 			$file->injectDB($this->db);
-			echo count($filesToScan) - $i, TAB, $file->getPath(),
+			echo count($filesToScan) - $i, TAB, $file->getFullPath(),
 			' [', $file->id, ']', PHP_EOL;
 //			$metaFile = new MetaFile($thumbsPath, $file->getPath());
 			$is = new ImageScanner($file, $this->db);

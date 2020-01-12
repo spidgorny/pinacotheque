@@ -32,13 +32,15 @@ class InitDB extends AppController
 		$amount = $iterator->count();
 		/** @var MetaForSQL $meta */
 		foreach ($iterator as $i => $meta) {
-			$this->log($amount - $i, $meta->getPath());
 			$meta->injectDB($this->db);
 			$metaData = $meta->getMetaData();
 			if (isset($metaData['DateTime'])) {
 				$meta->update([
 					'DateTime' => $metaData['DateTime'],
 				]);
+				$this->log($amount - $i, '✔', $meta->getFullPath());
+			} else {
+				$this->log($amount - $i, '✕', $meta->getFullPath());
 			}
 		}
 	}
