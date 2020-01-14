@@ -30,7 +30,7 @@ class ImageParser
 		$this->image = $image;
 	}
 
-	public function log($message)
+	public function log($message): void
 	{
 		$this->log[] = $message;
 	}
@@ -42,16 +42,36 @@ class ImageParser
 		return $meta;
 	}
 
-	public function saveThumbnailTo($destination)
+	public function saveThumbnailTo($destination): void
 	{
 //		echo 'Saving thumbnail to ', $destination, PHP_EOL;
 		$start = microtime(true);
-		$this->image->resize(256, null, function (Constraint $constraint) {
+		$this->image->resize(256, null, static function (Constraint $constraint) {
 			$constraint->aspectRatio();
 		});
 
 		$this->image->save($destination);
 //		echo 'Saved in ', number_format(microtime(true) - $start, 3), PHP_EOL;
+	}
+
+	public function getCornerColors(): array
+	{
+		$colors = [];
+		$width = $this->image->width();
+		$height = $this->image->height();
+		$colors[00] = $this->image->pickColor(0, 0);
+		$colors[01] = $this->image->pickColor($width - 1, 0);
+		$colors[10] = $this->image->pickColor(0, $height - 1);
+		$colors[11] = $this->image->pickColor($width - 1, $height - 1);
+		foreach ($colors as &$color) {
+			unset($color[3]);    // alpha
+		}
+		return $colors;
+	}
+
+	public function getQuadrantColors(): array
+	{
+		return $this->getCornerColors();
 	}
 
 }
