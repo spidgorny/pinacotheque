@@ -44,24 +44,19 @@ class HelloWorld extends AppController
 		$row[] = $ph->getPlaceholder();
 
 		$ip = ImageParser::fromFile($source);
-		$cornerColors = $ip->getCornerColors();
-		$gradient = array_map(static function ($color) {
-			return Color::fromRGBArray($color)->getCSS();
-		}, $cornerColors);
+		$gradient = $ip->getCornerColorsAsHex();
 		$ph = new Placeholder($width, $height);
 		$row[] = $ph->getPlaceholder(null, $gradient);
 
 		$ip = ImageParser::fromFile($source);
-		$cornerColors = $ip->getQuadrantColors();
-		$gradient = array_map(static function ($color) {
-			return Color::fromRGBArray($color)->getCSS();
-		}, $cornerColors);
+		$gradient = $ip->getQuadrantColorsAsHex();
 		$ph = new Placeholder($width, $height);
 		$row[] = $ph->getPlaceholder(null, $gradient);
 
 		$ph = new Placeholder($width, $height);
-		$row[] = $ph->getPlaceholder($sourceURL);
+		$row[] = $ph->getPlaceholder($sourceURL, $gradient);
 
+		$cornerColors = $ip->getCornerColors();
 		$row[] = $this->html->pre(json_encode($cornerColors, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$colorDivs = array_map(static function ($color) {
 			return HTMLTag::div('', [
@@ -101,7 +96,7 @@ class HelloWorld extends AppController
 			]);
 
 			$ph = new Placeholder($width, $height);
-			$placeholder = $ph->getPlaceholder($sourceURL);
+			$placeholder = $ph->getPlaceholder($sourceURL, $gradient);
 			$content[] = $this->html->div($placeholder, '', [
 				'style' => [
 					'display' => 'inline-block',

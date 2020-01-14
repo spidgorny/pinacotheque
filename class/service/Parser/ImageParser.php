@@ -69,9 +69,27 @@ class ImageParser
 		return $colors;
 	}
 
+	public function getCornerColorsAsHex(): array
+	{
+		$cornerColors = $this->getCornerColors();
+		$gradient = array_map(static function ($color) {
+			return Color::fromRGBArray($color)->getCSS();
+		}, $cornerColors);
+		return $gradient;
+	}
+
 	public function getQuadrantColors(): array
 	{
 		return $this->getCornerColors();
+	}
+
+	public function getQuadrantColorsAsHex(): array
+	{
+		$cornerColors = $this->getQuadrantColors();
+		$gradient = array_map(static function ($color) {
+			return Color::fromRGBArray($color)->getCSS();
+		}, $cornerColors);
+		return $gradient;
 	}
 
 }

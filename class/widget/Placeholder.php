@@ -25,29 +25,16 @@ class Placeholder
 
 	public function getPlaceholder($imgSrc = null, $gradient = []): string
 	{
-		$img = '';
-		if ($imgSrc) {
-			$avgColor = 'transparent';
-			if ($gradient) {
-//				$avgColor = $this->getAverageColor($gradient);
-			}
-			$img = '<img src="' . $imgSrc . '" style="
-				width: ' . $this->w . 'px; 
-				height: ' . $this->h . 'px; 
-				object-fit: contain;
-				background-color: '.$avgColor.';
-				margin: auto; 
-			" title="' . $this->getTitle() . '"/>';
-		}
-
 		$id = uniqid('div', false);
-		$img = '<div id="'.$id.'" style="
+		$gradientDiv = '<div id="'.$id.'" style="
 			width: ' . $this->w . 'px; 
 			height: ' . $this->h . 'px;
 			object-fit: contain;
-			">'.$img.'</div>';
+			position: absolute;
+			top: 0; left: 0;
+			"></div>';	// should have nothing inside
 		if ($gradient) {
-			$img .= '
+			$gradientDiv .= '
 			<style>
 			#' . $id . ' {
 				width: 256px; 
@@ -68,7 +55,26 @@ class Placeholder
 			}
 			</style>';
 		}
-		return '<div style="width: 256px; height: 256px; overflow: hidden; background: #eee">
+
+		$img = '';
+		if ($imgSrc) {
+			$avgColor = 'transparent';
+			if ($gradient) {
+//				$avgColor = $this->getAverageColor($gradient);
+			}
+			$img = '<img src="' . $imgSrc . '" style="
+				width: ' . $this->w . 'px; 
+				height: ' . $this->h . 'px; 
+				object-fit: contain;
+				background-color: '.$avgColor.';
+				margin: auto; 
+				position: absolute;
+				top: 0; left: 0;
+			" title="' . $this->getTitle() . '"/>';
+		}
+
+		return '<div style="width: 256px; height: 256px; overflow: hidden; background: #eee; position: relative">
+		' . $gradientDiv . '
 		' . $img . '
 		</div>';
 	}
@@ -78,7 +84,7 @@ class Placeholder
 		$content[] = '[' . $this->width . 'x' . $this->height . ']';
 		$content[] = 'Aspect ratio: ' . $this->aspectRatio;
 		$content[] = '[' . $this->w . 'x' . $this->h . ']';
-		return implode(PHP_EOL, $content);
+		return implode('&#013;', $content);
 	}
 
 }
