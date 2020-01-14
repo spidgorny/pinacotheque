@@ -5,7 +5,8 @@ class HelloWorld extends AppController
 
 	protected $html;
 
-	protected $fileRoot = __DIR__ . '/../../test/ThomasGasson';
+//	protected $fileRoot = __DIR__ . '/../../test/ThomasGasson';
+	protected $fileRoot = __DIR__ . '/../../test/Stefan';
 
 	protected $files = [];
 
@@ -17,21 +18,29 @@ class HelloWorld extends AppController
 		parent::__construct();
 		$this->db = $db;
 		$this->html = new HTML();
-		$files = scandir($this->fileRoot);
-		$this->files = array_filter($files, static function ($file) {
-			return $file[0] !== '.';
-		});
-		$this->files = array_slice($this->files, 0, 24);
+
+//		$files = scandir($this->fileRoot);
+//		$this->files = array_filter($files, static function ($file) {
+//			return $file[0] !== '.';
+//		});
+//		$this->files = array_slice($this->files, 0, 24);
+
+		$source = Source::findByID($this->db, 1);
+		$this->files = $source->getFiles([
+			'type' => 'file',
+		], 'ORDER BY rand() LIMIT 10');
 	}
 
 	public function __invoke()
 	{
-		$sourceURL = 'test/ThomasGasson/0oQZbcD.jpg';
+//		$sourceURL = 'test/ThomasGasson/0oQZbcD.jpg';
+		$sourceURL = 'test/Stefan/IMG_5473.JPG';
 //		$row[] = $this->html->p('Source: ' . $source);
 		$source = __DIR__ . '/../../' . $sourceURL;
 		$content[] = $this->renderAspectRatio($sourceURL, $source);
-		$sourceURL2 = 'test/exif-samples/jpg/Fujifilm_FinePix_E500.jpg';
-		$content[] = $this->renderAspectRatio($sourceURL2, __DIR__ . '/../../' . $sourceURL2);
+
+//		$sourceURL2 = 'test/exif-samples/jpg/Fujifilm_FinePix_E500.jpg';
+//		$content[] = $this->renderAspectRatio($sourceURL2, __DIR__ . '/../../' . $sourceURL2);
 
 		$content[] = $this->renderImagePlaceholders($this->files);
 
@@ -57,8 +66,8 @@ class HelloWorld extends AppController
 //		$gradient = $ip->getQuadrantColorsAsHex();
 		$gradientQ = [];
 		$file = MetaForSQL::findOne($this->db, [
-			'source' => 4,
-			'path' => basename($source),
+//			'source' => 4,
+			'path' => new SQLLikeContains(basename($source)),
 		]);
 		if ($file) {
 			$this->log(__METHOD__, basename($source), $file->id, $file->path, $file->colors);
@@ -90,13 +99,23 @@ class HelloWorld extends AppController
 		return $content;
 	}
 
+	/**
+	 * @param MetaForSQL[] $files
+	 * @return array
+	 */
 	public function renderImagePlaceholders(array $files): array
 	{
 		$content = [];
 		foreach ($files as $file) {
-			$source = path_plus($this->fileRoot, $file);
+			if (!$file->isImage()) {
+				continue;
+			}
+//			$source = path_plus($this->fileRoot, $file);
+			$source = $file->getFullPath();
+			llog($source);
 			[$width, $height] = getimagesize($source);
-			$sourceURL = 'test/ThomasGasson/' . $file;
+//			$sourceURL = 'test/ThomasGasson/' . $file;
+			$sourceURL = $file->getThumbnail('ShowThumb?file=');
 
 			$ip = ImageParser::fromFile($source);
 			$corners = $ip->getCornerColors();
@@ -112,19 +131,13 @@ class HelloWorld extends AppController
 				]
 			]);
 
-			$meta = MetaForSQL::findOne($this->db, [
-				'source' => 4,
-				'path' => basename($file),
+			$ph = new Placeholder($width, $height);
+			$placeholder = $ph->getPlaceholder(null, $file->colors);
+			$content[] = $this->html->div($placeholder, '', [
+				'style' => [
+					'display' => 'inline-block',
+				]
 			]);
-			if ($meta) {
-				$ph = new Placeholder($width, $height);
-				$placeholder = $ph->getPlaceholder(null, $meta->colors);
-				$content[] = $this->html->div($placeholder, '', [
-					'style' => [
-						'display' => 'inline-block',
-					]
-				]);
-			}
 
 			$ph = new Placeholder($width, $height);
 			$placeholder = $ph->getPlaceholder($sourceURL, $gradient);

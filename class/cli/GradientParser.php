@@ -20,6 +20,9 @@ class GradientParser extends AppController
 		]);
 
 		foreach ($files as $i => $file) {
+			if (!$file->isImage()) {
+				continue;
+			}
 			$sourceAndFile = $file->getDestination();
 			$this->log(count($files) - $i, $sourceAndFile);
 			$ip = ImageParser::fromFile($sourceAndFile);

@@ -37,9 +37,18 @@ class MetaForSQL extends Meta
 		$this->db = $db;
 	}
 
+	/**
+	 * @param string $prefix 'ShowThumb?file='
+	 * @return string
+	 */
 	public function getThumbnail($prefix = '')
 	{
 		return $prefix . $this->id;
+	}
+
+	public function getThumb()
+	{
+		return new Thumb($this);
 	}
 
 	public function getFullPath()

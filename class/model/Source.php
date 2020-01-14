@@ -37,12 +37,17 @@ class Source extends POPOBase
 		return $files['count'];
 	}
 
-	public function getFiles($where = []): array
+	/**
+	 * @param array $where
+	 * @param string $orderBy
+	 * @return MetaForSQL[]
+	 */
+	public function getFiles($where = [], $orderBy = ''): array
 	{
 		return MetaForSQL::findAll($this->db, $where + [
 			'type' => 'file',
 			'source' => $this->id,
-		]);
+		], $orderBy);
 	}
 
 }

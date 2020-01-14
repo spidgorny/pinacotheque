@@ -8,6 +8,9 @@ class ShowThumb extends AppController
 
 	protected $transparent1px = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
+	/**
+	 * @var DBInterface
+	 */
 	protected $db;
 
 	public function __construct(DBInterface $db)
