@@ -6,6 +6,7 @@
  * @property int source
  * @property string path
  * @property int timestamp
+ * @property int colors
  */
 class MetaForSQL extends Meta
 {
@@ -18,7 +19,7 @@ class MetaForSQL extends Meta
 	 */
 	public $sourceInstance;
 
-	public static function getTableName()
+	public static function getTableName(): string
 	{
 		return 'files';
 	}
@@ -26,6 +27,9 @@ class MetaForSQL extends Meta
 	public function __construct(array $meta)
 	{
 		parent::__construct($meta);
+		if ($this->colors) {
+			$this->colors = json_decode($this->colors, true, 512, JSON_THROW_ON_ERROR);
+		}
 	}
 
 	public function injectDB(DBInterface $db)

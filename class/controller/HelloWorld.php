@@ -9,9 +9,13 @@ class HelloWorld extends AppController
 
 	protected $files = [];
 
-	public function __construct()
+	/** @var DBInterface */
+	protected $db;
+
+	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
+		$this->db = $db;
 		$this->html = new HTML();
 		$files = scandir($this->fileRoot);
 		$this->files = array_filter($files, static function ($file) {
@@ -48,16 +52,29 @@ class HelloWorld extends AppController
 		$ph = new Placeholder($width, $height);
 		$row[] = $ph->getPlaceholder(null, $gradient);
 
-		$ip = ImageParser::fromFile($source);
-		$gradient = $ip->getQuadrantColorsAsHex();
-		$ph = new Placeholder($width, $height);
-		$row[] = $ph->getPlaceholder(null, $gradient);
+		// too slow
+//		$ip = ImageParser::fromFile($source);
+//		$gradient = $ip->getQuadrantColorsAsHex();
+		$gradientQ = [];
+		$file = MetaForSQL::findOne($this->db, [
+			'source' => 4,
+			'path' => basename($source),
+		]);
+		if ($file) {
+			$this->log(__METHOD__, basename($source), $file->id, $file->path, $file->colors);
+			$gradientQ = $file->colors;
+			$ph = new Placeholder($width, $height);
+			$row[] = $ph->getPlaceholder(null, $gradientQ);
+		} else {
+			$this->log(__METHOD__, $this->db->getLastQuery() . '');
+		}
 
 		$ph = new Placeholder($width, $height);
 		$row[] = $ph->getPlaceholder($sourceURL, $gradient);
 
 		$cornerColors = $ip->getCornerColors();
 		$row[] = $this->html->pre(json_encode($cornerColors, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+		$row[] = $this->html->pre(json_encode($gradientQ, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$colorDivs = array_map(static function ($color) {
 			return HTMLTag::div('', [
 				'style' => [
@@ -94,6 +111,20 @@ class HelloWorld extends AppController
 					'display' => 'inline-block',
 				]
 			]);
+
+			$meta = MetaForSQL::findOne($this->db, [
+				'source' => 4,
+				'path' => basename($file),
+			]);
+			if ($meta) {
+				$ph = new Placeholder($width, $height);
+				$placeholder = $ph->getPlaceholder(null, $meta->colors);
+				$content[] = $this->html->div($placeholder, '', [
+					'style' => [
+						'display' => 'inline-block',
+					]
+				]);
+			}
 
 			$ph = new Placeholder($width, $height);
 			$placeholder = $ph->getPlaceholder($sourceURL, $gradient);
