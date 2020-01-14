@@ -1,6 +1,6 @@
 <?php
 
-class FileProvider
+class FileProviderDenormalized
 {
 
 	/**
@@ -47,8 +47,8 @@ class FileProvider
 				'.tif',
 			]),
 			new SQLOr([
-				'(meta.value IS NULL)',
-				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
+				'(DateTime IS NULL)',
+				new SQLWhereNotEqual('DateTime', '0000:00:00 00:00:00'),
 			]),
 		];
 		if ($this->source) {
@@ -57,18 +57,20 @@ class FileProvider
 			];
 		}
 		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
-			'files LEFT OUTER JOIN meta 
-			ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, '',
-			"min(coalesce(meta.value, $this->strftime)) as min, 
-			max(coalesce(meta.value, $this->strftime)) as max");
-		llog($this->db->getLastQuery().'');
+			'files', $where, '',
+			"min(coalesce(DateTime, $this->strftime)) as min, 
+			max(coalesce(DateTime, $this->strftime)) as max");
+		//debug($this->db->getLastQuery().'');
+//        $content[] = 'min: ' . $min . BR;
+//        $content[] = 'max: ' . $max . BR;
+//		llog($this->db->getLastQuery());
 		return ['min' => $min, 'max' => $max];
 	}
 
 	public function getOneFilePerMonth()
 	{
-		$YM = "CASE WHEN meta.value THEN 
-			replace(substr(meta.value, 1, 7), ':', '-')
+		$YM = "CASE WHEN DateTime THEN 
+			replace(substr(DateTime, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     END";
 		$where = [
@@ -90,7 +92,7 @@ class FileProvider
 				'source' => $this->source->id,
 			];
 		}
-		$imageFiles = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, 'GROUP BY ' . $YM .
+		$imageFiles = $this->db->fetchAllSelectQuery('files', $where, 'GROUP BY ' . $YM .
 			' ORDER BY ' . $YM,
 			'min(files.id) as id, 
 			' . $YM . ' as YM, 
@@ -119,7 +121,7 @@ class FileProvider
 
 	public function getFilesForMonth($year, $month): ArrayPlus
 	{
-		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
+		$YM = "CASE WHEN DateTime THEN replace(substr(DateTime, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     	END";
 		$where = [
@@ -147,12 +149,12 @@ class FileProvider
 			$where += ['YM' => $year . '-' . $month];	// SQLite only column names
 		}
 		$query = $this->db->getSelectQuery(
-			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")',
+			'files',
 			$where,
 			$this->db instanceof DBLayerPDO
 			? 'ORDER BY ' . $YM
 			: 'ORDER BY YM',    // SQLite only column names can be used
-			'meta.*, files.*, ' . $YM . ' as YM'
+			'files.*, ' . $YM . ' as YM'
 		);
 //		llog($query . '');
 		$imageFiles = $this->db->fetchAll($query);
@@ -167,39 +169,6 @@ class FileProvider
 //			debug($meta);
 			return $meta;
 		});
-		return $imageFiles;
-	}
-
-	/**
-	 * @return array[]
-	 */
-	public function getUnscanned()
-	{
-		$where = [
-			'type' => 'file',
-			'substr(path, -4)' => new SQLIn([
-				'jpeg',
-				'.jpg',
-				'.png',
-				'.gif',
-				'.mp4',
-				'.mov',
-				'.mkv',
-				'tiff',
-				'.tif',
-			]),
-			'meta.id' => null,
-		];
-		if ($this->source) {
-			$where += [
-				'source' => $this->source->id,
-			];
-		}
-		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', $where, 'ORDER BY timestamp');
-//		$content[] = new slTable($imageFiles);
-//		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
-//		$imageFiles->setResult($res);
-		$imageFiles = $res;
 		return $imageFiles;
 	}
 

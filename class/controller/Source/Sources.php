@@ -14,7 +14,7 @@ class Sources extends AppController
 
 	protected $session;
 
-	/** @var Source */
+	/** @var Source|null */
 	protected $source;
 
 	/**
@@ -29,10 +29,13 @@ class Sources extends AppController
 		$this->prefixURL = ShowThumb::class . '?file=';
 		$this->session = new Session(__CLASS__);
 		$sourceID = (int)$this->session->get('source', 1);
-		$this->source = Source::findByID($this->db, $sourceID);
-		$this->provider = new FileProvider($this->db, $this->source);
+		if ($sourceID) {
+			$this->source = Source::findByID($this->db, $sourceID);
+		}
+		$this->provider = new FileProviderDenormalized($this->db, $this->source);
 	}
 
+	/// AJAX
 	public function setSource($id)
 	{
 		$this->session->set('source', $id);

@@ -52,7 +52,8 @@
 		"docker:redis": "",
 		"docker:run": "docker run --rm -it -v /c/Users/User/dev/pinacotheque:/app -w /app -p 80:80 php:7.3 php -S localhost:80 router.php",
 		"nginx:start": "c:\\tools\\nginx-1.17.7\\nginx",
-		"nginx:stop": "c:\\tools\\nginx-1.17.7\\nginx -s stop"
+		"nginx:stop": "c:\\tools\\nginx-1.17.7\\nginx -s stop",
+		"backup:db": "/usr/local/bin/mysqldump pina --result-file=\"/Users/depidsvy/dev/pinacotheque/{data_source}-{timestamp}-dump.sql\""
 	},
 	"require-dev": {
 		"phpunit/phpunit": "^7.5"

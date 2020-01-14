@@ -40,13 +40,15 @@ class MonthBrowserDB extends AppController
 
 	public function init()
 	{
-		$source = $this->request->getIntRequired('source');
-		$this->source = Source::findByID($this->db, $source);
+		$source = $this->request->getInt('source');
+		if ($source) {
+			$this->source = Source::findByID($this->db, $source);
+		}
 		$this->year = $this->request->getIntRequired('year');
 		$this->month = $this->request->getTrimRequired('month');
 		$this->month = str_pad($this->month, 2, '0', STR_PAD_LEFT);
 
-		$this->provider = new FileProvider($this->db, $this->source);
+		$this->provider = new FileProviderDenormalized($this->db, $this->source);
 	}
 
 	public function index()
@@ -75,7 +77,7 @@ class MonthBrowserDB extends AppController
 			$content[] = '<hr />';
 
 			$this->monthTimeline = new MonthTimeline($this->year, $this->month, ShowThumb::href(['file' => '']), Preview::href([
-				'source' => $this->source->id,
+				'source' => $this->source ? $this->source->id : null,
 				'year' => $this->year,
 				'month' => $this->month,
 				'file' => ''

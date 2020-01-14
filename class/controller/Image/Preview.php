@@ -14,13 +14,15 @@ class Preview extends AppController
 
 	public function __invoke()
 	{
-		$source = $this->request->getTrimRequired('source');
+		$source = $this->request->getTrim('source') ?: null;
 		$year = $this->request->getTrimRequired('year');
 		$month = $this->request->getTrimRequired('month');
 		$file = $this->request->getTrimRequired('file');
 
-		$source = Source::findByID($this->db, $source);
-		$provider = new FileProvider($this->db, $source);
+		if ($source) {
+			$source = Source::findByID($this->db, $source);
+		}
+		$provider = new FileProviderDenormalized($this->db, $source);
 		$data = $provider->getFilesForMonth($year, $month);
 		$monthTimeline = new MonthTimeline($year, $month, ShowThumb::href( ['file' => '']), Preview::href([
 			'year' => $year,

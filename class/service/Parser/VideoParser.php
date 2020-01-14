@@ -30,7 +30,7 @@ class VideoParser
 	public function getMeta()
 	{
 		$json = $this->probe();
-		$creation_time = $json->format->tags->creation_time;
+		$creation_time = ifsetor($json->format->tags->creation_time);
 		if ($creation_time) {
 			$json->DateTime = str_replace('T', ' ', $creation_time);
 		}
@@ -41,8 +41,9 @@ class VideoParser
 	{
 		$time = '00:00:01.000';
 		$probe = $this->probe();
-		$this->log('duration' . $probe->format->duration);
-		if ($probe->format->duration < 2) {	// 1.045 is not enough
+		$duration = ifsetor($probe->format->duration);
+		$this->log('duration' . $duration);
+		if ($duration < 2) {	// 1.045 is not enough
 			$time = '00:00:00.000';
 		}
 		$ffmpeg = getenv('ffmpeg');

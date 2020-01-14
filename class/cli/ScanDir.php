@@ -4,11 +4,11 @@ class ScanDir extends AppController
 {
 
     /**
-     * @var DBLayerSQLite
+     * @var DBInterface
      */
     protected $db;
 
-    public function __construct(DBLayerSQLite $db)
+    public function __construct(DBInterface $db)
     {
     	parent::__construct();
         $this->db = $db;

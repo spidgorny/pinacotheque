@@ -1,5 +1,6 @@
 <?php
 
+use Intervention\Image\Exception\ImageException;
 use Intervention\Image\Exception\NotReadableException;
 
 class ImageScanner
@@ -26,47 +27,44 @@ class ImageScanner
 	public function __invoke()
 	{
 		try {
-//			debug($metaFile);
-			if (!$this->file->hasMeta()) {
-				$path = $this->file->getFullPath();
-				$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image?');
-				$ok = false;
-				if ($this->file->isImage()) {
-					$ip = ImageParser::fromFile($path);
-					$meta = $ip->getMeta();
-					$ok = $this->saveMetaToDB($meta, $this->file->id);
-				} elseif ($this->file->isVideo()) {
-					$vp = VideoParser::fromFile($path);
-					$meta = $vp->getMeta();
-					$ok = $this->saveMetaToDB($meta, $this->file->id);
-				}
-				$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
-			}
-			// thumbnail
-			$destination = $this->file->getDestination();
-			if (!file_exists($destination)) {
-				$thumb = new Thumb($this->file);
-				try {
-					$thumb->getThumb();    // make it if doesn't exist
-					$this->log(TAB . 'Thumb', 'OK');
-					$this->log('Thumb->log', $thumb->log);
-				} catch (NotReadableException $e) {
-					$content[] = $e;
-					$this->log(TAB . 'Thumb', '*** FAIL ***');
-					$this->log('Thumb->log', $thumb->log);
-				}
-			}
+			$this->fetchExif();
+			$this->fetchThumbnail();
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
+			echo '** Error: ' . $e->getMessage(), PHP_EOL;
+		} catch (ImageException $e) {
 			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		}
 	}
 
-	public function saveMetaToDB($meta, $fileID)
+	public function fetchExif()
+	{
+		if (!$this->file->hasMeta()) {
+			$path = $this->file->getFullPath();
+			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image?');
+			$ok = false;
+			if ($this->file->isImage()) {
+				$ip = ImageParser::fromFile($path);
+				$meta = (array)$ip->getMeta();
+				if ($meta) {
+					$ok = $this->saveMetaToDB($meta, $this->file->id);
+				}
+			} elseif ($this->file->isVideo()) {
+				$vp = VideoParser::fromFile($path);
+				$meta = (array)$vp->getMeta();
+				$ok = $this->saveMetaToDB($meta, $this->file->id);
+			}
+			$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
+		} else {
+			$this->log(TAB . 'Meta', 'exists');
+		}
+	}
+
+	public function saveMetaToDB(array $meta, $fileID)
 	{
 		$this->db->transaction();
 		foreach ($meta as $key => $val) {
-			$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
 			try {
+				$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
 				/** @var SQLite3Result $row */
 				$row = MetaEntry::insert($this->db, [
 					'id_file' => $fileID,
@@ -75,10 +73,31 @@ class ImageScanner
 				]);
 			} catch (PDOException $e) {
 				// some strings can't be saved in DB
+			} catch (JsonException $e) {
+				// just ignore
 			}
 //			echo $row->numColumns(), PHP_EOL;
 		}
 		return $this->db->commit();
+	}
+
+	public function fetchThumbnail()
+	{
+		$destination = $this->file->getDestination();
+		if (!file_exists($destination)) {
+			$thumb = new Thumb($this->file);
+			try {
+				$thumb->getThumb();    // make it if doesn't exist
+				$this->log(TAB . 'Thumb', 'OK');
+				$this->log('Thumb->log', $thumb->log);
+			} catch (NotReadableException $e) {
+				$content[] = $e;
+				$this->log(TAB . 'Thumb', '*** FAIL ***');
+				$this->log('Thumb->log', $thumb->log);
+			}
+		} else {
+			$this->log(TAB . 'Thumb', 'exists');
+		}
 	}
 
 }
