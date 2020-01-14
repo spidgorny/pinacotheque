@@ -37,4 +37,12 @@ class Source extends POPOBase
 		return $files['count'];
 	}
 
+	public function getFiles($where = []): array
+	{
+		return MetaForSQL::findAll($this->db, $where + [
+			'type' => 'file',
+			'source' => $this->id,
+		]);
+	}
+
 }

@@ -80,7 +80,30 @@ class ImageParser
 
 	public function getQuadrantColors(): array
 	{
-		return $this->getCornerColors();
+		$colors = [];
+		$WWWW = $this->image->width() - 1;
+		$halfW = floor($WWWW / 2);
+		$HHHH = $this->image->height() - 1;
+		$halfH = floor($HHHH / 2);
+
+		$colors[00] = $this->getQuadrantColor(0, 0, $halfW, $halfH);
+		$colors[01] = $this->getQuadrantColor($halfW, 0, $WWWW, $halfH);
+		$colors[10] = $this->getQuadrantColor(0, $halfH, $halfW, $HHHH);
+		$colors[11] = $this->getQuadrantColor($halfW, $halfH, $WWWW, $HHHH);
+
+		return $colors;
+	}
+
+	public function getQuadrantColor($w1, $h1, $w2, $h2): array
+	{
+		$colors = [];
+		for ($y = $h1; $y <= $h2; $y++) {
+			for ($x = $w1; $x <= $w2; $x++) {
+				$color = $this->image->pickColor($x, $y);
+				$colors[] = $color;
+			}
+		}
+		return Color::average($colors);
 	}
 
 	public function getQuadrantColorsAsHex(): array

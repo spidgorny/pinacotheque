@@ -14,11 +14,12 @@ class MetaEntry extends POPOBase
 	public $name;
 	public $value;
 
-	public static function getTableName()
+	public static function getTableName(): string
 	{
 		return 'meta';
 	}
 
+	/** Required */
 	public function __construct($set)
 	{
 		parent::__construct($set);

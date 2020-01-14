@@ -7,7 +7,7 @@
  * @property string path
  * @property int timestamp
  */
-class MetaForSQL extends Meta implements IMetaData
+class MetaForSQL extends Meta
 {
 
 	use DatabaseMixin;
