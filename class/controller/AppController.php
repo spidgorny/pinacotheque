@@ -75,9 +75,9 @@ class AppController
 		}
 	}
 
-	function template($body, array $params = [])
+	function template($body, array $params = [], $templateFile = __DIR__ . '/../../template/template.phtml')
 	{
-		$view = View::getInstance(__DIR__ . '/../../template/template.phtml', $this);
+		$view = View::getInstance($templateFile, $this);
 		$base = new Path(getcwd());	// CWD != __DIR__
 //		$base = $base->up()->up();
 		$view->baseHref = cap($base->getURL());
@@ -88,7 +88,7 @@ class AppController
 
 		return $view->render($params + [
 			'head' => '',
-			'body' => $body,
+			'body' => MergedContent::mergeStringArrayRecursive($body),
 			'foot' => '',
 			'scripts' => '',
 			'sources' => $this->getSources(),

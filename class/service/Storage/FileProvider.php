@@ -55,10 +55,7 @@ class FileProvider
 		], '',
 			"min(coalesce(meta.value, $this->strftime)) as min, 
 			max(coalesce(meta.value, $this->strftime)) as max");
-		//debug($this->db->getLastQuery().'');
-//        $content[] = 'min: ' . $min . BR;
-//        $content[] = 'max: ' . $max . BR;
-//		llog($this->db->getLastQuery());
+		llog($this->db->getLastQuery().'');
 		return ['min' => $min, 'max' => $max];
 	}
 
