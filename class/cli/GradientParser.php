@@ -25,9 +25,12 @@ class GradientParser extends AppController
 			}
 			$sourceAndFile = $file->getDestination();
 			$this->log(count($files) - $i, $sourceAndFile);
+			if (!is_file($sourceAndFile)) {
+				continue;
+			}
 			$ip = ImageParser::fromFile($sourceAndFile);
 			$quadrants = $ip->getQuadrantColorsAsHex();
-			$this->log($quadrants);
+			$this->log(implode(', ', $quadrants));
 
 			$file->update([
 				'colors' => json_encode($quadrants, JSON_THROW_ON_ERROR),

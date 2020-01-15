@@ -5,6 +5,8 @@ use nadlib\HTTP\Session;
 class AppController
 {
 
+	use LogTrait;
+
 	protected $validImages = [
 		'jpg',
 		'git',
@@ -63,16 +65,6 @@ class AppController
 		throw new Exception('Not implemented');
 		/** @noinspection PhpUnreachableStatementInspection */
 		return null;
-	}
-
-	public function log($key, ...$data)
-	{
-		$caller = Debug::getCaller();
-		if ($key && $data) {
-			$this->logger->log($caller, [$key => $data]);
-		} else {
-			$this->logger->log($caller, $key);
-		}
 	}
 
 	function template($body, array $params = [], $templateFile = __DIR__ . '/../../template/template.phtml')

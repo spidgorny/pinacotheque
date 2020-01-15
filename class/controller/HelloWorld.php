@@ -25,7 +25,7 @@ class HelloWorld extends AppController
 //		});
 //		$this->files = array_slice($this->files, 0, 24);
 
-		$source = Source::findByID($this->db, 1);
+		$source = Source::findByID($this->db, 4);
 		$this->files = $source->getFiles([
 			'type' => 'file',
 		], 'ORDER BY rand() LIMIT 10');
@@ -82,7 +82,11 @@ class HelloWorld extends AppController
 		$row[] = $ph->getPlaceholder($sourceURL, $gradient);
 
 		$cornerColors = $ip->getCornerColors();
-		$row[] = $this->html->pre(json_encode($cornerColors, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+		$cornerGradient = array_map(static function ($color) {
+			return Color::fromRGBArray($color)->getCSS();
+		}, $cornerColors);
+		$row[] = $this->html->pre(json_encode($cornerGradient, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+
 		$row[] = $this->html->pre(json_encode($gradientQ, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$colorDivs = array_map(static function ($color) {
 			return HTMLTag::div('', [
