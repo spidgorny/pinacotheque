@@ -23,7 +23,7 @@ class GetMetaInfo extends AppController
 		if ($this->request->getHeader('Accept') === 'application/json') {
 			$metaSet = [];
 			foreach ($metaData as $metaEntry) {
-				$metaSet[$metaEntry->name] = $metaEntry->value;
+				$metaSet[$metaEntry->name] = $metaEntry->value;
 			}
 			$this->request->json($metaSet);
 			return;
