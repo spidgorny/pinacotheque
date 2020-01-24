@@ -20,6 +20,15 @@ class GetMetaInfo extends AppController
 		$file = MetaForSQL::findByID($this->db, $this->request->getIntRequired('file'));
 		$metaData = $file->getMeta();
 
+		if ($this->request->getHeader('Accept') === 'application/json') {
+			$metaSet = [];
+			foreach ($metaData as $metaEntry) {
+				$metaSet[$metaEntry->name] = $metaEntry->value;
+			}
+			$this->request->json($metaSet);
+			return;
+		}
+
 		foreach ($metaData as $metaEntry) {
 			$content[] = HTMLTag::div($metaEntry->name, ['class' => 'has-text-weight-bold']);
 			$content[] = HTMLTag::div($metaEntry->value, ['class' => 'mb-3']);
