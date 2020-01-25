@@ -34,30 +34,39 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-document.addEventListener("DOMContentLoaded", function () { return __awaiter(_this, void 0, void 0, function () {
-    var pswpElement, options;
-    return __generator(this, function (_a) {
-        pswpElement = document.querySelector('.pswp');
-        options = {
-            // optionName: 'option value'
-            // for example:
-            index: 0 // start at first slide
-        };
-        // Initializes and opens PhotoSwipe
-        Array.prototype.slice.call(document.querySelectorAll('.tile figure'))
-            .filter(function (figure) {
-            figure.addEventListener('click', function (e) {
-                // console.log(e);
-                var imgClicked = e.target;
-                console.log(imgClicked);
-                var dataIndex = imgClicked.closest('figure').getAttribute('data-index');
-                options.index = parseInt(dataIndex, 10);
-                console.log(dataIndex, options.index);
-                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, options);
-                gallery.init();
+var TagFiles = /** @class */ (function () {
+    function TagFiles() {
+        var file = new URLSearchParams(document.location.search).get('file');
+        console.log('file', file);
+        this.id = parseInt(file, 10);
+        document.addEventListener('keyup', this.onKeyUp.bind(this));
+    }
+    TagFiles.prototype.onKeyUp = function (e) {
+        // console.log(e);
+        if (e.key === 't') {
+            var tag = prompt('New Tag?');
+            if (tag) {
+                this.sendTag(tag);
+            }
+        }
+    };
+    TagFiles.prototype.sendTag = function (tag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var SendTag, res;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        SendTag = new URL(document.location.href);
+                        SendTag.pathname = 'SendTag';
+                        SendTag.searchParams.set('tag', tag);
+                        return [4 /*yield*/, fetch(SendTag.toString())];
+                    case 1:
+                        res = _a.sent();
+                        console.log(res);
+                        return [2 /*return*/];
+                }
             });
         });
-        return [2 /*return*/];
-    });
-}); });
+    };
+    return TagFiles;
+}());

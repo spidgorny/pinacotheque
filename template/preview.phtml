@@ -40,8 +40,12 @@
 <script src="node_modules/swiped-events/src/swiped-events.js"></script>
 <script src="www/js/PreviewController.js"></script>
 <script>
-	var images = <?= $images ?>;
+	const images = <?= $images ?>;
     new PreviewController(images);
+</script>
+<script src="www/js/TagFiles.js"></script>
+<script>
+    new TagFiles();
 </script>
 </body>
 </html>
