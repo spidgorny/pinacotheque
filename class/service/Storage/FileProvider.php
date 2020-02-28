@@ -96,7 +96,7 @@ class FileProvider
 			' . $YM . ' as YM, 
 			count(*) as count'
 		);
-		//debug($this->db->getLastQuery().'');
+		debug($this->db->getLastQuery().'');
 //		llog($this->db->getLastQuery() . '');
 
 		//		$content[] = new slTable($imageFiles);

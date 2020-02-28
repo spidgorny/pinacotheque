@@ -64,7 +64,7 @@ class ImageScanner
 		$this->db->transaction();
 		foreach ($meta as $key => $val) {
 			try {
-				$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
+				$encoded = is_scalar($val) ? $val : json_encode($val /*JSON_THROW_ON_ERROR*/);
 				/** @var SQLite3Result $row */
 				$row = MetaEntry::insert($this->db, [
 					'id_file' => $fileID,

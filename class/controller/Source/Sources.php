@@ -65,4 +65,9 @@ class Sources extends AppController
 		]);
 	}
 
+	public function sidebar()
+	{
+		return $this->provider->getMinMax();
+	}
+
 }

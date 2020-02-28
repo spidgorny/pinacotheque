@@ -17,6 +17,8 @@ class FileProviderDenormalized
 
 	protected $strftimeYM;
 
+	protected $DateTimeAsDate;
+
 	public function __construct(DBInterface $db, Source $source = null)
 	{
 		$this->db = $db;
@@ -28,6 +30,7 @@ class FileProviderDenormalized
 			$this->timestamp = 'from_unixtime(timestamp)';
 			$this->strftime = "date_format($this->timestamp, '%Y:%m:%d %H:%i:%s')";
 			$this->strftimeYM = "date_format($this->timestamp, '%Y-%m')";
+			$this->DateTimeAsDate = "STR_TO_DATE(DateTime, '%Y:%m,%d %H:%i:%s')";
 		}
 	}
 
@@ -46,9 +49,10 @@ class FileProviderDenormalized
 				'tiff',
 				'.tif',
 			]),
+			// this does not allow to see photos without metadata
 			new SQLOr([
 				'(DateTime IS NULL)',
-				new SQLWhereNotEqual('DateTime', '0000:00:00 00:00:00'),
+				new AsIsOp('DateTime > 0'),
 			]),
 		];
 		if ($this->source) {
@@ -58,9 +62,9 @@ class FileProviderDenormalized
 		}
 		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
 			'files', $where, '',
-			"min(coalesce(DateTime, $this->strftime)) as min, 
-			max(coalesce(DateTime, $this->strftime)) as max");
-		//debug($this->db->getLastQuery().'');
+			"min(coalesce($this->timestamp, $this->DateTimeAsDate)) as min, 
+						max(coalesce($this->timestamp, $this->DateTimeAsDate)) as max");
+//		debug($this->db->getLastQuery().'');
 //        $content[] = 'min: ' . $min . BR;
 //        $content[] = 'max: ' . $max . BR;
 //		llog($this->db->getLastQuery());
