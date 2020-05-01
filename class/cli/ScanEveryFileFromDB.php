@@ -31,6 +31,11 @@ class ScanEveryFileFromDB extends AppController
 		$filesToScan = $provider->getUnscanned();
 //		debug(count($filesToScan));
 
+		$this->scanUnscanned($filesToScan);
+	}
+
+	public function scanUnscanned(array $filesToScan)
+	{
 		/** @var MetaForSQL $fileRow */
 		foreach ($filesToScan as $i => $fileRow) {
 			$file = new MetaForSQL($fileRow);

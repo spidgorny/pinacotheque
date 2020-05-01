@@ -18,7 +18,8 @@ class YearBrowser extends AppController
 		]);
 	}
 
-	public static function makeLink($year) {
+	public static function makeLink($year)
+	{
 		return new HTMLTag('a', [
 			'href' => self::makeHref($year),
 		], $year);
@@ -33,7 +34,7 @@ class YearBrowser extends AppController
 
 	public function index($year)
 	{
-		$content[] = '<h3>'.$year.'</h3>';
+		$content[] = '<h3>' . $year . '</h3>';
 		for ($month = 1; $month <= 12; $month++) {
 			$content[] = $this->renderMonth($year, $month);
 		}
@@ -42,10 +43,12 @@ class YearBrowser extends AppController
 
 	public function renderMonth($year, $month)
 	{
-		$content[] = '<h5>' . date('M', strtotime($year.'-'.$month.'-01')) . '</h5>';
 		$provider = new FileProvider($this->db);
-		$files = $provider->getFilesForMonth($year, $month, false, 'LIMIT 10');
+		$files = $provider->getFilesForMonth($year, $month, false
+// 'LIMIT 10'
+		);
 //		llog($this->db->lastQuery.'');
+		$content[] = '<h5>' . date('M', strtotime($year . '-' . $month . '-01')) . ' [' . $files->count() . ']</h5><hr />';
 
 		$this->linkPrefix = Preview::href([
 			'year' => $year,
@@ -57,7 +60,7 @@ class YearBrowser extends AppController
 		/** @var MetaForSQL $file */
 		foreach ($first10files as $file) {
 			$content[] = $file->getFullPath();
-			$img = $file->toHTMLWithI($this->prefixURL, [
+			$img = $file->toHTMLClickable($this->prefixURL, [
 				'class' => 'meta',
 			], $this->linkPrefix);
 			$meta = [

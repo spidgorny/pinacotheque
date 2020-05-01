@@ -90,10 +90,17 @@ class ShowThumb extends AppController
 					->setParam('action', 'deleteThumb')
 					->setParam('file', $file),
 			], 'Delete Thumb') . '</p>';
+		$content[] = '<p>' . new HTMLTag('a', [
+				'href' => $this->request->getURL()
+					->setParam('action', 'scanMeta')
+					->setParam('file', $file),
+			], 'Scan Meta') . '</p>';
 
 		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
 			'border' => 1,
 		]);
+
+		$content[] = getDebug($meta->getMetaData());
 
 		$thumbPath = $meta->getDestination();
 		if ($this->request->getBool('d') || !$thumb->exists()) {
@@ -111,6 +118,15 @@ class ShowThumb extends AppController
 		$file = $this->request->getIntRequired('file');
 		$meta = MetaForSQL::findByID($this->db, $file);
 		unlink($meta->getDestination());
+		$this->request->goBack();
+	}
+
+	public function scanMeta()
+	{
+		$file = $this->request->getIntRequired('file');
+		$meta = MetaForSQL::findByID($this->db, $file);
+		$is = new ImageScanner($meta, $this->db);
+		$is();
 		$this->request->goBack();
 	}
 
