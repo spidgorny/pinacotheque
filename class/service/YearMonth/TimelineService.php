@@ -101,7 +101,7 @@ class TimelineService
 	{
 		$table = [];
 		for ($year = $this->min->getYear(); $year <= $this->max->getYear(); $year++) {
-			$table[$year]['year'] = $year;
+			$table[$year]['year'] = YearBrowser::makeLink($year);
 			$table[$year] += $this->getMonthRow($year, $byMonth);
 		}
 		return $table;

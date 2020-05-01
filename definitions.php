@@ -92,5 +92,8 @@ return [
 		} else {
 			return $c->get(DBLayerSQLite::class);
 		}
+	},
+	ScanAll::class => static function (ContainerInterface $c) {
+		return new ScanAll($c->get(DBInterface::class));
 	}
 ];

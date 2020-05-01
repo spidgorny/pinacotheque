@@ -126,7 +126,7 @@ class Meta implements IMetaData
 				],
 			]);
 		if ($this->isVideo()) {
-			$img = HTMLTag::div($img, ['class' => "video-thumbnail"]);
+			$img = HTMLTag::div($img, ['class' => 'video-thumbnail']);
 		}
 		return $img;
 	}

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class MonthSelector
+ * Horizontal line of one year shown on top of browse pages
+ */
 class MonthSelector
 {
 

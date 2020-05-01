@@ -16,6 +16,7 @@ class FileProvider
 	protected $strftime;
 
 	protected $strftimeYM;
+	private $imageExtList;
 
 	public function __construct(DBInterface $db, Source $source = null)
 	{
@@ -29,23 +30,24 @@ class FileProvider
 			$this->strftime = "date_format($this->timestamp, '%Y:%m:%d %H:%i:%s')";
 			$this->strftimeYM = "date_format($this->timestamp, '%Y-%m')";
 		}
+		$this->imageExtList = [
+			'jpeg',
+			'.jpg',
+			'.png',
+			'.gif',
+			'.mp4',
+			'.mov',
+			'.mkv',
+			'tiff',
+			'.tif',
+		];
 	}
 
 	public function getMinMax()
 	{
 		$where = [
 			'type' => 'file',
-			'substr(path, -4)' => new SQLIn([
-				'jpeg',
-				'.jpg',
-				'.png',
-				'.gif',
-				'.mp4',
-				'.mov',
-				'.mkv',
-				'tiff',
-				'.tif',
-			]),
+			'ext' => new SQLIn($this->imageExtList),
 			new SQLOr([
 				'(meta.value IS NULL)',
 				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
@@ -61,7 +63,7 @@ class FileProvider
 			ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, '',
 			"min(coalesce(meta.value, $this->strftime)) as min, 
 			max(coalesce(meta.value, $this->strftime)) as max");
-		llog($this->db->getLastQuery().'');
+		llog($this->db->getLastQuery() . '');
 		return ['min' => $min, 'max' => $max];
 	}
 
@@ -73,17 +75,7 @@ class FileProvider
     END";
 		$where = [
 			'type' => 'file',
-			'substr(path, -4)' => new SQLIn([
-				'jpeg',
-				'.jpg',
-				'.png',
-				'.gif',
-				'.mp4',
-				'.mov',
-				'.mkv',
-				'tiff',
-				'.tif',
-			]),
+			'ext' => new SQLIn($this->imageExtList),
 		];
 		if ($this->source) {
 			$where += [
@@ -96,7 +88,7 @@ class FileProvider
 			' . $YM . ' as YM, 
 			count(*) as count'
 		);
-		debug($this->db->getLastQuery().'');
+		debug($this->db->getLastQuery() . '');
 //		llog($this->db->getLastQuery() . '');
 
 		//		$content[] = new slTable($imageFiles);
@@ -117,41 +109,40 @@ class FileProvider
 		return $byMonth;
 	}
 
-	public function getFilesForMonth($year, $month): ArrayPlus
+	public function getFilesForMonth($year, $month, $isOrder = true, $limit = ''): ArrayPlus
 	{
 		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     	END";
 		$where = [
 			'type' => 'file',
-			'substr(path, -4)' => new SQLIn([
-				'jpeg',
-				'.jpg',
-				'.png',
-				'.gif',
-				'.mp4',
-				'.mov',
-				'.mkv',
-				'tiff',
-				'.tif',
-			]),
+			'ext' => new SQLIn($this->imageExtList),
 		];
 		if ($this->source) {
 			$where += [
 				'source' => $this->source->id,
 			];
 		}
+
+		$zeroMonth = str_pad($month, 2, '0', STR_PAD_LEFT);
 		if ($this->db instanceof DBLayerPDO) {
-			$where += [$YM => $year . '-' . $month];
+			$where += [$YM => $year . '-' . $zeroMonth];
 		} else {
-			$where += ['YM' => $year . '-' . $month];	// SQLite only column names
+			$where += ['YM' => $year . '-' . $zeroMonth];    // SQLite only column names
 		}
+
+		$order = '';
+		if ($isOrder) {
+			$order =
+				$this->db instanceof DBLayerPDO
+					? 'ORDER BY ' . $YM
+					: 'ORDER BY YM';
+		}
+
 		$query = $this->db->getSelectQuery(
 			'files LEFT OUTER JOIN meta ON (meta.id_file = files.id AND meta.name = "DateTime")',
 			$where,
-			$this->db instanceof DBLayerPDO
-			? 'ORDER BY ' . $YM
-			: 'ORDER BY YM',    // SQLite only column names can be used
+			$order . ' ' . $limit,    // SQLite only column names can be used
 			'meta.*, files.*, ' . $YM . ' as YM'
 		);
 //		llog($query . '');
@@ -177,17 +168,7 @@ class FileProvider
 	{
 		$where = [
 			'type' => 'file',
-			'substr(path, -4)' => new SQLIn([
-				'jpeg',
-				'.jpg',
-				'.png',
-				'.gif',
-				'.mp4',
-				'.mov',
-				'.mkv',
-				'tiff',
-				'.tif',
-			]),
+			'ext' => new SQLIn($this->imageExtList),
 			'meta.id' => null,
 		];
 		if ($this->source) {
