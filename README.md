@@ -137,3 +137,17 @@ It would be very useful to be able to group images based on their geolocation. T
 
 It would be nice to attach a face recognition API and filter images by person on the photo (like Picasa did).
 
+### Troubleshooting
+
+#### NFS mounted drives
+
+Permissions are not managed. New files are created by a current client UID/GID. That leads to inconsistency when reading files on the server or the client.
+
+#### Samba mounts
+
+Often has Permission denied errors.
+
+#### SSHFS mounts
+
+Freeze often. Needs to be killed.
+

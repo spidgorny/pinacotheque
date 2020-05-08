@@ -69,10 +69,11 @@ class FileProvider
 
 	public function getOneFilePerMonth()
 	{
-		$YM = "CASE WHEN meta.value THEN 
-			replace(substr(meta.value, 1, 7), ':', '-')
+		$YM = "CASE 
+			WHEN ym THEN ym 
+			WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
-    END";
+	    END";
 		$where = [
 			'type' => 'file',
 			'ext' => new SQLIn($this->imageExtList),
@@ -111,7 +112,9 @@ class FileProvider
 
 	public function getFilesForMonth($year, $month, $isOrder = true, $limit = ''): ArrayPlus
 	{
-		$YM = "CASE WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
+		$YM = "CASE
+			WHEN ym THEN ym 
+			WHEN meta.value THEN replace(substr(meta.value, 1, 7), ':', '-')
             ELSE $this->strftimeYM
     	END";
 		$where = [
@@ -162,9 +165,11 @@ class FileProvider
 	}
 
 	/**
+	 * @param DateTime $olderThan
 	 * @return array[]
+	 * @noinspection PhpUndefinedClassInspection
 	 */
-	public function getUnscanned()
+	public function getUnscanned(DateTime $olderThan = null)
 	{
 		$where = [
 			'type' => 'file',
@@ -176,7 +181,16 @@ class FileProvider
 				'source' => $this->source->id,
 			];
 		}
+		if ($olderThan) {
+			$where += [
+				'meta_timestamp' => new SQLOr([
+					'meta_timestamp ' => null,
+					'meta_timestamp' => new AsIsOp("< '" . $olderThan->format('Y-m-d H:i:s') . "'"),
+				]),
+			];
+		}
 		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', $where, 'ORDER BY timestamp');
+		llog($this->db->getLastQuery());
 //		$content[] = new slTable($imageFiles);
 //		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 //		$imageFiles->setResult($res);

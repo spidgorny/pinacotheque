@@ -38,7 +38,11 @@ class ImageScanner
 
 	public function fetchExif()
 	{
-		if (!$this->file->hasMeta()) {
+		if ($this->file->hasMeta()) {
+			$this->log(TAB . 'Meta', 'exists');
+		}
+
+		try {
 			$path = $this->file->getFullPath();
 			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image?');
 			$ok = false;
@@ -54,14 +58,21 @@ class ImageScanner
 				$ok = $this->saveMetaToDB($meta, $this->file->id);
 			}
 			$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
-		} else {
-			$this->log(TAB . 'Meta', 'exists');
+		} catch (Exception $e) {
+			$this->file->update([
+				'meta_timestamp' => new SQLNow(),
+				'meta_error' => $e->getMessage(),
+			]);
 		}
 	}
 
 	public function saveMetaToDB(array $meta, $fileID)
 	{
 		$this->db->transaction();
+		$this->file->update([
+			'meta_timestamp' => new SQLNow(),
+			'meta_error' => null,
+		]);
 		foreach ($meta as $key => $val) {
 			try {
 				$encoded = is_scalar($val) ? $val : json_encode($val /*JSON_THROW_ON_ERROR*/);

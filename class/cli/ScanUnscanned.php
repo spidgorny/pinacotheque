@@ -14,12 +14,14 @@ class ScanUnscanned extends AppController
 
 	public function __invoke()
 	{
+		$this->updateYM();
 		$provider = new FileProvider($this->db);
-		$filesToScan = $provider->getUnscanned();
+		$filesToScan = $provider->getUnscanned(new DateTime('-2 days'));
 //		debug(count($filesToScan));
 
 		$sef = new ScanEveryFileFromDB($this->db);
 		$sef->scanUnscanned($filesToScan);
+		$this->updateYM();
 	}
 
 	public function updateYM()
