@@ -39,12 +39,12 @@ class ImageScanner
 	public function fetchExif()
 	{
 		if ($this->file->hasMeta()) {
-			$this->log(TAB . 'Meta', 'exists');
+			$this->log('Meta', 'exists', count($this->file->getMetaData()));
 		}
 
 		try {
 			$path = $this->file->getFullPath();
-			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image?');
+			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image');
 			$ok = false;
 			if ($this->file->isImage()) {
 				$ip = ImageParser::fromFile($path);
@@ -57,7 +57,7 @@ class ImageScanner
 				$meta = (array)$vp->getMeta();
 				$ok = $this->saveMetaToDB($meta, $this->file->id);
 			}
-			$this->log(TAB . 'Meta', $ok ? 'OK' : '*** FAIL ***');
+			$this->log('Meta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 		} catch (Exception $e) {
 			$this->file->update([
 				'meta_timestamp' => new SQLNow(),
@@ -99,15 +99,15 @@ class ImageScanner
 			$thumb = new Thumb($this->file);
 			try {
 				$thumb->getThumb();    // make it if doesn't exist
-				$this->log(TAB . 'Thumb', 'OK');
+				$this->log('Thumb', 'OK', new Bytes(filesize($this->file->getDestination())));
 				$this->log('Thumb->log', $thumb->log);
 			} catch (NotReadableException $e) {
 				$content[] = $e;
-				$this->log(TAB . 'Thumb', '*** FAIL ***');
+				$this->log('Thumb', '*** FAIL ***');
 				$this->log('Thumb->log', $thumb->log);
 			}
 		} else {
-			$this->log(TAB . 'Thumb', 'exists');
+			$this->log('Thumb', 'exists', new Bytes(filesize($this->file->getDestination())));
 		}
 	}
 
