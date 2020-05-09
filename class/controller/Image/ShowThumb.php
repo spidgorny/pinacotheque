@@ -35,7 +35,7 @@ class ShowThumb extends AppController
 	{
 //		debug($_REQUEST);
 //		exit;
-		$file = $this->request->getTrim('file');
+		$file = $this->request->getIntRequired('file');
 		if (!$file) {
 			header('Content-Type: image/png');
 			return base64_decode($this->transparent1px);

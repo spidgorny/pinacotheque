@@ -146,4 +146,13 @@ class MetaForSQL extends Meta
 		return count($metaRows);
 	}
 
+	public function toJson()
+	{
+		$vars = $this->props;
+		$vars['thumb'] = $this->getDestination();
+		$vars['source_path'] = $this->getSource()->path;
+		$vars['meta'] = $this->getMetaData();
+		return $vars;
+	}
+
 }
