@@ -16,3 +16,4 @@ alter table files
 alter table files
     add meta_error text null;
 
+alter table files add mtime timestamp null;

@@ -18,7 +18,7 @@ interface IAppState {
 export default class App extends React.Component<IAppProps, IAppState> {
 
 	state = {
-		start: new Date('1970-01-01 00:00:00'),
+		start: new Date(),
 		items: [],
 		end: undefined,
 	}

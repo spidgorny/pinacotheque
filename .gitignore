@@ -11,3 +11,4 @@ www/bundle.js
 /test/flickr/
 /test/ThomasGasson
 /test/Stefan
+*-dump.sql

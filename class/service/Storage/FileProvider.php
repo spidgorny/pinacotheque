@@ -16,7 +16,17 @@ class FileProvider
 	protected $strftime;
 
 	protected $strftimeYM;
-	private $imageExtList;
+	public $imageExtList = [
+			'jpeg',
+			'.jpg',
+			'.png',
+			'.gif',
+			'.mp4',
+			'.mov',
+			'.mkv',
+			'tiff',
+			'.tif',
+		];
 
 	public function __construct(DBInterface $db, Source $source = null)
 	{
@@ -30,17 +40,6 @@ class FileProvider
 			$this->strftime = "date_format($this->timestamp, '%Y:%m:%d %H:%i:%s')";
 			$this->strftimeYM = "date_format($this->timestamp, '%Y-%m')";
 		}
-		$this->imageExtList = [
-			'jpeg',
-			'.jpg',
-			'.png',
-			'.gif',
-			'.mp4',
-			'.mov',
-			'.mkv',
-			'tiff',
-			'.tif',
-		];
 	}
 
 	public function getMinMax()
