@@ -19,11 +19,31 @@ export class Image {
 	}
 
 	get width() {
-		return this.meta.COMPUTED.Width;
+		if ('COMPUTED' in this.meta) {
+			return this.meta.COMPUTED.Width;
+		}
+		if ('streams' in this.meta/* && this.meta.streams.length*/) {
+			// @ts-ignore
+			return this.meta.streams[0].width;
+		}
+		if (Object.keys(this.meta).length) {
+			console.error('Find width in', this.meta);
+		}
+		return 1024;
 	}
 
 	get height() {
-		return this.meta.COMPUTED.Height;
+		if ('COMPUTED' in this.meta) {
+			return this.meta.COMPUTED.Height;
+		}
+		if ('streams' in this.meta/* && this.meta.streams.length*/) {
+			// @ts-ignore
+			return this.meta.streams[0].height;
+		}
+		if (Object.keys(this.meta)) {
+			console.error('Find width in', this.meta);
+		}
+		return 768;
 	}
 
 	// convert 2019:11:17 13:18:57
@@ -96,6 +116,8 @@ interface Meta {
 	XResolution: string;
 	YCbCrPositioning: string;
 	YResolution: string;
+	format?: any;
+	streams?: any[];
 }
 
 interface THUMBNAIL {

@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "esnext",
     "lib": [
       "dom",
-      "es2017"
+      "es2017",
+      "es2015.collection",
+      "es2015.iterable"
     ],
     "outDir": "./tsout",
     "rootDir": "./",
@@ -18,7 +20,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react"
+    "jsx": "react",
+    "downlevelIteration": true,
+    "importHelpers": true
   },
   "compileOnSave": true,
   "exclude": [

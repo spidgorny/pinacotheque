@@ -9,6 +9,7 @@ interface MyPhotoState {
 
 interface CustomPhotoProps {
 	image: Image;
+	key: string;
 }
 
 export class MyPhoto extends React.Component<RenderImageProps<PhotoProps<CustomPhotoProps>>, MyPhotoState> {
@@ -20,6 +21,7 @@ export class MyPhoto extends React.Component<RenderImageProps<PhotoProps<CustomP
 	render() {
 		//console.log(this.props);
 		return <div
+			// key={this.props.key}
 			style={{
 				margin: this.props.margin,
 				position: 'relative'

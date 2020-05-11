@@ -9,7 +9,11 @@ class SetCorrectDateTimeNotTest extends AppController
 	 */
 	protected $db;
 
-	protected $count;
+	protected $remaining;
+
+	protected $processed = 0;
+
+	protected $startTime;
 
 	public function __construct(DBInterface $db)
 	{
@@ -32,7 +36,8 @@ class SetCorrectDateTimeNotTest extends AppController
 		], 'ORDER BY id');
 		$feed = new DatabaseResultIteratorAssoc($this->db);
 		$feed->perform($query);
-		$this->count = $feed->count();
+		$this->remaining = $feed->count();
+		$this->startTime = microtime(true);
 		foreach ($feed as $row) {
 			$this->processOne($row);
 		}
@@ -48,14 +53,15 @@ class SetCorrectDateTimeNotTest extends AppController
 		try {
 			$meta = $file->getMetaData();
 			$dateTime = $this->getDateTime($file->getOriginal(), $meta, $file->timestamp);
-			echo $this->count--, TAB, ifsetor($meta['DateTime']), ' => ', $dateTime, PHP_EOL;
+			$speed = $this->processed++ / (microtime(true) - $this->startTime);
+			echo $this->remaining--, TAB, number_format($speed, 3), '/s', TAB, ifsetor($meta['DateTime']), ' => ', $dateTime, PHP_EOL;
 			$file->update([
 				'mtime' => new SQLNow(),
 				'DateTime' => $dateTime,
 			]);
 		} catch (RuntimeException $e) {
-			debug($file, $file->getOriginal());
-			throw $e;
+			//debug($file, $file->getOriginal());
+			//throw $e;
 		}
 	}
 
@@ -63,6 +69,7 @@ class SetCorrectDateTimeNotTest extends AppController
 	{
 		if (count($meta) === 0) {
 			// there is nothing to parse
+
 			return date(self::YMDHis, $timestamp);
 		}
 
@@ -83,7 +90,7 @@ class SetCorrectDateTimeNotTest extends AppController
 		}
 
 		$FileDateTime = $meta['FileDateTime'] ?? null;
-		if ($FileDateTime && count($meta) <= 13) {	// last resort for a specific limited file
+		if ($FileDateTime && count($meta) <= 15) {	// last resort for a specific limited file
 			return $this->fromDateTime($FileDateTime);
 		}
 
@@ -92,10 +99,36 @@ class SetCorrectDateTimeNotTest extends AppController
 			return $this->fromDateTime($creation_time);
 		}
 
+		$isTelegram = str_contains($filename, 'Telegram Video');
 		$ymdhis = '/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/';
-		if (preg_match($ymdhis, $filename, $matches)) {
+		$match = preg_match($ymdhis, basename($filename), $matches);
+		if (!$isTelegram && $match && in_array($matches[1][1], [1, 2], false)) {
 			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3].' '.$matches[4].':'.$matches[5].':'.$matches[6];
 			return $this->fromDateTime($formatted);
+		}
+
+		$ymd_his = '/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/';
+		$match = preg_match($ymd_his, basename($filename), $matches);
+		if ($match && in_array($matches[1][1], [1, 2], false)) {
+			debug($filename, $isTelegram, $match);
+			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3].' '.$matches[4].':'.$matches[5].':'.$matches[6];
+			return $this->fromDateTime($formatted);
+		}
+
+		$ymd = '/VID-(\d{4})(\d{2})(\d{2})-WA/';	// what's app
+		if (preg_match($ymd, basename($filename), $matches) && in_array($matches[1][1], [1, 2], false)) {
+			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3];
+			return $this->fromDateTime($formatted);
+		}
+
+		if ($isTelegram) {	// there is no hope to find any metadata
+			return date(self::YMDHis, $timestamp);
+		}
+
+		$isIPad = str_contains($filename, 'iPad2018');
+		$isVideoshow = str_contains($filename, '1Videoshow');
+		if ($isIPad || $isVideoshow) {
+			return date(self::YMDHis, $timestamp);
 		}
 
 		debug($timestamp, date(self::YMDHis, $timestamp), $meta);

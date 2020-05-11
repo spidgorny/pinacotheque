@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React from "react";
 import Gallery from 'react-photo-gallery';
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from 'redaxios';
@@ -31,8 +31,8 @@ export default class App extends React.Component<IAppProps, IAppState> {
 
 	async fetchData() {
 		const urlImages = new URL('Images', this.baseUrl);
-		urlImages.searchParams.set('since', moment(this.state.end || this.state.start).format('YYYY-MM-DD HH:mm :ss'));
-		console.log(urlImages);
+		urlImages.searchParams.set('since', moment(this.state.end || this.state.start).format('YYYY-MM-DD HH:mm:ss'));
+		//console.log(urlImages);
 		const res = await axios.get(urlImages.toString(), {
 			cors: 'no-cors',
 		});
@@ -46,12 +46,22 @@ export default class App extends React.Component<IAppProps, IAppState> {
 
 		const lastImage = images[images.length-1];
 		const lastDate = lastImage.getTimestamp();
-		console.log(lastImage, lastDate);
+		// console.log(lastImage, lastDate);
 
-		this.setState(({items}) => ({
-			items: items.concat(images),
-			end: lastDate,
-		}));
+		this.setState(({items}) => {
+			// append if not id exists
+			images.map(nnew => {
+				if (!items.some(el => el.id == nnew.id)) {
+					return items.push(nnew);
+				}
+			});
+			return ({
+				items,
+				end: lastDate,
+			});
+		}, () => {
+			console.log(this.state.items.map((el: Image) => el.id));
+		});
 	}
 
 	render() {

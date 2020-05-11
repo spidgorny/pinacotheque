@@ -42,3 +42,7 @@ where DateTime > ''
 group by substr(DateTime, 1, 5);
 
 select * from files where DateTime like '14691%';
+
+select * from files
+where DateTime < now()
+order by DateTime desc;
