@@ -1,3 +1,5 @@
+const path = require('path');
+
 export class Image {
 	id: string;
 	source: string;
@@ -14,8 +16,16 @@ export class Image {
 	source_path: string;
 	meta: Meta;
 
+	baseUrl: string;
+
 	constructor(props) {
 		Object.assign(this, props);
+	}
+
+	get thumbURL() {
+		const url = new URL('ShowThumb', this.baseUrl);
+		url.searchParams.set('file', this.id);
+		return url.toString();
 	}
 
 	get width() {
@@ -52,6 +62,10 @@ export class Image {
 			if (index) return part;
 			return part.replace(/:/g, '-');
 		}).join(' '));
+	}
+
+	get title() {
+		return path.basename(this.path);
 	}
 
 }

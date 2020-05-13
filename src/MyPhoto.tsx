@@ -7,7 +7,7 @@ interface MyPhotoState {
 	showOverlay: boolean;
 }
 
-interface CustomPhotoProps {
+export interface CustomPhotoProps {
 	image: Image;
 	key: string;
 }
@@ -26,6 +26,10 @@ export class MyPhoto extends React.Component<RenderImageProps<PhotoProps<CustomP
 				margin: this.props.margin,
 				position: 'relative'
 			}}
+			onClick={(e) => this.props.onClick(e, {
+				...this.props.photo,
+				index: this.props.index
+			})}
 		>
 			<img
 				src={this.props.photo.src}
