@@ -47,10 +47,9 @@ class FileProvider
 		$where = [
 			'type' => 'file',
 			'ext' => new SQLIn($this->imageExtList),
-			new SQLOr([
-				'(meta.value IS NULL)',
-				new SQLWhereNotEqual('meta.value', '0000:00:00 00:00:00'),
-			]),
+			'DateTime' => new SQLWhereNotEqual('DateTime', null),
+			'DateTime ' => new AsIsOp("> ''"),
+			'DateTime  ' => new AsIsOp("> 0"),
 		];
 		if ($this->source) {
 			$where += [
@@ -58,10 +57,9 @@ class FileProvider
 			];
 		}
 		list('min' => $min, 'max' => $max) = $this->db->fetchOneSelectQuery(
-			'files LEFT OUTER JOIN meta 
-			ON (meta.id_file = files.id AND meta.name = "DateTime")', $where, '',
-			"min(coalesce(meta.value, $this->strftime)) as min, 
-			max(coalesce(meta.value, $this->strftime)) as max");
+			'files', $where, '',
+			"min(DateTime) as min, 
+			max(DateTime) as max");
 		llog($this->db->getLastQuery() . '');
 		return ['min' => $min, 'max' => $max];
 	}
