@@ -32,6 +32,7 @@
     "react-infinite-scroll-component": "^5.0.4",
     "react-photo-gallery": "^8.0.0",
     "react-router": "^5.1.2",
+    "react-spinners": "^0.8.3",
     "redaxios": "^0.2.0",
     "storage-wrap": "^1.0.2",
     "swiped-events": "^1.0.9",

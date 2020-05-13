@@ -3,10 +3,26 @@ import ImageStream from "./ImageStream";
 import {AppContext, context} from "./context";
 import axios from 'redaxios';
 
+import ScaleLoader from "react-spinners/ScaleLoader";
+
 interface IAppProps {
 }
 
+export interface Source {
+	id: number;
+	name: string;
+	path: string;
+	thumbRoot: string;
+	_missingProperties: [];
+}
+
 interface IAppState {
+	status: 'ok';
+	min: string;
+	max: string;
+	sources: any[];
+	query: string;
+	duration: number;
 }
 
 export default class App extends React.Component<IAppProps, IAppState> {
@@ -14,6 +30,8 @@ export default class App extends React.Component<IAppProps, IAppState> {
 	static contextType = context;
 	context: AppContext;
 	baseUrl;
+
+	state = null;
 
 	componentDidMount() {
 		this.baseUrl = this.context.baseUrl;
@@ -28,12 +46,17 @@ export default class App extends React.Component<IAppProps, IAppState> {
 		if (resData.status !== 'ok') {
 			throw new Error(resData.error);
 		}
-		console.log(urlInfo);
+		// console.log(resData);
+		this.setState(resData);
 	}
 
 	render() {
 		return (
-			<ImageStream/>
+			<>
+				{this.state === null ? <ScaleLoader loading={true} color='#4DAF7C'/> :
+					<ImageStream/>
+				}
+			</>
 		);
 	}
 
