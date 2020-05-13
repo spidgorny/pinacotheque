@@ -1,12 +1,13 @@
 import React from "react";
-import Gallery, {PhotoProps} from 'react-photo-gallery';
+import Gallery, {PhotoProps, RenderImageProps} from 'react-photo-gallery';
 import InfiniteScroll from "react-infinite-scroll-component";
 import axios from 'redaxios';
 import {Image} from "./model/Image";
 import moment from 'moment';
 import {CustomPhotoProps, MyPhoto} from "./MyPhoto";
 import {AppContext, context} from "./context";
-import Carousel, { Modal, ModalGateway } from "react-images";
+import Carousel, {Modal, ModalGateway} from "react-images";
+import IntersectionVisible from 'react-intersection-visible';
 
 interface IAppProps {
 }
@@ -17,6 +18,13 @@ interface IAppState {
 	end?: Date;
 	currentImage?: number;
 	viewerIsOpen: boolean;
+}
+
+interface PhotoSetItem {
+	src: string;
+	width: number;
+	height: number;
+	image: Image;
 }
 
 export default class ImageStream extends React.Component<IAppProps, IAppState> {
@@ -33,9 +41,15 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	context: AppContext;
 
 	baseUrl;
+	private static readonly VIEWPORT_TIMESTAMP: string = 'viewportTimestamp';
 
 	componentDidMount() {
 		this.baseUrl = this.context.baseUrl;
+		const lastTopTimestamp = this.getStorage(ImageStream.VIEWPORT_TIMESTAMP);
+		console.log('lastTopTimestamp', lastTopTimestamp);
+		if (lastTopTimestamp) {
+			this.state.start = new Date(lastTopTimestamp);
+		}
 		this.fetchData();
 	}
 
@@ -54,14 +68,14 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 
 		const images: Image[] = resData.data.map(el => new Image(el));
 
-		const lastImage = images[images.length-1];
+		const lastImage = images[images.length - 1];
 		const lastDate = lastImage.getTimestamp();
 		// console.log(lastImage, lastDate);
 
 		this.setState(({items}) => {
 			// append if not id exists
 			images.map(nnew => {
-				if (!items.some(el => el.id == nnew.id)) {
+				if (!items.some(el => el.id === nnew.id)) {
 					nnew.baseUrl = this.baseUrl;
 					return items.push(nnew);
 				}
@@ -82,28 +96,37 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 				width: img.width,
 				height: img.height,
 				image: img,
-			};
+			} as PhotoSetItem;
 		});
 
 		const imageRenderer =
-			(props: any) => (
-				<MyPhoto
-					key={props.key}
-					margin={"2px"}
-					index={props.index}
-					photo={props.photo}
-					left={props.left}
-					top={props.top}
-					direction={'row'}
-					onClick={() => {this.openLightbox(props.index)}}
-				/>
+			(props: RenderImageProps<PhotoProps<CustomPhotoProps>>) => (
+				<IntersectionVisible
+					key={props.photo.key}
+					// onIntersect={ e => this.onIntersect( e ) }
+					onHide={e => this.onImageHide(e, props.photo.image)}
+					onShow={e => this.onImageShow(e, props.photo.image)}>
+					<MyPhoto
+						key={props.photo.key}
+						margin={"2px"}
+						index={props.index}
+						photo={props.photo}
+						left={props.left}
+						top={props.top}
+						direction={'row'}
+						onClick={() => {
+							this.openLightbox(props.index)
+						}}
+					/>
+				</IntersectionVisible>
 			);
 
 		return (
 			<div>
 				<InfiniteScroll
 					dataLength={this.state.items.length} //This is important field to render the next data
-					children={<Gallery photos={photoSet} renderImage={imageRenderer}/>}
+					children={<Gallery photos={photoSet}
+									   renderImage={imageRenderer}/>}
 					next={this.fetchData.bind(this)}
 					hasMore={true}
 					hasChildren={false}
@@ -156,6 +179,23 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		this.setState({
 			viewerIsOpen: false,
 		});
+	}
+
+	private onImageShow(e: IntersectionObserverEntry, image: Image) {
+		// console.log('show', e);
+		this.setStorage(ImageStream.VIEWPORT_TIMESTAMP, image.date);
+	}
+
+	private onImageHide(e: IntersectionObserverEntry, image: Image) {
+		// console.log('hide', e);
+	}
+
+	setStorage(name: string, val: any) {
+		window.localStorage.setItem(name, JSON.stringify(val));
+	}
+
+	getStorage(name: string) {
+		return JSON.parse(window.localStorage.getItem(name));
 	}
 
 }

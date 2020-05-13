@@ -68,6 +68,10 @@ export class Image {
 		return path.basename(this.path);
 	}
 
+	get date() {
+		return new Date(this.DateTime);
+	}
+
 }
 
 interface Meta {
