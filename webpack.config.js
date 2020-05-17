@@ -1,32 +1,19 @@
-var path = require('path');
+const path = require('path');
 
-var config = {
-	context: path.join(__dirname, 'ts'),
-	entry: [
-		'./main.js',
-	],
+const config = {
+	mode: 'development',
+	// context: path.join(__dirname, 'ts'),
+	entry: {
+		// 'php-support': './ts/main.js',
+		'ml': './ml/mobilenet.npm.js',
+	},
 	output: {
-		path: path.join(__dirname, 'www'),
-		filename: 'bundle.js',
+		// path: path.join(__dirname, 'www'),
+		path: path.join(__dirname, 'ml'),
+		filename: 'mobilenet.bundle.js',
 	},
-	module: {
-		loaders: [
-			{
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loaders: ['babel'],
-			},
-		],
-	},
-	resolveLoader: {
-		root: [
-			path.join(__dirname, 'node_modules'),
-		],
-	},
-	resolve: {
-		root: [
-			path.join(__dirname, 'node_modules'),
-		],
-	},
+	module: {},
+	resolveLoader: {},
+	resolve: {},
 };
 module.exports = config;

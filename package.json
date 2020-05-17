@@ -16,6 +16,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.0.4",
+    "@tensorflow/tfjs-converter": "^1.7.4",
+    "@tensorflow/tfjs-core": "^1.7.4",
     "bootstrap": "^4.4.1",
     "defiant": "git+https://github.com/hbi99/defiant.js.git",
     "defiant.js": "git+https://github.com/hbi99/defiant.js.git",

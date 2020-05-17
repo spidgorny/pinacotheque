@@ -41,14 +41,11 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	context: AppContext;
 
 	baseUrl;
-	private static readonly VIEWPORT_TIMESTAMP: string = 'viewportTimestamp';
 
 	componentDidMount() {
 		this.baseUrl = this.context.baseUrl;
-		const lastTopTimestamp = this.getStorage(ImageStream.VIEWPORT_TIMESTAMP);
-		console.log('lastTopTimestamp', lastTopTimestamp);
-		if (lastTopTimestamp) {
-			this.state.start = new Date(lastTopTimestamp);
+		if (this.context.lastTopTimestamp) {
+			this.state.start = this.context.lastTopTimestamp;
 		}
 		this.fetchData();
 	}
@@ -56,6 +53,10 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	async fetchData() {
 		const urlImages = new URL('Images', this.baseUrl);
 		urlImages.searchParams.set('since', moment(this.state.end || this.state.start).format('YYYY-MM-DD HH:mm:ss'));
+		let minWidth = this.context.sidebar?.minWidth;
+		if (minWidth) {
+			urlImages.searchParams.set('minWidth', minWidth.toString());
+		}
 		//console.log(urlImages);
 		const res = await axios.get(urlImages.toString(), {
 			cors: 'no-cors',
@@ -183,19 +184,13 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 
 	private onImageShow(e: IntersectionObserverEntry, image: Image) {
 		// console.log('show', e);
-		this.setStorage(ImageStream.VIEWPORT_TIMESTAMP, image.date);
+		this.context.setState({
+			[AppContext.VIEWPORT_TIMESTAMP]: image.date
+		});
 	}
 
 	private onImageHide(e: IntersectionObserverEntry, image: Image) {
 		// console.log('hide', e);
-	}
-
-	setStorage(name: string, val: any) {
-		window.localStorage.setItem(name, JSON.stringify(val));
-	}
-
-	getStorage(name: string) {
-		return JSON.parse(window.localStorage.getItem(name));
 	}
 
 }

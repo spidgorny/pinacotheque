@@ -4,6 +4,7 @@ import {AppContext, context} from "./context";
 import axios from 'redaxios';
 
 import ScaleLoader from "react-spinners/ScaleLoader";
+import {Sidebar} from "./Sidebar";
 
 interface IAppProps {
 }
@@ -52,11 +53,18 @@ export default class App extends React.Component<IAppProps, IAppState> {
 
 	render() {
 		return (
-			<>
-				{this.state === null ? <ScaleLoader loading={true} color='#4DAF7C'/> :
-					<ImageStream/>
-				}
-			</>
+			<div className="container" style={{width: '100%', maxWidth: '100%'}}>
+				<div className="row">
+					<div className="two columns">
+						<Sidebar/>
+					</div>
+					<div className="ten columns">
+						{this.state === null ? <ScaleLoader loading={true} color='#4DAF7C'/> :
+							<ImageStream/>
+						}
+					</div>
+				</div>
+			</div>
 		);
 	}
 
