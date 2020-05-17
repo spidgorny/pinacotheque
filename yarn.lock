@@ -4322,7 +4322,14 @@ default-gateway@^4.2.0:
     execa "^1.0.0"
     ip-regex "^2.1.0"
 
-"defiant.js@git+https://github.com/hbi99/defiant.js.git", "defiant@git+https://github.com/hbi99/defiant.js.git":
+defiant.js@^2.2.6:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/defiant.js/-/defiant.js-2.2.6.tgz#3126abcd25c2d6f655b1f79c25f8e3caa97029a7"
+  integrity sha512-c2wOifF1AnxtqnYk4HE/k44OHCu6hskQYQBYUey9GNcvsom8eDKJoBHCzncC38sCrR1iuAvFnxRkXbF6KSubKA==
+  dependencies:
+    puppeteer "^1.7.0"
+
+"defiant@git+https://github.com/hbi99/defiant.js.git":
   version "2.2.6"
   resolved "git+https://github.com/hbi99/defiant.js.git#59f09e5812c258e81bf2688d5d5a864f3bd95bf9"
   dependencies:
@@ -9482,7 +9489,7 @@ process@^0.11.10:
   resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
   integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
 
-progress@^2.0.0, progress@^2.0.1:
+progress@^2.0.0, progress@^2.0.1, progress@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==

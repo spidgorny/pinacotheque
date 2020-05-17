@@ -57,6 +57,7 @@ export class Image {
 	}
 
 	// convert 2019:11:17 13:18:57
+	/// @deprecated
 	getTimestamp() {
 		return new Date(this.DateTime.split(' ').map((part, index) => {
 			if (index) return part;

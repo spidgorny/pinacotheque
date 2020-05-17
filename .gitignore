@@ -12,3 +12,4 @@ www/bundle.js
 /test/ThomasGasson
 /test/Stefan
 *-dump.sql
+redis/snapshot.json
