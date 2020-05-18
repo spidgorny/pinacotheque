@@ -28,7 +28,7 @@ export class Image {
 		return url.toString();
 	}
 
-	get width() {
+	getWidth() {
 		if ('COMPUTED' in this.meta) {
 			return this.meta.COMPUTED.Width;
 		}
@@ -42,7 +42,7 @@ export class Image {
 		return 1024;
 	}
 
-	get height() {
+	getHeight() {
 		if ('COMPUTED' in this.meta) {
 			return this.meta.COMPUTED.Height;
 		}

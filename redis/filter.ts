@@ -1,4 +1,4 @@
-async function search() {
+export async function search() {
 	const data = require('./snapshot.json');
 	console.log('source', data.length);
 	const results = data.filter((row) => {

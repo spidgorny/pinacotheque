@@ -8,6 +8,7 @@ import {CustomPhotoProps, MyPhoto} from "./MyPhoto";
 import {AppContext, context} from "./context";
 import Carousel, {Modal, ModalGateway} from "react-images";
 import IntersectionVisible from 'react-intersection-visible';
+import {ImageFromFilter} from "./model/ImageFromFilter";
 
 interface IAppProps {
 }
@@ -51,28 +52,29 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	}
 
 	async fetchData() {
-		const urlImages = new URL('Images', this.baseUrl);
-		urlImages.searchParams.set('since', moment(this.state.end || this.state.start).format('YYYY-MM-DD HH:mm:ss'));
-		let minWidth = this.context.sidebar?.minWidth;
-		if (minWidth) {
-			urlImages.searchParams.set('minWidth', minWidth.toString());
-		}
+		await this.fetchDataFromFilterServer();
+	}
+
+	async fetchDataFromFilterServer() {
+		const urlImages = new URL('http://127.0.0.1:8080/images');
+		this.appendSearchParams(urlImages);
 		//console.log(urlImages);
-		const res = await axios.get(urlImages.toString(), {
-			cors: 'no-cors',
-		});
+		const res = await axios.get(urlImages.toString());
 		// console.log(res.data);
 		const resData = JSON.parse(res.data);
 		if (resData.status !== 'ok') {
 			throw new Error(resData.error);
 		}
 
-		const images: Image[] = resData.data.map(el => new Image(el));
+		const images: Image[] = resData.results.map(el => new ImageFromFilter(el));
 
+		this.appendImages(images);
+	}
+
+	appendImages(images: any[]) {
 		const lastImage = images[images.length - 1];
 		const lastDate = lastImage.getTimestamp();
 		// console.log(lastImage, lastDate);
-
 		this.setState(({items}) => {
 			// append if not id exists
 			images.map(nnew => {
@@ -90,12 +92,38 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		});
 	}
 
+	appendSearchParams(urlImages: URL) {
+		urlImages.searchParams.set('since', moment(this.state.end || this.state.start).format('YYYY-MM-DD HH:mm:ss'));
+		let minWidth = this.context.sidebar?.minWidth;
+		if (minWidth) {
+			urlImages.searchParams.set('minWidth', minWidth.toString());
+		}
+	}
+
+	async fetchDataFromPHP() {
+		const urlImages = new URL('Images', this.baseUrl);
+		this.appendSearchParams(urlImages);
+		//console.log(urlImages);
+		const res = await axios.get(urlImages.toString(), {
+			cors: 'no-cors',
+		});
+		// console.log(res.data);
+		const resData = JSON.parse(res.data);
+		if (resData.status !== 'ok') {
+			throw new Error(resData.error);
+		}
+
+		const images: Image[] = resData.data.map(el => new Image(el));
+
+		this.appendImages(images);
+	}
+
 	render() {
-		const photoSet = this.state.items.map(img => {
+		const photoSet = this.state.items.map((img: Image|ImageFromFilter) => {
 			return {
 				src: img.thumbURL,
-				width: img.width,
-				height: img.height,
+				width: img.getWidth(),
+				height: img.getHeight(),
 				image: img,
 			} as PhotoSetItem;
 		});
