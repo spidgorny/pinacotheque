@@ -18,7 +18,7 @@ export class Image {
 
 	baseUrl: string;
 
-	constructor(props) {
+	constructor(props: any) {
 		Object.assign(this, props);
 	}
 

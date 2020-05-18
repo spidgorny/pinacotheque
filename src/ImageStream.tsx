@@ -1,14 +1,10 @@
 import React from "react";
-import Gallery, {PhotoProps, RenderImageProps} from 'react-photo-gallery';
-import InfiniteScroll from "react-infinite-scroll-component";
 import axios from 'redaxios';
 import {Image} from "./model/Image";
 import moment from 'moment';
-import {CustomPhotoProps, MyPhoto} from "./MyPhoto";
 import {AppContext, context} from "./context";
-import Carousel, {Modal, ModalGateway} from "react-images";
-import IntersectionVisible from 'react-intersection-visible';
 import {ImageFromFilter} from "./model/ImageFromFilter";
+import {GalleryInScroll} from "./GalleryInScroll";
 
 interface IAppProps {
 }
@@ -17,11 +13,9 @@ interface IAppState {
 	start: Date;
 	items: Image[];
 	end?: Date;
-	currentImage?: number;
-	viewerIsOpen: boolean;
 }
 
-interface PhotoSetItem {
+export interface PhotoSetItem {
 	src: string;
 	width: number;
 	height: number;
@@ -34,8 +28,6 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		start: new Date(),
 		items: [],
 		end: undefined,
-		currentImage: 0,
-		viewerIsOpen: false,
 	}
 
 	static contextType = context;
@@ -67,7 +59,6 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		}
 
 		const images: Image[] = resData.results.map(el => new ImageFromFilter(el));
-
 		this.appendImages(images);
 	}
 
@@ -118,8 +109,14 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		this.appendImages(images);
 	}
 
+	get queryParams() {
+		const url = new URL(document.location.href);
+		return url.searchParams;
+	}
+
 	render() {
-		const photoSet = this.state.items.map((img: Image|ImageFromFilter) => {
+		const photoSet = this.state.items.map((img: Image | ImageFromFilter) => {
+			// console.log(img);
 			return {
 				src: img.thumbURL,
 				width: img.getWidth(),
@@ -127,98 +124,31 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 				image: img,
 			} as PhotoSetItem;
 		});
+		//console.log(photoSet.map(el => el.src + ' [' + el.width + 'x' + el.height + ']'));
 
-		const imageRenderer =
-			(props: RenderImageProps<PhotoProps<CustomPhotoProps>>) => (
-				<IntersectionVisible
-					key={props.photo.key}
-					// onIntersect={ e => this.onIntersect( e ) }
-					onHide={e => this.onImageHide(e, props.photo.image)}
-					onShow={e => this.onImageShow(e, props.photo.image)}>
-					<MyPhoto
-						key={props.photo.key}
-						margin={"2px"}
-						index={props.index}
-						photo={props.photo}
-						left={props.left}
-						top={props.top}
-						direction={'row'}
-						onClick={() => {
-							this.openLightbox(props.index)
-						}}
-					/>
-				</IntersectionVisible>
-			);
-
-		return (
-			<div>
-				<InfiniteScroll
-					dataLength={this.state.items.length} //This is important field to render the next data
-					children={<Gallery photos={photoSet}
-									   renderImage={imageRenderer}/>}
-					next={this.fetchData.bind(this)}
-					hasMore={true}
-					hasChildren={false}
-					loader={<h4>Loading...</h4>}
-					endMessage={
-						<p style={{textAlign: 'center'}}>
-							<b>Yay! You have seen it all</b>
-						</p>
-					}
-					// below props only if you need pull down functionality
-					refreshFunction={this.refresh.bind(this)}
-					pullDownToRefresh
-					pullDownToRefreshContent={
-						<h3 style={{textAlign: 'center'}}>&#8595; Pull down to refresh</h3>
-					}
-					releaseToRefreshContent={
-						<h3 style={{textAlign: 'center'}}>&#8593; Release to refresh</h3>
-					}
-				/>
-				<ModalGateway>
-					{this.state.viewerIsOpen ? (
-						<Modal onClose={this.closeLightbox.bind(this)}>
-							<Carousel
-								currentIndex={this.state.currentImage}
-								views={this.state.items.map((x: Image) => ({
+		if (this.queryParams.has('simple')) {
+			return <div>
+				{photoSet.map(el => <div style={{clear: 'both'}} key={el.src}>
+					<img src={el.src} style={{float: 'left'}}/>
+					{el.src}<br />
+					{el.width}x{el.height}<br />
+					{/*{JSON.stringify(el.image, null, 2)}*/}
+				</div>)}
+			</div>;
+		}
+		return <GalleryInScroll items={this.state.items}
+								photos={photoSet}
+								next={this.fetchData.bind(this)}
+								refreshFunction={this.refresh.bind(this)}
+								callbackfn={(x: Image) => ({
 									...x,
 									source: x.thumbURL,
 									caption: x.title,
-								}))}
-							/>
-						</Modal>
-					) : null}
-				</ModalGateway>
-			</div>
-		);
+								} as Image & { source: string; caption: string })}/>;
 	}
 
 	refresh() {
 		console.log('refresh');
-	}
-
-	openLightbox(index: number) {
-		this.setState({
-			currentImage: index,
-			viewerIsOpen: true,
-		});
-	}
-
-	closeLightbox() {
-		this.setState({
-			viewerIsOpen: false,
-		});
-	}
-
-	private onImageShow(e: IntersectionObserverEntry, image: Image) {
-		// console.log('show', e);
-		this.context.setState({
-			[AppContext.VIEWPORT_TIMESTAMP]: image.date
-		});
-	}
-
-	private onImageHide(e: IntersectionObserverEntry, image: Image) {
-		// console.log('hide', e);
 	}
 
 }

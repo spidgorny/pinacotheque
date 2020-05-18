@@ -26,9 +26,11 @@
   },
   "compileOnSave": true,
   "exclude": [
+    "node_modules",
     "vendor"
   ],
   "include": [
+    "redis",
     "src"
   ]
 }

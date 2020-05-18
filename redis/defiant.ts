@@ -1,7 +1,7 @@
 const defiant = require('defiant.js');
 const data = require('./snapshot.json');
 
-async function search() {
+export async function search() {
 	const search = await defiant.search(data, '//.[id=3]');
 	console.log(search);
 }

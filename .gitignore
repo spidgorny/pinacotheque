@@ -13,3 +13,4 @@ www/bundle.js
 /test/Stefan
 *-dump.sql
 redis/snapshot.json
+tsout/

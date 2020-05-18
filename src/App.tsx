@@ -5,6 +5,7 @@ import axios from 'redaxios';
 
 import ScaleLoader from "react-spinners/ScaleLoader";
 import {Sidebar} from "./Sidebar";
+import './test.object.assign';
 
 interface IAppProps {
 }

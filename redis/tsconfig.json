@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",
-		"isolatedModules": false
+		"isolatedModules": false,
+		"outDir": "../tsout",
+		"noEmit": false
 	}
 }
