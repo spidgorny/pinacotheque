@@ -28,6 +28,12 @@ export class Image {
 		return url.toString();
 	}
 
+	get originalURL() {
+		const url = new URL('ShowOriginal', this.baseUrl);
+		url.searchParams.set('file', this.id);
+		return url.toString();
+	}
+
 	getWidth() {
 		if ('COMPUTED' in this.meta) {
 			return this.meta.COMPUTED.Width;

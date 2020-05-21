@@ -9,14 +9,10 @@ import {PhotoSetItem} from "./ImageStream";
 import {AppContext, context} from "./context";
 
 interface IGalleryInScrollProps {
-	items: any[],
-	photos: PhotoSetItem[],
-	next: any,
-	refreshFunction: any,
-	callbackfn: (x: Image) => (Image & {
-		source: string;
-		caption: string;
-	})
+	items: any[];
+	photos: PhotoSetItem[];
+	next: any;
+	refreshFunction: () => void;
 }
 
 export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
@@ -84,7 +80,14 @@ export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
 					<Modal onClose={this.closeLightbox.bind(this)}>
 						<Carousel
 							currentIndex={this.state.currentImage}
-							views={this.props.items.map(this.props.callbackfn)}
+							views={this.props.items.map((x: Image) => ({
+								...x,
+								source: {
+									thumbnail: x.thumbURL,
+									regular: x.originalURL,
+								},
+								caption: x.title,
+							}))}
 						/>
 					</Modal>
 				) : null}

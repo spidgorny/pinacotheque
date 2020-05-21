@@ -105,7 +105,6 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		}
 
 		const images: Image[] = resData.data.map(el => new Image(el));
-
 		this.appendImages(images);
 	}
 
@@ -128,23 +127,21 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 
 		if (this.queryParams.has('simple')) {
 			return <div>
-				{photoSet.map(el => <div style={{clear: 'both'}} key={el.src}>
+				{photoSet.map(el => <div style={{clear: 'both'}}
+										 key={el.src}>
 					<img src={el.src} style={{float: 'left'}}/>
-					{el.src}<br />
-					{el.width}x{el.height}<br />
+					{el.src}<br/>
+					{el.width}x{el.height}<br/>
 					{/*{JSON.stringify(el.image, null, 2)}*/}
 				</div>)}
 			</div>;
 		}
-		return <GalleryInScroll items={this.state.items}
-								photos={photoSet}
-								next={this.fetchData.bind(this)}
-								refreshFunction={this.refresh.bind(this)}
-								callbackfn={(x: Image) => ({
-									...x,
-									source: x.thumbURL,
-									caption: x.title,
-								} as Image & { source: string; caption: string })}/>;
+		return <GalleryInScroll
+			items={this.state.items}
+			photos={photoSet}
+			next={this.fetchData.bind(this)}
+			refreshFunction={this.refresh.bind(this)}
+		/>;
 	}
 
 	refresh() {
