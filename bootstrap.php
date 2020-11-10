@@ -14,6 +14,7 @@ function getContext()
 			'request_fulluri' => true,
 		],
 	];
+	/** @noinspection ForgottenDebugOutputInspection */
 	print_r($options);
 	$context = stream_context_create($options);
 	return $context;
@@ -27,8 +28,10 @@ function __($a)
 function llog(...$msg)
 {
 	if (count($msg) === 1 && is_scalar($msg[0])) {
+		/** @noinspection ForgottenDebugOutputInspection */
 		error_log(implode(', ', $msg));
 	} else {
+		/** @noinspection ForgottenDebugOutputInspection */
 		error_log(json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR));
 	}
 }

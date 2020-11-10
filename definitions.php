@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection ALL */
 
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -76,9 +76,9 @@ return [
 		return $db;
 	},
 	Client::class => static function ($c) {
-		$predis = new Client('tcp://127.0.0.1', array(
+		$predis = new Client(['scheme' => 'tcp', 'host' => getenv('REDIS_HOST'), 'port' => 6379,], [
 			'prefix' => 'bernard:',
-		));
+		]);
 		return $predis;
 	},
 	ScanEveryFileFromDB::class => static function ($c) {

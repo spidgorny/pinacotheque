@@ -10,9 +10,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require_once __DIR__.'/../bootstrap.php';
 
-$predis = new Client('tcp://127.0.0.1', array(
+$predis = new Client('tcp://' . getenv('REDIS_HOST'), [
     'prefix' => 'bernard:',
-));
+]);
 
 $driver = new Driver($predis);
 
@@ -27,4 +27,6 @@ $message = new PlainMessage($JobType, [
 //$queue = 'send-newsletter';
 //$queue = $factory->create('send-newsletter');
 $producer->produce($message);
+$producer->produce(new PlainMessage('asd'));
+$producer->produce(new PlainMessage(ScanDir::class));
 echo 'produced', "\t", $JobType, PHP_EOL;

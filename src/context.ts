@@ -1,7 +1,7 @@
 import {createContext} from "react";
 
 export class AppContext {
-	public baseUrl = new URL('http://192.168.1.120/');
+	public baseUrl = new URL(process.env.REACT_APP_API);
 	public sidebar = {
 		minWidth: 640,
 	};

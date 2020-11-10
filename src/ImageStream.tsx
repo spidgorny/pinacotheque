@@ -48,7 +48,8 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	}
 
 	async fetchDataFromFilterServer() {
-		const urlImages = new URL('http://127.0.0.1:8080/images');
+		const urlImages = new URL(process.env.REACT_APP_API +
+			'Images');
 		this.appendSearchParams(urlImages);
 		//console.log(urlImages);
 		const res = await axios.get(urlImages.toString());
@@ -58,7 +59,7 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 			throw new Error(resData.error);
 		}
 
-		const images: Image[] = resData.results.map(el => new ImageFromFilter(el));
+		const images: Image[] = resData.data.map(el => new ImageFromFilter(el));
 		this.appendImages(images);
 	}
 
