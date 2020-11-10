@@ -79,7 +79,7 @@ class Thumb
 			$this->log('mkdir: ' . $dirName);
 			$ok = mkdir($dirName, 0777, true);
 			if (!$ok) {
-				$this->log('mkdir failed ' . $ok);
+				$this->log('mkdir failed [' . $dirName . ']');
 			}
 		}
 	}
