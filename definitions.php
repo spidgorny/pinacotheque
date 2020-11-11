@@ -1,9 +1,14 @@
-<?php /** @noinspection ALL */
+<?php /** @noinspection ForgottenDebugOutputInspection */
 
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Predis\Client;
 use Psr\Container\ContainerInterface;
+use Bernard\QueueFactory\PersistentFactory;
+use Bernard\Serializer;
+use Bernard\Driver\Predis\Driver;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Bernard\Producer;
 
 require_once __DIR__ . '/autoload.php';
 
@@ -89,11 +94,18 @@ return [
 			$m = new DBLayerPDO(getenv('mysql.db'), getenv('mysql'), getenv('mysql.user'), getenv('mysql.password'));
 			$m->setQB(new SQLBuilder($m));
 			return $m;
-		} else {
-			return $c->get(DBLayerSQLite::class);
 		}
+
+		return $c->get(DBLayerSQLite::class);
 	},
 	ScanAll::class => static function (ContainerInterface $c) {
 		return new ScanAll($c->get(DBInterface::class));
+	},
+	\Bernard\Producer::class => static function (ContainerInterface $c) {
+		$predis = $c->get(Client::class);
+		$driver = new Driver($predis);
+		$factory = new PersistentFactory($driver, new Serializer());
+		$producer = new Producer($factory, new EventDispatcher());
+		return $producer;
 	}
 ];

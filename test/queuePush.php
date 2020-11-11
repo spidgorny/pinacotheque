@@ -2,31 +2,24 @@
 
 use Bernard\Message\PlainMessage;
 use Bernard\Producer;
-use Bernard\QueueFactory\PersistentFactory;
-use Bernard\Serializer;
-use Bernard\Driver\Predis\Driver;
-use Predis\Client;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
-require_once __DIR__.'/../bootstrap.php';
+$container = require __DIR__.'/../bootstrap.php';
 
-$predis = new Client('tcp://' . getenv('REDIS_HOST'), [
-    'prefix' => 'bernard:',
-]);
+$producer = $container->get(Producer::class);
 
-$driver = new Driver($predis);
+function sendJobFromCLI(Producer $producer)
+{
+	$JobType = ifsetor($_SERVER['argv'][1], 'SendNewsletter');
+	$message = new PlainMessage($JobType, [
+		'newsletterId' => 12,
+	]);
 
-$factory = new PersistentFactory($driver, new Serializer());
-$producer = new Producer($factory, new EventDispatcher());
+	//$queue = 'send-newsletter';
+	//$queue = $factory->create('send-newsletter');
+	$producer->produce($message);
+	//$producer->produce(new PlainMessage('asd'));
+}
 
-$JobType = ifsetor($_SERVER['argv'][1], 'SendNewsletter');
-$message = new PlainMessage($JobType, [
-    'newsletterId' => 12,
-]);
-
-//$queue = 'send-newsletter';
-//$queue = $factory->create('send-newsletter');
+$message = new PlainMessage(ScanDir::class, ['dir' => '/tmp']);
 $producer->produce($message);
-$producer->produce(new PlainMessage('asd'));
-$producer->produce(new PlainMessage(ScanDir::class));
-echo 'produced', "\t", $JobType, PHP_EOL;
+echo 'produced', "\t", $message->getName(), PHP_EOL;

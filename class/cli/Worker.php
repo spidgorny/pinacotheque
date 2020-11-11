@@ -76,13 +76,37 @@ class Worker
 
 	public function scanDir(PlainMessage $message)
 	{
-		echo __METHOD__, PHP_EOL;
-		/** @noinspection ForgottenDebugOutputInspection */
-		print_r($message->all());
-		$dir = $message->get('dir');
-		if (!$dir) {
-			throw new \InvalidArgumentException('ScanDir worker needs $dir');
+		$startTime = microtime(true);
+		try {
+			echo __METHOD__, PHP_EOL;
+			/** @noinspection ForgottenDebugOutputInspection */
+			print_r($message->all());
+			$dir = $message->get('dir');
+			if (!$dir) {
+				throw new \InvalidArgumentException('ScanDir worker needs $dir');
+			}
+			echo 'ScanDir [' . $dir . ']', PHP_EOL;
+			if (!is_readable($dir)) {
+				throw new \InvalidArgumentException('This dir is not readable');
+			}
+			echo 'readable', PHP_EOL;
+			$db = $this->container->get(\DBInterface::class);
+			echo $db, PHP_EOL;
+			$source = \Source::findByPath($db, $dir);
+			if (!$source) {
+				$source = \Source::insert($db, $dir);
+			}
+			echo $source, PHP_EOL;
+			$scanner = new ScanDir($db, $source);
+			$scanner();
+		} catch (\Exception $e) {
+			echo '***', PHP_EOL;
+			echo get_class($e), PHP_EOL;
+			echo $e->getMessage(), PHP_EOL;
+			echo $e->getFile(), ':', $e->getLine(), PHP_EOL;
+			echo $e->getTraceAsString(), PHP_EOL;
+			echo '***', PHP_EOL;
 		}
-		echo 'ScanDir [' . $dir . ']', PHP_EOL;
+		echo 'Done in ', microtime(true) - $startTime, PHP_EOL;
 	}
 }

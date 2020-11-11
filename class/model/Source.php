@@ -9,14 +9,45 @@ class Source extends POPOBase
 	use DatabaseMixin;
 	use DatabaseManipulation;
 
-	public $id;
-	public $name;
-	public $path;
-	public $thumbRoot;
+	public const NAME = 'name';
+	public const PATH = 'path';
+
+	public int $id;
+	public string $name;
+	public string $path;
+	public string $thumbRoot;
 
 	public static function getTableName()
 	{
 		return 'source';
+	}
+
+	public static function findByName(DBInterface $db, $name)
+	{
+		$row = $db->fetchOneSelectQuery(static::getTableName(), [
+			static::NAME => $name,
+		]);
+//		debug($row);
+		if (!$row) {
+			return null;
+		}
+		$instance = new static($row);
+		$instance->db = $db;
+		return $instance;
+	}
+
+	public static function findByPath(DBInterface $db, $path)
+	{
+		$row = $db->fetchOneSelectQuery(static::getTableName(), [
+			static::PATH => $path,
+		]);
+//		debug($row);
+		if (!$row) {
+			return null;
+		}
+		$instance = new static($row);
+		$instance->db = $db;
+		return $instance;
 	}
 
 	/**

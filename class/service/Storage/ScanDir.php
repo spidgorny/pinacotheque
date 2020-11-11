@@ -42,7 +42,7 @@ class ScanDir
 	public function numFiles()
 	{
 		$dirs = $this->scandir($this->dir);
-		return sizeof($dirs);
+		return count($dirs);
 	}
 
 	public function __invoke()
@@ -51,7 +51,7 @@ class ScanDir
 //        $dirs = array_map(static function (array $aFile) {
 //            return $aFile;
 //        }, $dirs);
-		echo sizeof($dirs), PHP_EOL;
+		echo count($dirs), PHP_EOL;
 //        print_r(first($dirs));
 
 		$sourceID = $this->source->id;
