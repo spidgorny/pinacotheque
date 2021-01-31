@@ -1,4 +1,4 @@
-import React from "react";
+import React, {FormEvent} from "react";
 import {AppContext, context} from "./context";
 
 interface ISidebarProps {
@@ -11,6 +11,7 @@ interface ISidebarState {
 export class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
 	static contextType = context;
+	// @ts-ignore
 	context: AppContext;
 
 	state: ISidebarState = {};
@@ -42,7 +43,7 @@ export class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 		);
 	}
 
-	onSubmit(e) {
+	onSubmit(e: FormEvent) {
 		e.preventDefault();
 		this.context.setState({
 			sidebar: {

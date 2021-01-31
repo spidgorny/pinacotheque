@@ -1,21 +1,32 @@
 const path = require('path');
 
 export class Image {
+	// @ts-ignore
 	id: string;
+	// @ts-ignore
 	source: string;
+	// @ts-ignore
 	type: string;
+	// @ts-ignore
 	path: string;
+	// @ts-ignore
 	timestamp: string;
+	// @ts-ignore
 	DateTime: string;
 	colors?: any;
+	// @ts-ignore
 	ext: string;
 	ym?: any;
 	meta_timestamp?: any;
 	meta_error?: any;
+	// @ts-ignore
 	thumb: string;
+	// @ts-ignore
 	source_path: string;
+	// @ts-ignore
 	meta: Meta;
 
+	// @ts-ignore
 	baseUrl: string;
 
 	constructor(props: any) {

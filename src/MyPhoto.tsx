@@ -26,10 +26,10 @@ export class MyPhoto extends React.Component<RenderImageProps<PhotoProps<CustomP
 				margin: this.props.margin,
 				position: 'relative'
 			}}
-			onClick={(e) => this.props.onClick(e, {
+			onClick={(e) => this.props.onClick ? this.props.onClick(e, {
 				...this.props.photo,
 				index: this.props.index
-			})}
+			}) : null}
 		>
 			<img
 				src={this.props.photo.src}
@@ -37,27 +37,28 @@ export class MyPhoto extends React.Component<RenderImageProps<PhotoProps<CustomP
 				height={this.props.photo.height}
 				onMouseEnter={this.showOverlay.bind(this)}
 				onMouseLeave={this.hideOverlay.bind(this)}
+				alt={this.props.photo.src}
 			/>
 			{this.state.showOverlay &&
-			<div style={{
+	  <div style={{
 				position: 'absolute',
 				top: 0,
 				width: '100%',
 				textAlign: 'center'
 			}}>
-				<div style={{
-					background: 'black',
-					opacity: 0.5,
-					padding: '0.5em',
-				}}>
-					<div style={{opacity: 1}}>
-						{this.props.photo.image.path}
-					</div>
-					<div>
-						{moment(this.props.photo.image.getTimestamp()).format('YYYY-MM-DD HH:mm:ss')}
-					</div>
-				</div>
-			</div>
+		  <div style={{
+						background: 'black',
+						opacity: 0.5,
+						padding: '0.5em',
+					}}>
+			  <div style={{opacity: 1}}>
+								{this.props.photo.image.path}
+			  </div>
+			  <div>
+								{moment(this.props.photo.image.getTimestamp()).format('YYYY-MM-DD HH:mm:ss')}
+			  </div>
+		  </div>
+	  </div>
 			}
 		</div>;
 	}

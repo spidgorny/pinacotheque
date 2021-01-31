@@ -1,12 +1,10 @@
 import {Image} from "./model/Image";
 import React from "react";
-import Gallery, {PhotoProps, RenderImageProps} from "react-photo-gallery";
-import {CustomPhotoProps, MyPhoto} from "./MyPhoto";
 import Carousel, {Modal, ModalGateway} from "react-images";
-import IntersectionVisible from 'react-intersection-visible';
 import InfiniteScroll from "react-infinite-scroll-component";
 import {PhotoSetItem} from "./ImageStream";
 import {AppContext, context} from "./context";
+import {MyGallery} from "./my-gallery";
 
 interface IGalleryInScrollProps {
 	items: any[];
@@ -21,6 +19,7 @@ export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
 }> {
 
 	static contextType = context;
+	// @ts-ignore
 	context: AppContext;
 
 	state = {
@@ -29,33 +28,9 @@ export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
 	};
 
 	render() {
-		const imageRenderer =
-			(props: RenderImageProps<PhotoProps<CustomPhotoProps>>) => (
-				<IntersectionVisible
-					key={props.photo.key}
-					// onIntersect={ e => this.onIntersect( e ) }
-					onHide={e => this.onImageHide(e, props.photo.image)}
-					onShow={e => this.onImageShow(e, props.photo.image)}>
-					<MyPhoto
-						key={props.photo.key}
-						margin={"2px"}
-						index={props.index}
-						photo={props.photo}
-						left={props.left}
-						top={props.top}
-						direction={'row'}
-						onClick={() => {
-							this.openLightbox(props.index)
-						}}
-					/>
-				</IntersectionVisible>
-			);
-
 		return <div>
 			<InfiniteScroll
 				dataLength={this.props.items.length} //This is important field to render the next data
-				children={<Gallery photos={this.props.photos}
-								   renderImage={imageRenderer}/>}
 				next={this.props.next}
 				hasMore={true}
 				hasChildren={false}
@@ -74,7 +49,10 @@ export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
 				releaseToRefreshContent={
 					<h3 style={{textAlign: "center"}}>&#8593; Release to refresh</h3>
 				}
-			/>
+			>
+				<MyGallery photos={this.props.photos} openLightbox={this.openLightbox.bind(this)}/>
+			</InfiniteScroll>
+
 			<ModalGateway>
 				{this.state.viewerIsOpen ? (
 					<Modal onClose={this.closeLightbox.bind(this)}>
@@ -106,17 +84,6 @@ export class GalleryInScroll extends React.Component<IGalleryInScrollProps, {
 		this.setState({
 			viewerIsOpen: false,
 		});
-	}
-
-	private onImageShow(e: IntersectionObserverEntry, image: Image) {
-		// console.log('show', e);
-		this.context.setState({
-			[AppContext.VIEWPORT_TIMESTAMP]: image.date
-		});
-	}
-
-	private onImageHide(e: IntersectionObserverEntry, image: Image) {
-		// console.log('hide', e);
 	}
 
 }
