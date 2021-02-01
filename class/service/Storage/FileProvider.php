@@ -170,7 +170,10 @@ class FileProvider
 	{
 		$where = [
 			'type' => 'file',
-			'ext' => new SQLIn($this->imageExtList),
+			'ext' => new SQLOr([
+				'ext' => null,
+				'ext ' => new SQLIn($this->imageExtList)
+			]),
 			'meta.id' => null,
 		];
 		if ($this->source) {
@@ -187,7 +190,7 @@ class FileProvider
 			];
 		}
 		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', $where, 'ORDER BY timestamp');
-		llog($this->db->getLastQuery());
+		llog($this->db->getLastQuery().'');
 //		$content[] = new slTable($imageFiles);
 //		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 //		$imageFiles->setResult($res);

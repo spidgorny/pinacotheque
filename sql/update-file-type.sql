@@ -6,7 +6,7 @@ create index files_ext_index
 
 UPDATE files
 SET ext = substr(path, -4)
-WHERE type = 'file';
+WHERE type = 'file' AND ext is null;
 
 ALTER TABLE files ADD ym varchar(7) null;
 CREATE INDEX files_ym_index ON files(ym);

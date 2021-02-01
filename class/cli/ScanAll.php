@@ -3,7 +3,7 @@
 class ScanAll extends AppController
 {
 
-	protected $db;
+	protected DBInterface $db;
 
 	public function __construct(DBInterface $db)
 	{
@@ -16,6 +16,7 @@ class ScanAll extends AppController
 		$sources = Source::findAll($this->db);
 
 		$ok = 0;
+		/** @var Source $s */
 		foreach ($sources as $s) {
 			$ok += $this->checkSource($s);
 		}
