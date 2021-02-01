@@ -85,6 +85,7 @@ class SourceScan extends ApiController
 			'status' => 'ok',
 			'done' => true,
 			'md5' => $md5,
+			'folders' => count($allLines),
 		], JSON_THROW_ON_ERROR, JSON_PRETTY_PRINT);
 	}
 

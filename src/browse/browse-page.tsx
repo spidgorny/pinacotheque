@@ -13,8 +13,8 @@ export default function BrowsePage(props: { sources: Source[] }) {
         <h3 className="text-lg leading-6 font-medium text-gray-900">Sources</h3>
       </div>
       <div className="border-t border-gray-200 divide-gray-100 divide-y">
-        {props.sources.map((el) => (
-          <SourceItem data={el} />
+        {props.sources.map((el: Source) => (
+          <SourceItem data={el} key={el.id} />
         ))}
       </div>
     </div>
@@ -25,7 +25,12 @@ function SourceItem(props: { data: Source }) {
   return (
     <div className="my-3 px-3 py-1 flex flex-row">
       <div className="flex-grow">
-        <h5 className="">{props.data.name}</h5>
+        <h5 className="">
+          {props.data.name}
+          <span className="text-sm bg-blue-300 align-top px-1 mx-1">
+            {props.data.id}
+          </span>
+        </h5>
         <div>{props.data.path}</div>
       </div>
       <CheckSource source={props.data} />
