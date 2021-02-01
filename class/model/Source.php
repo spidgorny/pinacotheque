@@ -16,6 +16,9 @@ class Source extends POPOBase
 	public string $name;
 	public string $path;
 	public string $thumbRoot;
+	public int $files;
+	public int $folders;
+	public string $md5;	// of folders
 
 	public static function getTableName()
 	{

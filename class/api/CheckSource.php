@@ -27,11 +27,11 @@ class CheckSource extends AppController
 				'error' => 'no ' . $source->path
 			]);
 		}
-		$files = scandir($source->path);
 		header('Access-Control-Allow-Origin: http://localhost:3000');
 		return new JSONResponse([
 			'status' => 'ok',
-			'files' => $files,
+			'files' => $source->files,
+			'folders' => $source->folders,
 		]);
 	}
 
