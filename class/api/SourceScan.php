@@ -14,6 +14,8 @@ class SourceScan extends ApiController
 	{
 		parent::__construct();
 		$this->db = $db;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Content-type: application/json');
 	}
 
 	public function index()
@@ -24,12 +26,8 @@ class SourceScan extends ApiController
 			throw new Exception('Source ' . $id . ' not found');
 		}
 
-		if (gethostname() === '761K7Y2') {
-			$source->path = '/c/windows/assembly';
-		} else {
-			if (!is_dir($source->path)) {
-				throw new Exception('Source is not dir: ' . $source->path);
-			}
+		if (!is_dir($source->path)) {
+			throw new Exception('Source is not dir: ' . $source->path);
 		}
 
 		$find = getenv('find') ?: 'find';
@@ -65,9 +63,6 @@ class SourceScan extends ApiController
 		$p->setTimeout(null);
 		$p->enableOutput();
 
-		header('Access-Control-Allow-Origin: http://localhost:3000');
-		header('Content-type: application/json');
-
 		$allLines = [];
 		$p->run(function ($type, $buffer) use (&$allLines) {
 			$plus = $this->streamLines($buffer, Process::ERR === $type ? 'err' : 'lines');
@@ -87,7 +82,7 @@ class SourceScan extends ApiController
 			'done' => true,
 			'md5' => $md5,
 			'folders' => count($allLines),
-		], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+		], JSON_THROW_ON_ERROR);
 	}
 
 	/// sometimes the buffer is split in the middle of the line

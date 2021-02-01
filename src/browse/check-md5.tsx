@@ -12,12 +12,14 @@ export default function CheckMD5(props: { source: Source }) {
   const [md5, setMD5] = useState("");
   const [error, setError] = useState((null as unknown) as string);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     setFolders([]);
     setLoading(true);
+    setError("");
     const urlCheck = new URL("SourceScan", ctx.baseUrl);
     urlCheck.searchParams.set("id", props.source.id.toString());
     const res = await fetch(urlCheck.toString());
+    console.warn(urlCheck.toString(), res.status, res.statusText);
     if (res.status !== 200) {
       setError(res.statusText);
       setLoading(false);
@@ -46,8 +48,9 @@ export default function CheckMD5(props: { source: Source }) {
         }
       }
     }
-  }, []);
+  };
 
+  // autostart fetchData() is disabled as this is heavy load on the server
   useEffect(() => {
     // noinspection JSIgnoredPromiseFromCall
     // fetchData();
@@ -57,8 +60,35 @@ export default function CheckMD5(props: { source: Source }) {
     return <BarLoader loading={true} />;
   }
 
+  const loadingProgress = loading ? (
+    <div>
+      <div>
+        Dir: {folders.length}/{props.source.folders}
+      </div>
+      <progress
+        value={folders.length}
+        max={props.source.folders}
+        className="w-full"
+      />
+    </div>
+  ) : null;
+
+  const afterScan = folders?.length ? (
+    <div>
+      <div>Dir: {folders?.length ?? props.source.folders}</div>
+      <div>
+        MD5:{" "}
+        <span
+          className={md5 === props.source.md5 ? "bg-green-300" : "bg-red-300"}
+        >
+          {md5}
+        </span>
+      </div>
+    </div>
+  ) : null;
+
   return (
-    <div className="w-32">
+    <div className="">
       <button
         className="bg-yellow-300 p-1 rounded"
         onClick={fetchData}
@@ -66,14 +96,9 @@ export default function CheckMD5(props: { source: Source }) {
       >
         Rescan
       </button>
-      {folders.length ? (
-        <div>
-          <div>Dir: {folders.length}</div>
-          <div>{md5}</div>
-        </div>
-      ) : null}
-      {loading && <BarLoader loading={true} />}
-      <BarLoader loading={loading} />
+      {loadingProgress}
+      {afterScan}
+      {error && <div className="bg-red-300">{error}</div>}
     </div>
   );
 }

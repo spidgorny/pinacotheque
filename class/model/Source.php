@@ -19,6 +19,7 @@ class Source extends POPOBase
 	public ?int $files;
 	public ?int $folders;
 	public ?string $md5;	// of folders
+	public ?DateTimeImmutable $mtime;
 
 	public static function getTableName()
 	{

@@ -11,6 +11,7 @@ import { Header } from "./widgets/header";
 import "./app.css";
 import { Route, Switch } from "wouter";
 import BrowsePage from "./browse/browse-page";
+import OneSourcePage from "./browse/one-source-page";
 
 interface IAppProps {}
 
@@ -93,6 +94,14 @@ export default class App extends React.Component<IAppProps, IAppState> {
               />
             ) : (
               <ScaleLoader />
+            )}
+          </Route>
+          <Route path="/browse/:slug">
+            {(params) => (
+              <OneSourcePage
+                name={params.slug}
+                sources={this.state.sources || []}
+              />
             )}
           </Route>
         </Switch>
