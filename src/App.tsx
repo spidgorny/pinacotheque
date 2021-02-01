@@ -87,7 +87,10 @@ export default class App extends React.Component<IAppProps, IAppState> {
           </Route>
           <Route path="/browse">
             {this.state.sources ? (
-              <BrowsePage sources={this.state.sources || []} />
+              <BrowsePage
+                sources={this.state.sources || []}
+                reloadSources={this.fetchRange.bind(this)}
+              />
             ) : (
               <ScaleLoader />
             )}

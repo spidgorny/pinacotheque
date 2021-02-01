@@ -31,8 +31,7 @@
 		"predis/predis": "^1.1",
 		"spidgorny/nadlib": "dev-master",
 		"symfony/process": "^3.4",
-		"vlucas/phpdotenv": "^3.3",
-		"ext-http": "*"
+		"vlucas/phpdotenv": "^3.3"
 	},
 	"autoload": {
 		"classmap": [

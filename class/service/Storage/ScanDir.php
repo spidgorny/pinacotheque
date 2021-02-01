@@ -8,6 +8,10 @@ use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Source;
 
+/**
+ * Class ScanDir - will
+ * @package App\Service
+ */
 class ScanDir
 {
 
@@ -16,15 +20,19 @@ class ScanDir
 	 */
 	protected $db;
 
-
-	protected $source;
+	protected Source $source;
 
 	/**
 	 * @var Filesystem
 	 */
-	protected $fileSystem;
+	protected Filesystem $fileSystem;
 
-	protected $dir;
+	protected string $dir;
+
+	/**
+	 * @var callable
+	 */
+	public $progressCallback;
 
 	public function __construct(DBInterface $db, Source $source)
 	{
@@ -36,7 +44,7 @@ class ScanDir
 
 	public function log(...$msg)
 	{
-		echo implode(' ', $msg), PHP_EOL;
+		llog(...$msg);
 	}
 
 	public function numFiles()
@@ -51,26 +59,26 @@ class ScanDir
 //        $dirs = array_map(static function (array $aFile) {
 //            return $aFile;
 //        }, $dirs);
-		echo count($dirs), PHP_EOL;
+		$this->log(count($dirs));
 //        print_r(first($dirs));
 
 		$sourceID = $this->source->id;
 		foreach ($dirs as $i => $dir) {
-			echo count($dirs) - $i, TAB, $dir['path'], PHP_EOL;
+			$this->log(count($dirs) - $i, $dir['path']);
 //			$query = "INSERT INTO files (source, type, path, timestamp) VALUES ('$sourceID', '${dir['type']}', '${dir['path']}', '${dir['timestamp']}')";
 			//echo $query, PHP_EOL;
 //			$this->db->perform($query);
 			try {
-				\MetaForSQL::insert($this->db, [
+				$ok = \MetaForSQL::insert($this->db, [
 					'source' => $sourceID,
 					'type' => $dir['type'],
 					'path' => $dir['path'],
 					'timestamp' => $dir['timestamp'],
 				]);
-			} catch (\DatabaseException $e) {
-				// most likely file is already in DB
+				$this->reportProgress($i, count($dirs), $ok);
 			} catch (\Exception $e) {
 				// most likely file is already in DB
+				$this->reportProgress($i, count($dirs), $e->getMessage());
 			}
 		}
 	}
@@ -82,12 +90,24 @@ class ScanDir
 		$dirWithoutPrefix = str_replace($this->dir, '', $dir);
 		try {
 			$files = $this->fileSystem->listContents($dirWithoutPrefix, true);
-			usort($files, function ($a, $b) {
+			usort($files, static function ($a, $b) {
 				return strcmp($a['path'], $b['path']);
 			});
 		} catch (RuntimeException $e) {
+			// access denied is ignored
 		}
 		return $files;
+	}
+
+	function reportProgress(int $i, int $max, $ok)
+	{
+		if (!$this->progressCallback) {
+			return;
+		}
+		if (!is_callable($this->progressCallback)) {
+			return;
+		}
+		call_user_func($this->progressCallback, $i, $max, $ok);
 	}
 
 }

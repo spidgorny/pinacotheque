@@ -12,6 +12,7 @@ class CheckSource extends AppController
 	{
 		parent::__construct();
 		$this->db = $db;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
 	}
 
 	public function index()
@@ -27,7 +28,6 @@ class CheckSource extends AppController
 				'error' => 'no ' . $source->path
 			]);
 		}
-		header('Access-Control-Allow-Origin: http://localhost:3000');
 		return new JSONResponse([
 			'status' => 'ok',
 			'files' => $source->files,

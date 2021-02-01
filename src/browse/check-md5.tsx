@@ -10,6 +10,7 @@ export default function CheckMD5(props: { source: Source }) {
   const [loading, setLoading] = useState(false);
   const [folders, setFolders] = useState([] as string[]);
   const [md5, setMD5] = useState("");
+  const [error, setError] = useState((null as unknown) as string);
 
   const fetchData = useCallback(async () => {
     setFolders([]);
@@ -17,6 +18,11 @@ export default function CheckMD5(props: { source: Source }) {
     const urlCheck = new URL("SourceScan", ctx.baseUrl);
     urlCheck.searchParams.set("id", props.source.id.toString());
     const res = await fetch(urlCheck.toString());
+    if (res.status !== 200) {
+      setError(res.statusText);
+      setLoading(false);
+      return;
+    }
     const exampleReader = ndjsonStream(res.body).getReader();
 
     let result:
@@ -53,7 +59,11 @@ export default function CheckMD5(props: { source: Source }) {
 
   return (
     <div className="w-32">
-      <button className="bg-yellow-300 p-1 rounded" onClick={fetchData}>
+      <button
+        className="bg-yellow-300 p-1 rounded"
+        onClick={fetchData}
+        disabled={loading}
+      >
         Rescan
       </button>
       {folders.length ? (
@@ -63,6 +73,7 @@ export default function CheckMD5(props: { source: Source }) {
         </div>
       ) : null}
       {loading && <BarLoader loading={true} />}
+      <BarLoader loading={loading} />
     </div>
   );
 }

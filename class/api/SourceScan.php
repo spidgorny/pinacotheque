@@ -8,7 +8,7 @@ class SourceScan extends ApiController
 	/**
 	 * @var DBInterface
 	 */
-	protected $db;
+	protected DBInterface $db;
 
 	public function __construct(DBInterface $db)
 	{

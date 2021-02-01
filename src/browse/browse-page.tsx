@@ -4,13 +4,25 @@ import { BarLoader } from "react-spinners";
 import axios from "redaxios";
 import { context } from "../context";
 import CheckMD5 from "./check-md5";
+import { IoReload } from "react-icons/all";
 
-export default function BrowsePage(props: { sources: Source[] }) {
+export default function BrowsePage(props: {
+  sources: Source[];
+  reloadSources: () => void;
+}) {
   console.log(props.sources);
   return (
     <div className="bg-white shadow overflow-hidden sm:rounded-lg mx-3">
-      <div className="px-4 py-5">
-        <h3 className="text-lg leading-6 font-medium text-gray-900">Sources</h3>
+      <div className="px-4 py-5 flex flex-row">
+        <h3 className="text-lg leading-6 font-medium text-gray-900 flex-grow">
+          Sources
+        </h3>
+        <button
+          className="bg-blue-300 p-1 rounded"
+          onClick={props.reloadSources}
+        >
+          <IoReload />
+        </button>
       </div>
       <div className="border-t border-gray-200 divide-gray-100 divide-y">
         {props.sources.map((el: Source) => (
@@ -53,13 +65,18 @@ function CheckSource(props: { source: Source }) {
   const [state, setState] = useState(
     (null as unknown) as CheckSourceState | null
   );
+  const [error, setError] = useState((null as unknown) as string);
 
   async function fetchData() {
     setState(null);
     const urlCheck = new URL("CheckSource", ctx.baseUrl);
     urlCheck.searchParams.set("id", props.source.id.toString());
-    const res = await axios.get(urlCheck.toString());
-    setState(res.data);
+    try {
+      const res = await axios.get(urlCheck.toString());
+      setState(res.data);
+    } catch (e) {
+      setError(e.message);
+    }
   }
 
   useEffect(() => {
@@ -70,7 +87,14 @@ function CheckSource(props: { source: Source }) {
   if (!state) {
     return <BarLoader loading={true} />;
   }
-  return state?.status === "ok" ? (
+  if (error && state?.status === "ok") {
+    return (
+      <button className="bg-red-300 p-1 rounded" onClick={fetchData}>
+        {error} {state.error}
+      </button>
+    );
+  }
+  return (
     <>
       <div className="mx-2">
         <button className="bg-blue-300 p-1 rounded" onClick={fetchData}>
@@ -85,9 +109,5 @@ function CheckSource(props: { source: Source }) {
         <CheckMD5 source={props.source} />
       </div>
     </>
-  ) : (
-    <button className="bg-red-300 p-1 rounded" onClick={fetchData}>
-      {state.error}
-    </button>
   );
 }

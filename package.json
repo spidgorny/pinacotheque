@@ -43,6 +43,7 @@
     "progress": "^2.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-icons": "^4.1.0",
     "react-images": "^1.1.7",
     "react-infinite-scroll-component": "^5.1.0",
     "react-intersection-visible": "^2.1.0",
