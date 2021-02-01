@@ -105,7 +105,7 @@ class SourceScan extends ApiController
 		echo json_encode([
 			'status' => $type,
 			'file' => $lines,
-		], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR), PHP_EOL;
+		], JSON_THROW_ON_ERROR), PHP_EOL;
 		return $lines;
 	}
 

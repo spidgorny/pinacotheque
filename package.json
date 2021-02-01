@@ -25,6 +25,7 @@
     "@tensorflow/tfjs-core": "^3.0.0",
     "@types/ioredis": "^4.19.3",
     "bootstrap": "^4.6.0",
+    "can-ndjson-stream": "^1.0.2",
     "defiant": "git+https://github.com/hbi99/defiant.js.git",
     "defiant.js": "^2.2.7",
     "depot": "^0.1.6",

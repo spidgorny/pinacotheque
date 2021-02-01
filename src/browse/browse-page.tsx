@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
 import axios from "redaxios";
 import { context } from "../context";
+import CheckMD5 from "./check-md5";
 
 export default function BrowsePage(props: { sources: Source[] }) {
   console.log(props.sources);
@@ -35,7 +36,8 @@ function SourceItem(props: { data: Source }) {
 interface CheckSourceState {
   status: "ok" | "error";
   error?: string;
-  files: string[];
+  files: number;
+  folders: number;
 }
 
 function CheckSource(props: { source: Source }) {
@@ -67,7 +69,13 @@ function CheckSource(props: { source: Source }) {
           OK
         </button>
       </div>
-      <div className="w-5">Files: {state.files.length}</div>
+      <div className="mx-2 w-20">
+        <div>Files: {state.files}</div>
+        <div>Folders: {state.folders}</div>
+      </div>
+      <div className="mx-2">
+        <CheckMD5 source={props.source} />
+      </div>
     </>
   ) : (
     <button className="bg-red-300 p-1 rounded" onClick={fetchData}>
