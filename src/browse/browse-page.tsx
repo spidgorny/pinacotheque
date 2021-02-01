@@ -31,7 +31,10 @@ function SourceItem(props: { data: Source }) {
             {props.data.id}
           </span>
         </h5>
-        <div>{props.data.path}</div>
+        <div>
+          {props.data.path} [{props.data.folders}/{props.data.files}]
+        </div>
+        <div>{props.data.md5}</div>
       </div>
       <CheckSource source={props.data} />
     </div>
@@ -74,7 +77,7 @@ function CheckSource(props: { source: Source }) {
           OK
         </button>
       </div>
-      <div className="mx-2 w-20">
+      <div className="mx-2 w-24">
         <div>Files: {state.files}</div>
         <div>Folders: {state.folders}</div>
       </div>

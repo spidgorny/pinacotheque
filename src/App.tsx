@@ -19,6 +19,9 @@ export interface Source {
   name: string;
   path: string;
   thumbRoot: string;
+  files: number;
+  folders: number;
+  md5: string;
   _missingProperties: [];
 }
 

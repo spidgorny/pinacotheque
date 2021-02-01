@@ -62,6 +62,7 @@ class SourceScan extends ApiController
 	{
 		set_time_limit(0);
 		$p = new Process($cmd);
+		$p->setTimeout(null);
 		$p->enableOutput();
 
 		header('Access-Control-Allow-Origin: http://localhost:3000');
@@ -86,7 +87,7 @@ class SourceScan extends ApiController
 			'done' => true,
 			'md5' => $md5,
 			'folders' => count($allLines),
-		], JSON_THROW_ON_ERROR, JSON_PRETTY_PRINT);
+		], JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
 	}
 
 	/// sometimes the buffer is split in the middle of the line
