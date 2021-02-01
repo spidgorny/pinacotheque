@@ -12,6 +12,8 @@ class ScanDirApi extends ApiController
 	{
 		parent::__construct();
 		$this->db = $db;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Content-Type: application/json');
 	}
 
 	public function index()
@@ -26,15 +28,14 @@ class ScanDirApi extends ApiController
 			throw new Exception('Source is not dir: ' . $source->path);
 		}
 
-		header('Content-Type: application/json');
-
 		$scanner = new \App\Service\ScanDir($this->db, $source);
 		$scanner->progressCallback = [$this, 'report'];
-		$scanner();
+		$inserted = $scanner();
 
 		return json_encode([
 			'status' => 'done',
 			'done' => true,
+			'inserted' => $inserted,
 		], JSON_THROW_ON_ERROR);
 	}
 

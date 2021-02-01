@@ -1,9 +1,10 @@
 import { Source } from "../App";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { context } from "../context";
 import { BarLoader } from "react-spinners";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
+import { GoInfo } from "react-icons/all";
 
 export default function CheckMD5(props: { source: Source }) {
   const ctx = useContext(context);
@@ -56,10 +57,6 @@ export default function CheckMD5(props: { source: Source }) {
     // fetchData();
   }, [props.source]);
 
-  if (!folders) {
-    return <BarLoader loading={true} />;
-  }
-
   const loadingProgress = loading ? (
     <div>
       <div>
@@ -90,12 +87,16 @@ export default function CheckMD5(props: { source: Source }) {
   return (
     <div className="">
       <button
-        className="bg-yellow-300 p-1 rounded"
+        className="bg-yellow-300 p-1 rounded inline"
         onClick={fetchData}
         disabled={loading}
       >
         Rescan
       </button>
+      <GoInfo
+        style={{ display: "inline", verticalAlign: "top" }}
+        title="find all subdirectories and check md5 hash of their name to quickly see if this folder requires re-scanning"
+      />
       {loadingProgress}
       {afterScan}
       {error && <div className="bg-red-300">{error}</div>}

@@ -56,18 +56,12 @@ class ScanDir
 	public function __invoke()
 	{
 		$dirs = $this->scandir($this->dir);
-//        $dirs = array_map(static function (array $aFile) {
-//            return $aFile;
-//        }, $dirs);
 		$this->log(count($dirs));
-//        print_r(first($dirs));
 
+		$inserted = 0;
 		$sourceID = $this->source->id;
 		foreach ($dirs as $i => $dir) {
 			$this->log(count($dirs) - $i, $dir['path']);
-//			$query = "INSERT INTO files (source, type, path, timestamp) VALUES ('$sourceID', '${dir['type']}', '${dir['path']}', '${dir['timestamp']}')";
-			//echo $query, PHP_EOL;
-//			$this->db->perform($query);
 			try {
 				$ok = \MetaForSQL::insert($this->db, [
 					'source' => $sourceID,
@@ -76,11 +70,13 @@ class ScanDir
 					'timestamp' => $dir['timestamp'],
 				]);
 				$this->reportProgress($i, count($dirs), $ok);
+				$inserted++;
 			} catch (\Exception $e) {
 				// most likely file is already in DB
 				$this->reportProgress($i, count($dirs), $e->getMessage());
 			}
 		}
+		return $inserted;
 	}
 
 	public function scandir($dir)

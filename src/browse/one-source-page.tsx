@@ -4,6 +4,7 @@ import { MdDoNotDisturbOn } from "react-icons/all";
 import { CheckSource } from "./check-source";
 import { AppContext, context } from "../context";
 import CheckMD5 from "./check-md5";
+import ScanDir from "./scan-dir";
 
 export function NotFound() {
   return <MdDoNotDisturbOn />;
@@ -33,6 +34,10 @@ function SourcePage(props: { source: Source }) {
       <hr />
       <div className="p-2">
         <CheckMD5 source={props.source} />
+      </div>
+      <hr />
+      <div className="p-2">
+        <ScanDir source={props.source} />
       </div>
     </context.Provider>
   );
