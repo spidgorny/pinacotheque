@@ -1,6 +1,8 @@
 import { Source } from "../App";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BarLoader } from "react-spinners";
+import axios from "redaxios";
+import { context } from "../context";
 
 export default function BrowsePage(props: { sources: Source[] }) {
   console.log(props.sources);
@@ -21,21 +23,55 @@ export default function BrowsePage(props: { sources: Source[] }) {
 function SourceItem(props: { data: Source }) {
   return (
     <div className="my-3 px-3 py-1 flex flex-row">
-      <div>
+      <div className="flex-grow">
         <h5 className="">{props.data.name}</h5>
         <div>{props.data.path}</div>
       </div>
-      <div>
-        <CheckSource source={props.data} />
-      </div>
+      <CheckSource source={props.data} />
     </div>
   );
 }
 
+interface CheckSourceState {
+  status: "ok" | "error";
+  error?: string;
+  files: string[];
+}
+
 function CheckSource(props: { source: Source }) {
-  const [state, setState] = useState(null);
+  const ctx = useContext(context);
+  const [state, setState] = useState(
+    (null as unknown) as CheckSourceState | null
+  );
 
-  useEffect(() => {}, props.source);
+  async function fetchData() {
+    setState(null);
+    const urlCheck = new URL("CheckSource", ctx.baseUrl);
+    urlCheck.searchParams.set("id", props.source.id.toString());
+    const res = await axios.get(urlCheck.toString());
+    setState(res.data);
+  }
 
-  return !state ? <BarLoader /> : <span>OK</span>;
+  useEffect(() => {
+    // noinspection JSIgnoredPromiseFromCall
+    fetchData();
+  }, [props.source]);
+
+  if (!state) {
+    return <BarLoader loading={true} />;
+  }
+  return state?.status === "ok" ? (
+    <>
+      <div className="mx-2">
+        <button className="bg-blue-300 p-1 rounded" onClick={fetchData}>
+          OK
+        </button>
+      </div>
+      <div className="w-5">Files: {state.files.length}</div>
+    </>
+  ) : (
+    <button className="bg-red-300 p-1 rounded" onClick={fetchData}>
+      {state.error}
+    </button>
+  );
 }
