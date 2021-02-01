@@ -110,7 +110,6 @@ class SourceScan extends ApiController
 		], JSON_THROW_ON_ERROR), PHP_EOL;
 		flush();
 		ob_flush();
-		sleep(1);
 		return $lines;
 	}
 
