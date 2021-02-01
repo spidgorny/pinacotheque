@@ -107,6 +107,8 @@ class SourceScan extends ApiController
 			'status' => $type,
 			'file' => $lines,
 		], JSON_THROW_ON_ERROR), PHP_EOL;
+		flush();
+		ob_flush();
 		return $lines;
 	}
 
