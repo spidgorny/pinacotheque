@@ -32,7 +32,7 @@ class SourceScan extends ApiController
 			}
 		}
 
-		$find = getenv('find') ?? 'find';
+		$find = getenv('find') ?: 'find';
 		$cmd = [$find, $source->path, '-type', 'd'];
 //		$cmd = "echo asd";
 		llog($cmd);
