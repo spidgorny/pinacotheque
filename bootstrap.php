@@ -31,8 +31,14 @@ function llog(...$msg)
 		/** @noinspection ForgottenDebugOutputInspection */
 		error_log(implode(', ', $msg));
 	} else {
+		$jsonOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR;
+		$string = json_encode($msg, $jsonOptions);
+		if (strlen($string) > 70) {
+			/** @noinspection JsonEncodingApiUsageInspection */
+			$string = json_encode($msg, JSON_PRETTY_PRINT | $jsonOptions);
+		}
 		/** @noinspection ForgottenDebugOutputInspection */
-		error_log(json_encode($msg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR));
+		error_log($string);
 	}
 }
 

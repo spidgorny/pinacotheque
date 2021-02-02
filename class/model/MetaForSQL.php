@@ -28,7 +28,7 @@ class MetaForSQL extends Meta
 	{
 		parent::__construct($meta);
 		if ($this->colors) {
-			$this->colors = json_decode($this->colors, true, 512 /*JSON_THROW_ON_ERROR*/);
+			$this->colors = json_decode($this->colors, true, 512,  JSON_THROW_ON_ERROR);
 		}
 	}
 
@@ -117,7 +117,7 @@ class MetaForSQL extends Meta
 			$value = $entry->value;
 			if (strlen($value) && ($value[0] === '{' || $value[0] === '[')) {
 				try {
-					$try = json_decode($value, $value[0] === '[', 512 /*JSON_THROW_ON_ERROR*/);
+					$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
 					if ($try) {
 						$value = $try;
 					}

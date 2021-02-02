@@ -43,7 +43,7 @@ class Thumb
 		return file_exists($thumbPath);
 	}
 
-	public function getThumb()
+	public function getThumb(): string
 	{
 		if (!$this->exists()) {
 			$this->makeThumb();
@@ -106,6 +106,18 @@ class Thumb
 	public function log($something)
 	{
 		$this->log[] = $something;
+	}
+
+	public function getMeta()
+	{
+		$filename = $this->getThumb();
+		$size = getimagesize($filename);
+		$size['width'] = $size[0];
+		$size['height'] = $size[1];
+		return [
+			'file' => stat($filename),
+			'image'=> $size
+		];
 	}
 
 }

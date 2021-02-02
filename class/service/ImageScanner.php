@@ -26,14 +26,17 @@ class ImageScanner
 
 	public function __invoke()
 	{
+		$meta = null;
+		$thumb = null;
 		try {
-			$this->fetchExif();
-			$this->fetchThumbnail();
+			$meta = $this->fetchExif();
+			$thumb = $this->fetchThumbnail();
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
 			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		} catch (ImageException $e) {
 			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		}
+		return [$meta, $thumb];
 	}
 
 	public function fetchExif()
@@ -64,6 +67,7 @@ class ImageScanner
 				'meta_error' => $e->getMessage(),
 			]);
 		}
+		return $meta;
 	}
 
 	public function saveMetaToDB(array $meta, $fileID)
@@ -75,7 +79,7 @@ class ImageScanner
 		]);
 		foreach ($meta as $key => $val) {
 			try {
-				$encoded = is_scalar($val) ? $val : json_encode($val /*JSON_THROW_ON_ERROR*/);
+				$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
 				/** @var SQLite3Result $row */
 				$row = MetaEntry::insert($this->db, [
 					'id_file' => $fileID,
@@ -95,20 +99,23 @@ class ImageScanner
 	public function fetchThumbnail()
 	{
 		$destination = $this->file->getDestination();
-		if (!file_exists($destination)) {
-			$thumb = new Thumb($this->file);
-			try {
-				$thumb->getThumb();    // make it if doesn't exist
-				$this->log('Thumb', 'OK', new Bytes(filesize($this->file->getDestination())));
-				$this->log('Thumb->log', $thumb->log);
-			} catch (NotReadableException $e) {
-				$content[] = $e;
-				$this->log('Thumb', '*** FAIL ***');
-				$this->log('Thumb->log', $thumb->log);
-			}
-		} else {
+		if (file_exists($destination)) {
 			$this->log('Thumb', 'exists', new Bytes(filesize($this->file->getDestination())));
+			return $this->file->getDestination();
 		}
+
+		$thumbPath = null;
+		$thumb = new Thumb($this->file);
+		try {
+			$thumpPath = $thumb->getThumb();    // make it if doesn't exist
+			$this->log('Thumb', 'OK', new Bytes(filesize($this->file->getDestination())));
+			$this->log('Thumb->log', $thumb->log);
+		} catch (NotReadableException $e) {
+			$content[] = $e;
+			$this->log('Thumb', '*** FAIL ***');
+			$this->log('Thumb->log', $thumb->log);
+		}
+		return $thumpPath;
 	}
 
 }

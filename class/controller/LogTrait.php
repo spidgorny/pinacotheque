@@ -22,7 +22,7 @@ trait LogTrait
 			$data = implode(TAB, $messages);
 		}
 
-		echo '+', $since, ' ms', TAB, $class, TAB, $data, PHP_EOL;
+		llog('+', $since, ' ms', $class, $data);
 		$stamp = $now;
 	}
 

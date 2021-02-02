@@ -12,100 +12,107 @@ import "./app.css";
 import { Route, Switch } from "wouter";
 import BrowsePage from "./browse/browse-page";
 import OneSourcePage from "./browse/one-source-page";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 
 interface IAppProps {}
 
 export interface Source {
-  id: number;
-  name: string;
-  path: string;
-  thumbRoot: string;
-  files: number;
-  folders: number;
-  md5: string;
-  _missingProperties: [];
+	id: number;
+	name: string;
+	path: string;
+	thumbRoot: string;
+	files: number;
+	folders: number;
+	md5: string;
+	_missingProperties: [];
 }
 
 export interface IAppState {
-  status?: "ok";
-  min?: string;
-  max?: string;
-  sources?: Source[];
-  query?: string;
-  duration?: number;
+	status?: "ok";
+	min?: string;
+	max?: string;
+	sources?: Source[];
+	query?: string;
+	duration?: number;
 }
 
 function StreamPage(props: { state: IAppState }) {
-  return (
-    <div className="flex flex-row p-2">
-      <div className="w-2/12">
-        <Sidebar />
-      </div>
-      <div className="flex-grow">
-        {props.state === null ? (
-          <ScaleLoader loading={true} color="#4DAF7C" />
-        ) : (
-          <ImageStream />
-        )}
-      </div>
-    </div>
-  );
+	return (
+		<div className="flex flex-row p-2">
+			<div className="w-2/12">
+				<Sidebar />
+			</div>
+			<div className="flex-grow">
+				{props.state === null ? (
+					<ScaleLoader loading={true} color="#4DAF7C" />
+				) : (
+					<ImageStream />
+				)}
+			</div>
+		</div>
+	);
 }
 
+const queryClient = new QueryClient();
+
 export default class App extends React.Component<IAppProps, IAppState> {
-  static contextType = context;
-  // @ts-ignore
-  context: AppContext;
-  baseUrl: URL | undefined;
+	static contextType = context;
+	// @ts-ignore
+	context: AppContext;
+	baseUrl: URL | undefined;
 
-  state: IAppState = {};
+	state: IAppState = {};
 
-  componentDidMount() {
-    this.baseUrl = this.context.baseUrl;
-    // noinspection JSIgnoredPromiseFromCall
-    this.fetchRange();
-  }
+	componentDidMount() {
+		this.baseUrl = this.context.baseUrl;
+		// noinspection JSIgnoredPromiseFromCall
+		this.fetchRange();
+	}
 
-  async fetchRange() {
-    const urlInfo = new URL("Info", this.baseUrl);
-    const res = await axios.get(urlInfo.toString());
-    // console.log(res.data);
-    const resData = res.data;
-    if (resData.status !== "ok") {
-      throw new Error(resData.error);
-    }
-    // console.log(resData);
-    this.setState(resData);
-  }
+	async fetchRange() {
+		const urlInfo = new URL("Info", this.baseUrl);
+		const res = await axios.get(urlInfo.toString());
+		// console.log(res.data);
+		const resData = res.data;
+		if (resData.status !== "ok") {
+			throw new Error(resData.error);
+		}
+		// console.log(resData);
+		this.setState(resData);
+	}
 
-  render() {
-    return (
-      <div className="container" style={{ width: "100%", maxWidth: "100%" }}>
-        <Header />
-        <Switch>
-          <Route path="/">
-            <StreamPage state={this.state} />
-          </Route>
-          <Route path="/browse">
-            {this.state.sources ? (
-              <BrowsePage
-                sources={this.state.sources || []}
-                reloadSources={this.fetchRange.bind(this)}
-              />
-            ) : (
-              <ScaleLoader />
-            )}
-          </Route>
-          <Route path="/browse/:slug">
-            {(params) => (
-              <OneSourcePage
-                name={params.slug}
-                sources={this.state.sources || []}
-              />
-            )}
-          </Route>
-        </Switch>
-      </div>
-    );
-  }
+	render() {
+		return (
+			<QueryClientProvider client={queryClient}>
+				<div className="container" style={{ width: "100%", maxWidth: "100%" }}>
+					<Header />
+					<Switch>
+						<Route path="/">
+							<StreamPage state={this.state} />
+						</Route>
+						<Route path="/browse">
+							{this.state.sources ? (
+								<BrowsePage
+									sources={this.state.sources || []}
+									reloadSources={this.fetchRange.bind(this)}
+								/>
+							) : (
+								<ScaleLoader />
+							)}
+						</Route>
+						<Route path="/browse/:slug">
+							{(params) => (
+								<OneSourcePage
+									name={params.slug}
+									sources={this.state.sources || []}
+								/>
+							)}
+						</Route>
+					</Switch>
+				</div>
+				<ReactQueryDevtools initialIsOpen={true} />
+			</QueryClientProvider>
+		);
+	}
 }

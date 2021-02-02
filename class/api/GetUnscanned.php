@@ -42,15 +42,4 @@ WHERE type = 'file' AND ext is null");
 		], JSON_THROW_ON_ERROR);
 	}
 
-	function report($i, $max, $ok)
-	{
-		echo json_encode([
-			'status' => 'line',
-			'progress' => $i,
-			'max' => $max,
-			'res' => $ok,
-		], JSON_THROW_ON_ERROR), PHP_EOL;
-		flush();
-	}
-
 }
