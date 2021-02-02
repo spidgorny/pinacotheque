@@ -1,7 +1,6 @@
-import { Source } from "../App";
 import { useContext } from "react";
 import { context } from "../context";
-import { useQuery } from "react-query";
+import { QueryObserverBaseResult, useQuery } from "react-query";
 import axios from "redaxios";
 import { FadeLoader } from "react-spinners";
 
@@ -10,23 +9,13 @@ export interface FileToScan {
 }
 
 export default function ScanMeta(props: {
-	source: Source;
 	file: FileToScan;
-	autoStart: boolean;
+	autoStart?: boolean;
+	onDone?: () => void;
 }) {
 	const ctx = useContext(context);
 
-	const {
-		isLoading,
-		error,
-		data,
-		refetch,
-	}: {
-		isLoading: boolean;
-		error: Error | null;
-		data: any;
-		refetch: () => void;
-	} = useQuery(
+	const { isLoading, isFetching, error, data, refetch } = useQuery(
 		["ScanMeta", props.file.id],
 		async () => {
 			const url = new URL(ctx.baseUrl.toString() + "ScanMeta");
@@ -40,19 +29,30 @@ export default function ScanMeta(props: {
 			enabled: props.autoStart,
 			initialData: {},
 		}
-	);
+	) as QueryObserverBaseResult<
+		{
+			thumbUrl: string;
+			thumbMeta: {
+				image: {
+					width: number;
+					height: number;
+				};
+			};
+		},
+		Error
+	>;
 
-	if (isLoading)
-		return (
-			<span style={{ width: 256, height: 144 }}>
-				<FadeLoader loading={true} />
-			</span>
-		);
+	// if (isFetching)
+	// 	return (
+	// 		<div className="inline-block" style={{ width: 256, height: 144 }}>
+	// 			<FadeLoader loading={true} />
+	// 		</div>
+	// 	);
 
 	const scanButton = (
 		<button
 			className="bg-yellow-300 p-1 rounded m-1"
-			onClick={refetch}
+			onClick={() => refetch()}
 			disabled={isLoading}
 			style={{ width: 256, height: 144 }}
 		>
@@ -68,21 +68,27 @@ export default function ScanMeta(props: {
 			</div>
 		);
 
-	return (
-		<span>
-			{/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
-			{data.thumbUrl && (
-				<img
-					src={data.thumbUrl}
-					alt={data.thumbUrl}
-					style={{
-						width: data.thumbMeta.image.width ?? 256,
-						height: data.thumbMeta.image.height ?? 144,
-					}}
-					className="inline p-1 m-1"
-				/>
-			)}
-			{!data.thumbUrl && scanButton}
-		</span>
-	);
+	if (data) {
+		data.thumbUrl && props.onDone && setTimeout(props.onDone, 500);
+
+		return (
+			<span>
+				{/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
+				{data.thumbUrl && (
+					<img
+						src={data.thumbUrl}
+						alt={data.thumbUrl}
+						style={{
+							width: data.thumbMeta.image.width ?? 256,
+							height: data.thumbMeta.image.height ?? 144,
+						}}
+						className="inline p-1 m-1"
+					/>
+				)}
+				{!data.thumbUrl && scanButton}
+			</span>
+		);
+	}
+
+	return <div> some shit</div>;
 }

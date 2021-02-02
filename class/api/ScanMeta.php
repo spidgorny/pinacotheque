@@ -35,6 +35,7 @@ class ScanMeta extends ApiController
 		$host = $URL->getHost() ?? ('http://' . $_SERVER['HTTP_HOST']);
 		return new JSONResponse([
 			'status' => 'ok',
+			'row' => $file->toJson(),
 			'meta' => $meta,
 			'thumb' => $thumb,
 			'thumbUrl' => $file->getThumbnail($host . '/ShowThumb?file='),

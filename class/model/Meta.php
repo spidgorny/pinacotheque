@@ -171,7 +171,7 @@ class Meta implements IMetaData
 		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
 		$ext = strtolower($ext);
 		return in_array($ext, [
-			'gif', 'jpg', 'jpeg', 'bmp', 'webp', 'tif', 'tiff',
+			'gif', 'jpg', 'jpeg', 'bmp', 'webp', 'tif', 'tiff', 'png'
 		]);
 	}
 
@@ -180,7 +180,7 @@ class Meta implements IMetaData
 		$ext = pathinfo($this->getPath(), PATHINFO_EXTENSION);
 		$ext = strtolower($ext);
 		return in_array($ext, [
-			'mov', 'mp4', 'mpeg', 'avi',
+			'mov', 'mp4', 'mpeg', 'mpg', 'avi',
 		]);
 	}
 

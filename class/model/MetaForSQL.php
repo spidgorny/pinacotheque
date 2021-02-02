@@ -58,6 +58,11 @@ class MetaForSQL extends Meta
 		return $filePath;
 	}
 
+	public function getExt()
+	{
+		return pathinfo($this->path, PATHINFO_EXTENSION);
+	}
+
 	public function getSource()
 	{
 		if ($this->sourceInstance) {

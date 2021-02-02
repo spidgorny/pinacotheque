@@ -1,9 +1,82 @@
 import { Source } from "../App";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { context } from "../context";
 import { useQuery } from "react-query";
 import axios from "redaxios";
 import ScanMeta, { FileToScan } from "./scan-meta";
+
+function Top10(props: { filesToScan: FileToScan[] }) {
+	return (
+		<>
+			<hr />
+			{props.filesToScan.slice(0, 10).map((el: FileToScan) => (
+				<ScanMeta key={el.id} file={el} autoStart={false} />
+			))}
+		</>
+	);
+}
+
+function MetaScanProgress(props: { data: FileToScan[] }) {
+	const [current, setCurrent] = useState(0);
+	const [playState, setPlayState] = useState(false);
+
+	const play = () => {
+		setPlayState(true);
+		next();
+	};
+
+	const stop = () => {
+		setPlayState(false);
+	};
+
+	const next = () => {
+		console.log("next");
+		if (playState && current < props.data.length - 1) {
+			setCurrent((current) => current + 1);
+		}
+	};
+
+	if (!props.data.length) {
+		return <div>Done</div>;
+	}
+
+	return (
+		<div>
+			<progress value={current} max={props.data.length} className="w-full" />
+			<div>
+				<button
+					onClick={play}
+					disabled={playState}
+					className="bg-yellow-300 p-1 m-1 rounded"
+				>
+					Play
+				</button>
+				<button
+					onClick={stop}
+					disabled={!playState}
+					className="bg-red-300 p-1 m-1 rounded"
+				>
+					Stop
+				</button>
+				<button
+					onClick={next}
+					disabled={!playState}
+					className="bg-green-300 p-1 m-1 rounded"
+				>
+					Next
+				</button>
+			</div>
+			{current > 0 && (
+				<ScanMeta file={props.data[current - 1]} autoStart={true} />
+			)}
+			<ScanMeta
+				file={props.data[current]}
+				autoStart={playState}
+				onDone={next}
+			/>
+		</div>
+	);
+}
 
 export default function Unscanned(props: { source: Source }) {
 	const ctx = useContext(context);
@@ -50,15 +123,8 @@ export default function Unscanned(props: { source: Source }) {
 			<p>Unscanned: {data.count}</p>
 			{refetchButton}
 			{/*<pre>{JSON.stringify(data, null, 2)}</pre>*/}
-			<hr />
-			{data.filesToScan.slice(0, 10).map((el: FileToScan) => (
-				<ScanMeta
-					key={el.id}
-					source={props.source}
-					file={el}
-					autoStart={false}
-				/>
-			))}
+			{/*<Top10 data={data.filesToScan} />*/}
+			<MetaScanProgress data={data.filesToScan} />
 		</div>
 	);
 }

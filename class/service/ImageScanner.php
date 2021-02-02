@@ -58,7 +58,11 @@ class ImageScanner
 			} elseif ($this->file->isVideo()) {
 				$vp = VideoParser::fromFile($path);
 				$meta = (array)$vp->getMeta();
-				$ok = $this->saveMetaToDB($meta, $this->file->id);
+				if ($meta) {
+					$ok = $this->saveMetaToDB($meta, $this->file->id);
+				}
+			} else {
+				throw new Exception('Unknown file type: ' . $this->file->getExt());
 			}
 			$this->log('Meta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 		} catch (Exception $e) {
@@ -66,6 +70,7 @@ class ImageScanner
 				'meta_timestamp' => new SQLNow(),
 				'meta_error' => $e->getMessage(),
 			]);
+			$meta = null;
 		}
 		return $meta;
 	}
@@ -108,7 +113,7 @@ class ImageScanner
 		$thumb = new Thumb($this->file);
 		try {
 			$thumpPath = $thumb->getThumb();    // make it if doesn't exist
-			$this->log('Thumb', 'OK', new Bytes(filesize($this->file->getDestination())));
+			$this->log('Thumb', 'OK', new Bytes(@filesize($this->file->getDestination())));
 			$this->log('Thumb->log', $thumb->log);
 		} catch (NotReadableException $e) {
 			$content[] = $e;
