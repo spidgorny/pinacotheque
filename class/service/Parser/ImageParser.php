@@ -8,12 +8,14 @@ use Intervention\Image\ImageManager;
 class ImageParser
 {
 
+	protected string $filePath;
+
 	/** @var Image $image */
-	protected $image;
+	protected Image $image;
 
-	public $log = [];
+	public array $log = [];
 
-	public static function fromFile($filePath): ImageParser
+	public static function fromFile(string $filePath): ImageParser
 	{
 		$size = getimagesize($filePath);
 //		debug($size);
@@ -22,11 +24,12 @@ class ImageParser
 		}
 		$manager = new ImageManager();
 		$image = $manager->make($filePath);
-		return new static($image);
+		return new static($filePath, $image);
 	}
 
-	public function __construct(Image $image)
+	public function __construct(string $filePath, Image $image)
 	{
+		$this->filePath = $filePath;
 		$this->image = $image;
 	}
 
@@ -38,7 +41,38 @@ class ImageParser
 	public function getMeta()
 	{
 		$meta = $this->image->exif();
-//		llog('meta keys', sizeof($meta));
+//		if (error_get_last()) {
+//			throw new Exception(error_get_last()['message']);
+//		}
+		if (!$meta) {
+			$meta = $this->getMetaFromPHP();
+		}
+		if (!$meta) {
+			$meta = $this->getMetaByIM();
+		}
+		llog('meta keys', count($meta));
+		return $meta;
+	}
+
+	public function getMetaByIM()
+	{
+		llog(__METHOD__, $this->filePath);
+		return [];
+	}
+
+	public function getMetaFromPHP()
+	{
+		$meta = getimagesize($this->filePath);
+		llog('getimagesize', $this->filePath, $meta);
+		if ($meta) {
+			$meta['width'] = $meta[0];
+			$meta['height'] = $meta[1];
+//			$meta['type'] = image_type_to_mime_type($meta[2]);
+			unset($meta[0]);
+			unset($meta[1]);
+			unset($meta[2]);
+			unset($meta[3]);    // width="xx" height="yy"
+		}
 		return $meta;
 	}
 

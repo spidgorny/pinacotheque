@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Source } from "../App";
 import { MdDoNotDisturbOn } from "react-icons/all";
 import { CheckSource } from "./check-source";
@@ -20,9 +20,13 @@ export default function OneSourcePage(props: {
 }
 
 function SourcePage(props: { source: Source }) {
-	const fakeContext = {
-		baseUrl: new URL("http://localhost:8080/"),
-	} as AppContext;
+	const context1 = useContext(context);
+	const fakeContext =
+		props.source.name === "depidsvy"
+			? ({
+					baseUrl: new URL("http://localhost:8080/"),
+			  } as AppContext)
+			: context1;
 	return (
 		<context.Provider value={fakeContext}>
 			<div className="p-2">

@@ -16,7 +16,7 @@ class ImageScanner
 	/**
 	 * @var DBInterface
 	 */
-	protected $db;
+	protected DBInterface $db;
 
 	public function __construct(IMetaData $file, DBInterface $db)
 	{
@@ -24,13 +24,24 @@ class ImageScanner
 		$this->db = $db;
 	}
 
-	public function __invoke()
+	public function __invoke($force = false)
 	{
 		$meta = null;
 		$thumb = null;
 		try {
-			$meta = $this->fetchExif();
-			$thumb = $this->fetchThumbnail();
+			if (!$force && $this->file->hasMeta()) {
+				$this->log('Meta', 'exists', count($this->file->getMetaData()));
+			} else {
+				$meta = $this->fetchExif();
+			}
+
+			$destination = $this->file->getDestination();
+			if (file_exists($destination)) {
+				$this->log('Thumb', 'exists', new Bytes(filesize($this->file->getDestination())));
+				$thumb = $this->file->getDestination();
+			} else {
+				$thumb = $this->fetchThumbnail();
+			}
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
 			echo '** Error: ' . $e->getMessage(), PHP_EOL;
 		} catch (ImageException $e) {
@@ -41,10 +52,6 @@ class ImageScanner
 
 	public function fetchExif()
 	{
-		if ($this->file->hasMeta()) {
-			$this->log('Meta', 'exists', count($this->file->getMetaData()));
-		}
-
 		try {
 			$path = $this->file->getFullPath();
 			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image');
@@ -54,18 +61,20 @@ class ImageScanner
 				$meta = (array)$ip->getMeta();
 				if ($meta) {
 					$ok = $this->saveMetaToDB($meta, $this->file->id);
+					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 				}
 			} elseif ($this->file->isVideo()) {
 				$vp = VideoParser::fromFile($path);
 				$meta = (array)$vp->getMeta();
 				if ($meta) {
 					$ok = $this->saveMetaToDB($meta, $this->file->id);
+					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 				}
 			} else {
 				throw new Exception('Unknown file type: ' . $this->file->getExt());
 			}
-			$this->log('Meta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 		} catch (Exception $e) {
+			$this->log('ERROR', $e->getMessage());
 			$this->file->update([
 				'meta_timestamp' => new SQLNow(),
 				'meta_error' => $e->getMessage(),
@@ -75,7 +84,7 @@ class ImageScanner
 		return $meta;
 	}
 
-	public function saveMetaToDB(array $meta, $fileID)
+	public function saveMetaToDB(array $meta, int $fileID)
 	{
 		$this->db->transaction();
 		$this->file->update([
@@ -85,14 +94,26 @@ class ImageScanner
 		foreach ($meta as $key => $val) {
 			try {
 				$encoded = is_scalar($val) ? $val : json_encode($val, JSON_THROW_ON_ERROR);
-				/** @var SQLite3Result $row */
-				$row = MetaEntry::insert($this->db, [
-					'id_file' => $fileID,
-					'name' => $key,
-					'value' => $encoded,
-				]);
-			} catch (PDOException $e) {
-				// some strings can't be saved in DB
+				try {
+					/** @var SQLite3Result $row */
+					$row = MetaEntry::insert($this->db, [
+						'id_file' => $fileID,
+						'name' => $key,
+						'value' => $encoded,
+					]);
+				} catch (PDOException $e) {
+					// some strings can't be saved in DB
+					//				llog($e->getMessage());
+					if (str_contains($e->getMessage(), '1062 Duplicate entry')) {
+						$row = MetaEntry::findOne($this->db, [
+							'id_file' => $fileID,
+							'name' => $key,
+						]);
+						$row->update([
+							'value' => $encoded,
+						]);
+					}
+				}
 			} catch (JsonException $e) {
 				// just ignore
 			}
@@ -103,12 +124,6 @@ class ImageScanner
 
 	public function fetchThumbnail()
 	{
-		$destination = $this->file->getDestination();
-		if (file_exists($destination)) {
-			$this->log('Thumb', 'exists', new Bytes(filesize($this->file->getDestination())));
-			return $this->file->getDestination();
-		}
-
 		$thumbPath = null;
 		$thumb = new Thumb($this->file);
 		try {

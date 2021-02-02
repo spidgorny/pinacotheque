@@ -58,6 +58,7 @@ class Source extends POPOBase
 	 * Source constructor.
 	 * @param $set
 	 * @override
+	 * @throws Exception
 	 */
 	public function __construct($set)
 	{

@@ -42,6 +42,16 @@ class ShowThumb extends AppController
 		}
 
 		$meta = MetaForSQL::findByID($this->db, $file);
+		if (!$meta) {
+			header('Content-Type: image/png');
+			return base64_decode($this->transparent1px);
+		}
+
+		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
+			'border' => 1,
+			'align' => 'right',
+		]);
+
 		$content[] = getDebug($meta);
 		$content[] = getDebug([
 			'isImage' => $meta->isImage(),
@@ -96,17 +106,16 @@ class ShowThumb extends AppController
 					->setParam('file', $file),
 			], 'Scan Meta') . '</p>';
 
-		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
-			'border' => 1,
+		$content[] = getDebug([
+			'meta-rows'=>count($meta->getMeta()),
+			'meta' => $meta->getMetaData()
 		]);
 
-		$content[] = getDebug($meta->getMetaData());
-
-		$thumbPath = $meta->getDestination();
 		if ($this->request->getBool('d') || !$thumb->exists()) {
 			return $content;
 		}
 
+		$thumbPath = $meta->getDestination();
 		header('Content-Type: ' . mime_content_type($thumbPath));
 		header('Content-Length: ' . filesize($thumbPath));
 		$this->request->setCacheable(60 * 60 * 24 * 365);
@@ -126,7 +135,7 @@ class ShowThumb extends AppController
 		$file = $this->request->getIntRequired('file');
 		$meta = MetaForSQL::findByID($this->db, $file);
 		$is = new ImageScanner($meta, $this->db);
-		$is();
+		$is(true);
 		$this->request->goBack();
 	}
 
