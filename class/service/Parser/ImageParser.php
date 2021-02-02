@@ -45,19 +45,35 @@ class ImageParser
 //			throw new Exception(error_get_last()['message']);
 //		}
 		if (!$meta) {
-			$meta = $this->getMetaFromPHP();
-		}
-		if (!$meta) {
 			$meta = $this->getMetaByIM();
 		}
-		llog('meta keys', count($meta));
+		if (!$meta) {
+			$meta = $this->getMetaFromPHP();
+		}
+		llog('meta keys', array_keys($meta));
 		return $meta;
 	}
 
 	public function getMetaByIM()
 	{
-		llog(__METHOD__, $this->filePath);
-		return [];
+		try {
+//			llog(__METHOD__, $this->filePath);
+			$convertCommand = getenv('convert') ?: 'convert';
+			$p = new Symfony\Component\Process\Process([$convertCommand, $this->filePath, 'json:-']);
+//			llog($p->getCommandLine());
+			$p->enableOutput();
+			$p->start();
+			$p->wait();
+			if ($p->getErrorOutput()) {
+				throw new Exception($p->getErrorOutput());
+			}
+			$json = $p->getOutput();
+//			llog($json);
+			$output = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+			return $output[0]->image;
+		} catch (Exception $e) {
+			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
+		}
 	}
 
 	public function getMetaFromPHP()
