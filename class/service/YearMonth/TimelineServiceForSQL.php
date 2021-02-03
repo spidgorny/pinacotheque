@@ -14,7 +14,7 @@ class TimelineServiceForSQL extends TimelineService
 	{
 		parent::__construct($prefixURL);
 		$this->provider = $provider;
-		list('min' => $min, 'max' => $max) = $this->provider->getMinMax();
+		['min' => $min, 'max' => $max] = $this->provider->getMinMax();
 		$this->min = new Date($min);
 		$this->max = new Date($max);
 

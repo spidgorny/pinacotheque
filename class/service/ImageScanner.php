@@ -43,9 +43,9 @@ class ImageScanner
 				$thumb = $this->fetchThumbnail();
 			}
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
-			echo '** Error: ' . $e->getMessage(), PHP_EOL;
+			$this->log('** Error:', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 		} catch (ImageException $e) {
-			echo '** Error: ' . $e->getMessage(), PHP_EOL;
+			$this->log('** Error:', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 		}
 		return [$meta, $thumb];
 	}
@@ -74,7 +74,7 @@ class ImageScanner
 				throw new Exception('Unknown file type: ' . $this->file->getExt());
 			}
 		} catch (Exception $e) {
-			$this->log('ERROR', $e->getMessage());
+			$this->log('ERROR', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 			$this->file->update([
 				'meta_timestamp' => new SQLNow(),
 				'meta_error' => $e->getMessage(),

@@ -6,18 +6,18 @@ class FileProviderDenormalized
 	/**
 	 * @var DBInterface
 	 */
-	protected $db;
+	protected DBInterface $db;
 
 	/** @var Source|null */
-	protected $source;
+	protected ?Source $source;
 
-	protected $timestamp;
+	protected string $timestamp;
 
-	protected $strftime;
+	protected string $strftime;
 
-	protected $strftimeYM;
+	protected string $strftimeYM;
 
-	protected $DateTimeAsDate;
+	protected string $DateTimeAsDate;
 
 	public function __construct(DBInterface $db, Source $source = null)
 	{
@@ -96,7 +96,7 @@ class FileProviderDenormalized
 				'source' => $this->source->id,
 			];
 		}
-		$imageFiles = $this->db->fetchAllSelectQuery('files', $where, 'GROUP BY ' . $YM .
+		$imageFilesA = $this->db->fetchAllSelectQuery('files', $where, 'GROUP BY ' . $YM .
 			' ORDER BY ' . $YM,
 			'min(files.id) as id, 
 			' . $YM . ' as YM, 
@@ -106,7 +106,7 @@ class FileProviderDenormalized
 //		llog($this->db->getLastQuery() . '');
 
 		//		$content[] = new slTable($imageFiles);
-		$imageFiles = ArrayPlus::create($imageFiles);
+		$imageFiles = ArrayPlus::create($imageFilesA);
 
 		$byMonth = $imageFiles->reindex(static function ($key, array $row) {
 			return $row['YM'];

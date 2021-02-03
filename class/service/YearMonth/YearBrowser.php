@@ -5,20 +5,22 @@ use spidgorny\nadlib\HTTP\URL;
 class YearBrowser extends AppController
 {
 
-	protected $db;
+	protected DBInterface $db;
 
-	protected $prefixURL = 'prefixURL';
+	protected string $prefixURL = 'prefixURL';
 
-	protected $linkPrefix = 'Link prefix';
+	protected string $linkPrefix = 'Link prefix';
 
-	public static function makeHref($year)
+	public string $defaultAction = 'indexYear';
+
+	public static function makeHref($year): URL
 	{
 		return new URL(__CLASS__, [
 			'year' => $year,
 		]);
 	}
 
-	public static function makeLink($year)
+	public static function makeLink($year): HTMLTag
 	{
 		return new HTMLTag('a', [
 			'href' => self::makeHref($year),
@@ -32,7 +34,7 @@ class YearBrowser extends AppController
 		$this->prefixURL = ShowThumb::href(['file' => '']);
 	}
 
-	public function index($year)
+	public function indexYear($year): array
 	{
 		$content[] = '<h3>' . $year . '</h3>';
 		for ($month = 1; $month <= 12; $month++) {
@@ -41,7 +43,7 @@ class YearBrowser extends AppController
 		return $content;
 	}
 
-	public function renderMonth($year, $month)
+	public function renderMonth($year, $month): array
 	{
 		$provider = new FileProvider($this->db);
 		$files = $provider->getFilesForMonth($year, $month, false

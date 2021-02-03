@@ -7,7 +7,7 @@ class AppController
 
 	use LogTrait;
 
-	protected $validImages = [
+	protected array $validImages = [
 		'jpg',
 		'git',
 		'png',
@@ -20,21 +20,21 @@ class AppController
 	 * @Inject
 	 * @var ErrorLogLogger
 	 */
-	protected $logger;
+	protected ErrorLogLogger $logger;
 
 	/**
 	 * @var Request
 	 */
-	protected $request;
+	protected Request $request;
 
 	/** @var Psr\Container\ContainerInterface */
-	public $container;
+	public \Psr\Container\ContainerInterface $container;
+
+	public string $defaultAction = 'index';
 
 	public function __construct()
 	{
-		if (!$this->logger) {
-			$this->logger = new ErrorLogLogger();
-		}
+		$this->logger = new ErrorLogLogger();
 		$this->request = Request::getInstance();
 	}
 
@@ -50,7 +50,7 @@ class AppController
 	 */
 	public function __invoke()
 	{
-		$action = $this->getValidAction() ?: 'index';
+		$action = $this->getValidAction() ?: $this->defaultAction;
 //		return $this->$action();
 		$delegator = new MarshalParams($this);
 		return $delegator->call($action);

@@ -64,9 +64,16 @@ function getPathToThumbsFrom($index)
 	return $thumbsPath;
 }
 
+$whoops = new \Whoops\Run;
+$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+$whoops->register();
+
 $builder = new DI\ContainerBuilder();
 $builder->addDefinitions(__DIR__.'/definitions.php');
 $builder->useAnnotations(true);
 $container = $builder->build();
+
+//$db = $container->get(DBInterface::class);
+//$db->logToLog = true;
 
 return $container;

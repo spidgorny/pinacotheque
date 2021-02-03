@@ -68,13 +68,14 @@ class ScanDir
 		foreach ($dirs as $i => $file) {
 			$this->log(count($dirs) - $i, $file->getPathname());
 			try {
+				/** @var \PDOStatement $ok */
 				$ok = \MetaForSQL::insert($this->db, [
 					'source' => $sourceID,
 					'type' => $file->getType(),
 					'path' => $file->getPathname(),
 					'timestamp' => $file->getMTime(),
 				]);
-				$this->reportProgress($file->getPathname(), $i, count($dirs), $ok);
+				$this->reportProgress($file->getPathname(), $i, count($dirs), 'ok');
 				$inserted++;
 			} catch (\Exception $e) {
 				// most likely file is already in DB

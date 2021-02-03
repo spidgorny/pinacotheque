@@ -33,7 +33,7 @@ class ScanDirRecursive
 			$path = realpath($dir . DIRECTORY_SEPARATOR . $value);
 			if (!is_dir($path)) {
 				$results[] = $path;
-			} elseif ($value !== "." && $value !== "..") {
+			} elseif ($value !== "." && $value !== ".." && $value !== '@eaDir') {
 				$this->getDirContents($path, $results);
 				$results[] = $path;
 			}

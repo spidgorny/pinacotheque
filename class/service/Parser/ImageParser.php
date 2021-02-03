@@ -19,7 +19,7 @@ class ImageParser
 	{
 		$size = getimagesize($filePath);
 //		debug($size);
-		if ($size[0] > 20000 || $size[1] > 20000) {
+		if ($size && ($size[0] > 20000 || $size[1] > 20000)) {
 			throw new ImageException('Image too big ' . $size[0] . 'x' . $size[1]);
 		}
 		$manager = new ImageManager();

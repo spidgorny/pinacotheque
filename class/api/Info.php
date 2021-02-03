@@ -12,13 +12,13 @@ class Info extends AppController
 	{
 		parent::__construct();
 		$this->db = $db;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
 	}
 
 	public function index()
 	{
 		$provider = new FileProvider($this->db);
-		list('min' => $min, 'max' => $max) = $provider->getMinMax();
-		header('Access-Control-Allow-Origin: http://localhost:3000');
+		['min' => $min, 'max' => $max] = $provider->getMinMax();
 		return new JSONResponse([
 			'status' => 'ok',
 			'query' => $this->db->getLastQuery().'',
