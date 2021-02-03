@@ -6,6 +6,8 @@ use DBInterface;
 use DBLayerSQLite;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
+use ScanDir\FlySystem;
+use ScanDir\ScanDirRecursive;
 use Source;
 
 /**
@@ -22,11 +24,6 @@ class ScanDir
 
 	protected Source $source;
 
-	/**
-	 * @var Filesystem
-	 */
-	protected Filesystem $fileSystem;
-
 	protected string $dir;
 
 	/**
@@ -34,12 +31,16 @@ class ScanDir
 	 */
 	public $progressCallback;
 
+//	protected FlySystem $scanner;
+	protected ScanDirRecursive $scanner;
+
 	public function __construct(DBInterface $db, Source $source)
 	{
 		$this->db = $db;
 		$this->source = $source;
 		$this->dir = $source->path;
-		$this->fileSystem = new Filesystem(new Local($this->dir));
+//		$this->scanner = new FlySystem($this->dir);
+		$this->scanner = new ScanDirRecursive($this->dir);
 	}
 
 	public function log(...$msg)
@@ -49,53 +50,41 @@ class ScanDir
 
 	public function numFiles()
 	{
-		$dirs = $this->scandir($this->dir);
+		$dirs = $this->scanner->scandir();
 		return count($dirs);
 	}
 
 	public function __invoke()
 	{
-		$dirs = $this->scandir($this->dir);
+		$dirs = $this->scanner->scandir();
 		$this->log(count($dirs));
 
 		$inserted = 0;
 		$sourceID = $this->source->id;
-		foreach ($dirs as $i => $dir) {
-			$this->log(count($dirs) - $i, $dir['path']);
+		/**g
+		 * @var int $i
+		 * @var \File $file
+		 */
+		foreach ($dirs as $i => $file) {
+			$this->log(count($dirs) - $i, $file->getPathname());
 			try {
 				$ok = \MetaForSQL::insert($this->db, [
 					'source' => $sourceID,
-					'type' => $dir['type'],
-					'path' => $dir['path'],
-					'timestamp' => $dir['timestamp'],
+					'type' => $file->getType(),
+					'path' => $file->getPathname(),
+					'timestamp' => $file->getMTime(),
 				]);
-				$this->reportProgress($i, count($dirs), $ok);
+				$this->reportProgress($file->getPathname(), $i, count($dirs), $ok);
 				$inserted++;
 			} catch (\Exception $e) {
 				// most likely file is already in DB
-				$this->reportProgress($i, count($dirs), $e->getMessage());
+				$this->reportProgress($file->getPathname(), $i, count($dirs), $e->getMessage());
 			}
 		}
 		return $inserted;
 	}
 
-	public function scandir($dir)
-	{
-		$files = [];
-//		$this->log('Scanning', $dir);
-		$dirWithoutPrefix = str_replace($this->dir, '', $dir);
-		try {
-			$files = $this->fileSystem->listContents($dirWithoutPrefix, true);
-			usort($files, static function ($a, $b) {
-				return strcmp($a['path'], $b['path']);
-			});
-		} catch (RuntimeException $e) {
-			// access denied is ignored
-		}
-		return $files;
-	}
-
-	function reportProgress(int $i, int $max, $ok)
+	function reportProgress(string $file, int $i, int $max, $ok)
 	{
 		if (!$this->progressCallback) {
 			return;
@@ -103,7 +92,7 @@ class ScanDir
 		if (!is_callable($this->progressCallback)) {
 			return;
 		}
-		call_user_func($this->progressCallback, $i, $max, $ok);
+		call_user_func($this->progressCallback, $file, $i, $max, $ok);
 	}
 
 }

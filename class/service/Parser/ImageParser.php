@@ -50,7 +50,7 @@ class ImageParser
 		if (!$meta) {
 			$meta = $this->getMetaFromPHP();
 		}
-		llog('meta keys', array_keys($meta));
+//		llog('meta keys', array_keys($meta));
 		return $meta;
 	}
 

@@ -39,10 +39,11 @@ class ScanDirApi extends ApiController
 		], JSON_THROW_ON_ERROR);
 	}
 
-	function report($i, $max, $ok)
+	function report(string $file, int $i, int $max, string $ok)
 	{
 		echo json_encode([
 			'status' => 'line',
+			'file' => $file,
 			'progress' => $i,
 			'max' => $max,
 			'res' => $ok,
