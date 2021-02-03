@@ -76,7 +76,7 @@ class Thumb
 		$thumbPath = $this->meta->getDestination();
 		$dirName = dirname($thumbPath);
 		if (!is_dir($dirName)) {
-			$this->log('mkdir: ' . $dirName);
+			$this->log('mkdir:', $dirName);
 			$ok = mkdir($dirName, 0777, true);
 			if (!$ok) {
 				$this->log('mkdir failed [' . $dirName . ']');
@@ -103,9 +103,9 @@ class Thumb
 		];
 	}
 
-	public function log($something)
+	public function log(...$something)
 	{
-		$this->log[] = $something;
+		llog(...$something);
 	}
 
 	public function getMeta()

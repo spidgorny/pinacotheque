@@ -75,6 +75,7 @@ class ImageScanner
 			}
 		} catch (Exception $e) {
 			$this->log('ERROR', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
+			$this->log($this->file->getFullPath());
 			$this->file->update([
 				'meta_timestamp' => new SQLNow(),
 				'meta_error' => $e->getMessage(),
@@ -127,7 +128,7 @@ class ImageScanner
 		$thumbPath = null;
 		$thumb = new Thumb($this->file);
 		try {
-			$thumpPath = $thumb->getThumb();    // make it if doesn't exist
+			$thumbPath = $thumb->getThumb();    // make it if doesn't exist
 			$this->log('Thumb', 'OK', new Bytes(@filesize($this->file->getDestination())));
 			$this->log('Thumb->log', $thumb->log);
 		} catch (NotReadableException $e) {
@@ -135,7 +136,7 @@ class ImageScanner
 			$this->log('Thumb', '*** FAIL ***');
 			$this->log('Thumb->log', $thumb->log);
 		}
-		return $thumpPath;
+		return $thumbPath;
 	}
 
 }

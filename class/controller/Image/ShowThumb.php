@@ -63,6 +63,9 @@ class ShowThumb extends AppController
 			throw new Exception404('File with id=' . $file . ' not found');
 		}
 
+//		debug($meta);
+//		exit;
+
 		$filePath = $meta->getFullPath();
 		$content[] = getDebug([
 			'File' => $filePath,

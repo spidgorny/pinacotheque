@@ -186,12 +186,12 @@ class Meta implements IMetaData
 
 	public function width()
 	{
-		return $this->COMPUTED['Width'];
+		return ($this->COMPUTED) ? $this->COMPUTED['Width'] : null;
 	}
 
 	public function height()
 	{
-		return $this->COMPUTED['Height'];
+		return ($this->COMPUTED) ? $this->COMPUTED['Height'] : null;
 	}
 
 	public function getOriginalURL()

@@ -17,9 +17,11 @@ class ScanDirRecursive
 		$files = $this->getDirContents($this->dir);
 
 		$files = array_map(function ($el) {
-			$el = str_replace($this->dir, '', $el);
-			$el = ltrim($el, '\\');
-			$file = \File::fromLocal($el);
+			$without = str_replace($this->dir, '', $el);
+			$without = ltrim($without, '\\');
+			$without = ltrim($without, '/');
+//			llog('replace', $this->dir, $el, $without);
+			$file = \File::fromLocal($without, $this->dir);
 			return $file;
 		}, $files);
 
@@ -30,7 +32,7 @@ class ScanDirRecursive
 		$files = scandir($dir);
 
 		foreach ($files as $key => $value) {
-			$path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+			$path = ($dir . DIRECTORY_SEPARATOR . $value);
 			if (!is_dir($path)) {
 				$results[] = $path;
 			} elseif ($value !== "." && $value !== ".." && $value !== '@eaDir') {
