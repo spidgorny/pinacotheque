@@ -1,6 +1,6 @@
 <?php
 
-class ScanDirApi extends ApiController
+class SourceMeta extends ApiController
 {
 
 	/**
@@ -14,7 +14,6 @@ class ScanDirApi extends ApiController
 		$this->db = $db;
 		header('Access-Control-Allow-Origin: http://localhost:3000');
 		header('Content-Type: application/json');
-		set_time_limit(0);
 	}
 
 	public function index()
@@ -29,27 +28,12 @@ class ScanDirApi extends ApiController
 			throw new Exception('Source is not dir: ' . $source->path);
 		}
 
-		$scanner = new \App\Service\ScanDir($this->db, $source);
-		$scanner->progressCallback = [$this, 'report'];
-		$inserted = $scanner();
+		$filesInDB = $source->getFilesCount();
 
-		return json_encode([
-			'status' => 'done',
-			'done' => true,
-			'inserted' => $inserted,
-		], JSON_THROW_ON_ERROR);
-	}
-
-	function report(string $file, int $i, int $max, string $ok)
-	{
-		echo json_encode([
-			'status' => 'line',
-			'file' => $file,
-			'progress' => $i,
-			'max' => $max,
-			'res' => $ok,
-		], JSON_THROW_ON_ERROR), PHP_EOL;
-		flush();
+		return new JSONResponse([
+			'status' => 'ok',
+			'filesInDB' => $filesInDB,
+		]);
 	}
 
 }

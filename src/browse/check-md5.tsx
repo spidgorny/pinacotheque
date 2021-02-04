@@ -4,6 +4,12 @@ import { context } from "../context";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
 import { GoInfo } from "react-icons/all";
+import moment from "moment";
+import { CircleLoader } from "react-spinners";
+const momentDurationFormatSetup = require("moment-duration-format");
+const ColorHash = require("color-hash");
+
+momentDurationFormatSetup(moment);
 
 export default function CheckMD5(props: { source: Source }) {
 	const ctx = useContext(context);
@@ -11,11 +17,13 @@ export default function CheckMD5(props: { source: Source }) {
 	const [folders, setFolders] = useState([] as string[]);
 	const [md5, setMD5] = useState("");
 	const [error, setError] = useState((null as unknown) as string);
+	const [startTime, setStart] = useState((undefined as unknown) as Date);
 
 	const fetchData = async () => {
 		setFolders([]);
 		setLoading(true);
 		setError("");
+		setStart(new Date());
 		const urlCheck = new URL("SourceScan", ctx.baseUrl);
 		urlCheck.searchParams.set("id", props.source.id.toString());
 		const res = await fetch(urlCheck.toString());
@@ -56,32 +64,9 @@ export default function CheckMD5(props: { source: Source }) {
 		// fetchData();
 	}, [props.source]);
 
-	const loadingProgress = loading ? (
-		<div>
-			<div>
-				Dir: {folders.length}/{props.source.folders}
-			</div>
-			<progress
-				value={folders.length}
-				max={props.source.folders}
-				className="w-full"
-			/>
-		</div>
-	) : null;
-
-	const afterScan = folders?.length ? (
-		<div>
-			<div>Dir: {folders?.length ?? props.source.folders}</div>
-			<div>
-				MD5:{" "}
-				<span
-					className={md5 === props.source.md5 ? "bg-green-300" : "bg-red-300"}
-				>
-					{md5}
-				</span>
-			</div>
-		</div>
-	) : null;
+	const diff = moment().diff(moment(startTime));
+	// @ts-ignore
+	const dur = moment.duration(diff).format();
 
 	return (
 		<div className="">
@@ -96,8 +81,26 @@ export default function CheckMD5(props: { source: Source }) {
 				style={{ display: "inline", verticalAlign: "top" }}
 				title="find all subdirectories and check md5 hash of their name to quickly see if this folder requires re-scanning"
 			/>
-			{loadingProgress}
-			{afterScan}
+			{loading && <CircleLoader loading={true} size={16} />}
+			<div>
+				<div>
+					Dir: {folders?.length}/{props.source.folders}
+				</div>
+				<div>Dur: {dur}</div>
+				<progress
+					value={folders.length}
+					max={props.source.folders}
+					className="w-full"
+				/>
+				<div>
+					MD5:{" "}
+					<span
+						className={md5 === props.source.md5 ? "bg-green-300" : "bg-red-300"}
+					>
+						{md5}
+					</span>
+				</div>
+			</div>
 			{error && <div className="bg-red-300">{error}</div>}
 		</div>
 	);

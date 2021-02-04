@@ -106,6 +106,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 								<OneSourcePage
 									name={params.slug}
 									sources={this.state.sources || []}
+									reloadSources={this.fetchRange.bind(this)}
 								/>
 							)}
 						</Route>

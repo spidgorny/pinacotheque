@@ -3,10 +3,6 @@
 namespace App\Service;
 
 use DBInterface;
-use DBLayerSQLite;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
-use ScanDir\FlySystem;
 use ScanDir\ScanDirRecursive;
 use Source;
 
@@ -56,17 +52,22 @@ class ScanDir
 
 	public function __invoke()
 	{
-		$dirs = $this->scanner->scandir();
-		$this->log(count($dirs));
+		$files = $this->scanner->scandir();
+		$this->log(count($files));
+
+		$this->source->update([
+			'mtime' => new \SQLNow(),
+			'files' => count($files),
+		]);
 
 		$inserted = 0;
 		$sourceID = $this->source->id;
-		/**g
+		/**
 		 * @var int $i
 		 * @var \File $file
 		 */
-		foreach ($dirs as $i => $file) {
-			$this->log(count($dirs) - $i, $file->getName());
+		foreach ($files as $i => $file) {
+			$this->log(count($files) - $i, $file->getName());
 			try {
 				/** @var \PDOStatement $ok */
 				$insert = [
@@ -77,13 +78,20 @@ class ScanDir
 				];
 //				llog($insert);
 				$ok = \MetaForSQL::insert($this->db, $insert);
-				$this->reportProgress($file->getName(), $i, count($dirs), 'ok');
+				$this->reportProgress($file->getName(), $i, count($files), 'ok');
 				$inserted++;
 			} catch (\PDOException $e) {
 				// most likely file is already in DB
-				$this->reportProgress($file->getName(), $i, count($dirs), $e->getMessage());
+				$this->reportProgress($file->getName(), $i, count($files), $e->getMessage());
 			}
 		}
+
+		$this->source->update([
+			'mtime' => new \SQLNow(),
+			'files' => count($files),
+			'inserted' => $inserted,
+		]);
+
 		return $inserted;
 	}
 
