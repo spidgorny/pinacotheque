@@ -60,14 +60,14 @@ class ImageScanner
 				$ip = ImageParser::fromFile($path);
 				$meta = (array)$ip->getMeta();
 				if ($meta) {
-					$ok = $this->saveMetaToDB($meta, $this->file->id);
+					$ok = $this->saveMetaToDB($meta);
 					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 				}
 			} elseif ($this->file->isVideo()) {
 				$vp = VideoParser::fromFile($path);
 				$meta = (array)$vp->getMeta();
 				if ($meta) {
-					$ok = $this->saveMetaToDB($meta, $this->file->id);
+					$ok = $this->saveMetaToDB($meta);
 					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 				}
 			} else {
@@ -85,7 +85,8 @@ class ImageScanner
 		return $meta;
 	}
 
-	public function saveMetaToDB(array $meta, int $fileID)
+	/// TODO: extract to separate service
+	public function saveMetaToDB(array $meta)
 	{
 		$this->db->transaction();
 		$this->file->update([
@@ -98,7 +99,7 @@ class ImageScanner
 				try {
 					/** @var SQLite3Result $row */
 					$row = MetaEntry::insert($this->db, [
-						'id_file' => $fileID,
+						'id_file' => $this->file->id,
 						'name' => $key,
 						'value' => $encoded,
 					]);
@@ -107,7 +108,7 @@ class ImageScanner
 					//				llog($e->getMessage());
 					if (str_contains($e->getMessage(), '1062 Duplicate entry')) {
 						$row = MetaEntry::findOne($this->db, [
-							'id_file' => $fileID,
+							'id_file' => $this->file->id,
 							'name' => $key,
 						]);
 						$row->update([

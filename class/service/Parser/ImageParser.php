@@ -40,12 +40,9 @@ class ImageParser
 
 	public function getMeta()
 	{
-		$meta = $this->image->exif();
-//		if (error_get_last()) {
-//			throw new Exception(error_get_last()['message']);
-//		}
+		$meta = $this->getMetaByIM();
 		if (!$meta) {
-			$meta = $this->getMetaByIM();
+			$meta = $this->image->exif();
 		}
 		if (!$meta) {
 			$meta = $this->getMetaFromPHP();

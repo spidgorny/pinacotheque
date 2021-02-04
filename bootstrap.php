@@ -1,6 +1,9 @@
 <?php
 
-require_once __DIR__.'/autoload.php';
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
+require_once __DIR__ . '/autoload.php';
 
 function getContext()
 {
@@ -55,21 +58,23 @@ function getPathToThumbsFrom($index)
 		}
 		$thumbsPath = cap($DATA_STORAGE) . $storageFolder;
 	} else {
-		$thumbsPath = $storageFolder;	// absolute path provided
+		$thumbsPath = $storageFolder;    // absolute path provided
 	}
 	if (!is_dir($thumbsPath)) {
-		throw new RuntimeException($thumbsPath.' is not a folder');
+		throw new RuntimeException($thumbsPath . ' is not a folder');
 	}
 //	debug($storageFolder, $thumbsPath);
 	return $thumbsPath;
 }
 
-$whoops = new \Whoops\Run;
-$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-$whoops->register();
+if (php_sapi_name() !== 'cli') {
+	$whoops = new \Whoops\Run;
+	$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+	$whoops->register();
+}
 
 $builder = new DI\ContainerBuilder();
-$builder->addDefinitions(__DIR__.'/definitions.php');
+$builder->addDefinitions(__DIR__ . '/definitions.php');
 $builder->useAnnotations(true);
 $container = $builder->build();
 

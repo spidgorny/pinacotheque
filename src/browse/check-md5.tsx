@@ -1,5 +1,5 @@
 import { Source } from "../App";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { context } from "../context";
 // @ts-ignore
 import ndjsonStream from "can-ndjson-stream";
@@ -68,6 +68,7 @@ export default function CheckMD5(props: { source: Source }) {
 	// @ts-ignore
 	const dur = moment.duration(diff).format();
 
+	const colorHash = new ColorHash();
 	return (
 		<div className="">
 			<button
@@ -99,6 +100,15 @@ export default function CheckMD5(props: { source: Source }) {
 					>
 						{md5}
 					</span>
+					<div
+						style={{
+							width: "2em",
+							minHeight: "2em",
+							backgroundColor: colorHash.hex(props.source.md5),
+						}}
+					>
+						&nbsp;
+					</div>
 				</div>
 			</div>
 			{error && <div className="bg-red-300">{error}</div>}

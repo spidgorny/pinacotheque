@@ -7,6 +7,7 @@ import CheckMD5 from "./check-md5";
 import ScanDir from "./scan-dir";
 import Unscanned from "./unscanned";
 import SourceMeta from "./source-meta";
+const ColorHash = require("color-hash");
 
 export function NotFound() {
 	return <MdDoNotDisturbOn />;
@@ -33,11 +34,22 @@ function SourcePage(props: { source: Source; reloadSources: () => void }) {
 					baseUrl: new URL("http://localhost:8080/"),
 			  } as AppContext)
 			: context1;
+
+	const colorHash = new ColorHash();
 	return (
 		<context.Provider value={fakeContext}>
 			<div className="p-2 flex flex-row">
 				<div className="flex-grow">
 					<pre>{JSON.stringify(props.source, null, 2)}</pre>
+					<div
+						style={{
+							width: "2em",
+							minHeight: "2em",
+							backgroundColor: colorHash.hex(props.source.md5),
+						}}
+					>
+						&nbsp;
+					</div>
 				</div>
 				<SourceMeta source={props.source} />
 				<div>

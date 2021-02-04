@@ -4,7 +4,7 @@ class ScanEveryFileFromDB extends AppController
 {
 
 	/** @var DBInterface */
-	protected $db;
+	protected DBInterface $db;
 
 	public function __construct(DBInterface $db)
 	{
@@ -36,7 +36,7 @@ class ScanEveryFileFromDB extends AppController
 
 	public function scanUnscanned(array $filesToScan)
 	{
-		/** @var MetaForSQL $fileRow */
+		/** @var array $fileRow */
 		foreach ($filesToScan as $i => $fileRow) {
 			$file = new MetaForSQL($fileRow);
 			$file->injectDB($this->db);

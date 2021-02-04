@@ -92,7 +92,7 @@ class ScanExif extends BaseController
 		$dirWithoutPrefix = str_replace($this->prefix, '', $dir);
 		try {
 			$files = $this->fileSystem->listContents($dirWithoutPrefix, true);
-			usort($files, function ($a, $b) {
+			usort($files, static function ($a, $b) {
 				return strcmp($a['path'], $b['path']);
 			});
 		} catch (RuntimeException $e) {}
