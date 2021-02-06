@@ -66,7 +66,7 @@ class ImageParser
 			}
 			$json = $p->getOutput();
 //			llog($json);
-			$output = json_decode($json, false, 512, JSON_THROW_ON_ERROR);
+			$output = json_decode($json, false, 512, JSON_INVALID_UTF8_IGNORE | JSON_THROW_ON_ERROR);
 			return $output[0]->image;
 		} catch (Exception $e) {
 			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());

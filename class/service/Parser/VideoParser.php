@@ -69,7 +69,7 @@ class VideoParser
 		$this->log(implode(' ', $cmd));
 		$p = new Process($cmd);
 		$p->run();
-		return json_decode($p->getOutput(), false, 512 /*JSON_THROW_ON_ERROR*/);
+		return json_decode($p->getOutput(), false, 512, JSON_THROW_ON_ERROR);
 	}
 
 }

@@ -53,25 +53,13 @@ class ImageScanner
 	public function fetchExif()
 	{
 		try {
-			$path = $this->file->getFullPath();
 			$this->log('Type', $this->file->isVideo() ? 'Video' : 'Image');
-			$ok = false;
-			if ($this->file->isImage()) {
-				$ip = ImageParser::fromFile($path);
-				$meta = (array)$ip->getMeta();
-				if ($meta) {
-					$ok = $this->saveMetaToDB($meta);
-					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
-				}
-			} elseif ($this->file->isVideo()) {
-				$vp = VideoParser::fromFile($path);
-				$meta = (array)$vp->getMeta();
-				if ($meta) {
-					$ok = $this->saveMetaToDB($meta);
-					$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
-				}
-			} else {
-				throw new Exception('Unknown file type: ' . $this->file->getExt());
+			$pf = ParserFactory::getInstance($this->file);
+			$parser = $pf->getParser();
+			$meta = (array)$parser->getMeta();
+			if ($meta) {
+				$ok = $this->saveMetaToDB($meta);
+				$this->log('saveMeta', $ok ? 'OK: ' . count($this->file->getMetaData()) : '*** FAIL ***');
 			}
 		} catch (Exception $e) {
 			$this->log('ERROR', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());

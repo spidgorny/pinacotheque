@@ -37,20 +37,27 @@ class ReadMetaWriteDB extends AppController
 				echo 'Has meta', PHP_EOL;
 				continue;
 			}
-			if (!$file->isImage()) {
-				continue;
-			}
-			$ip = ImageParser::fromFile($file->getFullPath());
-			$meta = (array)$ip->getMeta();
-			if ($meta) {
-//				print_r($meta);
-				$is = new ImageScanner($file, $this->db);
-				$ok = $is->saveMetaToDB($meta);
-				$this->log('saveMeta', $ok ? 'OK: ' . count($file->getMetaData()) : '*** FAIL ***');
-			} else {
-				$this->log('no meta');
+			try {
+				$this->processFile($file);
+			} catch (Exception $e) {
+				llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 			}
 		}
 		echo 'Done in ', $profiler->elapsed(), PHP_EOL;
 	}
+
+	public function processFile(MetaForSQL $file)
+	{
+		$pf = ParserFactory::getInstance($file);
+		$parser = $pf->getParser();
+		$meta = (array)$parser->getMeta();
+		if (!$meta) {
+			$this->log('no meta');
+		}
+//		print_r($meta);
+		$is = new ImageScanner($file, $this->db);
+		$ok = $is->saveMetaToDB($meta);
+		$this->log('saveMeta', $ok ? 'OK: ' . count($file->getMetaData()) : '*** FAIL ***');
+	}
+
 }
