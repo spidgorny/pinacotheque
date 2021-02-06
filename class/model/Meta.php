@@ -17,10 +17,10 @@
 class Meta implements IMetaData
 {
 
-	protected $props = [];
+	protected array $props = [];
 
 	/** @var string for debugging when used directly (not MetaForSQL) */
-	public $sourcePath;
+	public string $sourcePath;
 
 	public function __construct(array $meta)
 	{
@@ -70,7 +70,7 @@ class Meta implements IMetaData
 		return $this->getPath();
 	}
 
-	public function getThumbnail($prefix = '')
+	public function getThumbnailURL($prefix = '')
 	{
 		$src = $prefix . '/' . $this->_path_ . '/' . $this->getFilename();
 		return $src;
@@ -102,23 +102,34 @@ class Meta implements IMetaData
 		$absRoot = path_plus(getenv('DATA_STORAGE'), $this->getSource()->thumbRoot);
 
 		$thumbPath = $this->getPath();
+		if (!$this->isFile()) {
+			throw new Exception('No thumbnail for directory');
+		}
+
 		if ($this->isVideo()) {
 			$ext = pathinfo($thumbPath, PATHINFO_EXTENSION);
 			$thumbPath = str_replace_once('.' . $ext, '.png', $thumbPath);
 		}
 		$destination = path_plus($absRoot, $thumbPath);
 
-		@mkdir(dirname($destination), 0777, true);
+		if (!is_dir(dirname($destination))) {
+			/** @noinspection MkdirRaceConditionInspection */
+			@mkdir(dirname($destination), 0777, true);
+		}
 		$real = realpath($destination);    // after mkdir()
 		if ($real) {
-			$destination = $real;
+			return $real;
 		}
-		return $destination;
+
+		// file not found, new standard format is WEBP
+		$ext = pathinfo($destination, PATHINFO_EXTENSION);
+		$tryWebp = str_replace_once('.' . $ext, '.webp', $destination);
+		return $tryWebp;
 	}
 
 	public function toHTML($prefix = '', array $attributes = [])
 	{
-		$img = HTMLTag::img($this->getThumbnail($prefix), $attributes + [
+		$img = HTMLTag::img($this->getThumbnailURL($prefix), $attributes + [
 //			'width' => 256,
 				'height' => 256 / 2,
 				'style' => [
@@ -311,6 +322,14 @@ class Meta implements IMetaData
 	public function __toString()
 	{
 		return '[Meta: '.json_encode($this->__debugInfo(), JSON_THROW_ON_ERROR).']';
+	}
+
+	public function isFile()
+	{
+		$is_file = is_file($this->getFullPath());
+		$is_dir = is_dir($this->getFullPath());
+//		llog($is_file, $is_dir);
+		return $is_file && !$is_dir;
 	}
 
 }

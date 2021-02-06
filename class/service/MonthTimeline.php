@@ -182,7 +182,7 @@ class MonthTimeline
 					'videosrc' => $meta->getOriginalURL(),
 //    vw: 1080,
 //    vh: 1920,
-    				'html' => '<video controls autostart poster="'.$meta->getThumbnail(ShowThumb::href(['file' => ''])).'" style="width: 100%; height: 100%">
+    				'html' => '<video controls autostart poster="'.$meta->getThumbnailURL(ShowThumb::href(['file' => ''])).'" style="width: 100%; height: 100%">
     				<source src="'.$meta->getOriginalURL().'" type="video/mp4">
     				</video>',
 					'title' => $meta->getFilename(),

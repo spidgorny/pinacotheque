@@ -35,13 +35,8 @@ class ImageScanner
 				$meta = $this->fetchExif();
 			}
 
-			$destination = $this->file->getDestination();
-			if (file_exists($destination)) {
-				$this->log('Thumb', 'exists', new Bytes(filesize($this->file->getDestination())));
-				$thumb = $this->file->getDestination();
-			} else {
-				$thumb = $this->fetchThumbnail();
-			}
+			$tg = new ThumbGen($this->file);
+			$thumb = $tg->generate();
 		} catch (Intervention\Image\Exception\NotReadableException $e) {
 			$this->log('** Error:', get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 		} catch (ImageException $e) {
@@ -110,22 +105,6 @@ class ImageScanner
 //			echo $row->numColumns(), PHP_EOL;
 		}
 		return $this->db->commit();
-	}
-
-	public function fetchThumbnail()
-	{
-		$thumbPath = null;
-		$thumb = new Thumb($this->file);
-		try {
-			$thumbPath = $thumb->getThumb();    // make it if doesn't exist
-			$this->log('Thumb', 'OK', new Bytes(@filesize($this->file->getDestination())));
-			$this->log('Thumb->log', $thumb->log);
-		} catch (NotReadableException $e) {
-			$content[] = $e;
-			$this->log('Thumb', '*** FAIL ***');
-			$this->log('Thumb->log', $thumb->log);
-		}
-		return $thumbPath;
 	}
 
 }

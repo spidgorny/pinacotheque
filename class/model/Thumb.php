@@ -46,52 +46,11 @@ class Thumb
 	public function getThumb(): string
 	{
 		if (!$this->exists()) {
-			$this->makeThumb();
+			$tg = new ThumbGen($this->meta);
+			$tg->generate();
 		}
 		$thumbPath = $this->meta->getDestination();
 		return $thumbPath;
-	}
-
-	public function makeThumb()
-	{
-		if ($this->meta->isImage()) {
-			$this->makeImageThumb();
-		} elseif ($this->meta->isVideo()) {
-			$this->makeVideoThumb();
-		}
-	}
-
-	public function makeImageThumb()
-	{
-		$this->prepareForSaving();
-		$parser = ImageParser::fromFile($this->meta->getFullPath());
-		$thumbPath = $this->meta->getDestination();
-		$ok = $parser->saveThumbnailTo($thumbPath);
-		$this->log($parser->log);
-		return $ok;
-	}
-
-	public function prepareForSaving()
-	{
-		$thumbPath = $this->meta->getDestination();
-		$dirName = dirname($thumbPath);
-		if (!is_dir($dirName)) {
-			$this->log('mkdir:', $dirName);
-			$ok = mkdir($dirName, 0777, true);
-			if (!$ok) {
-				$this->log('mkdir failed [' . $dirName . ']');
-			}
-		}
-	}
-
-	public function makeVideoThumb()
-	{
-		$this->prepareForSaving();
-		$parser = VideoParser::fromFile($this->meta->getFullPath());
-		$thumbPath = $this->meta->getDestination();
-		$ok = $parser->saveThumbnailTo($thumbPath);
-		$this->log($parser->log);
-		return $ok;
 	}
 
 	public function __debugInfo()

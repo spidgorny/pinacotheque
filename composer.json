@@ -59,12 +59,13 @@
 		"mount:data": "sudo mount 192.168.1.189:/volume1/photo /media/nas/photo",
 		"SetCorrectDateTimeNotTest": "php index.php SetCorrectDateTimeNotTest",
 		"queue:watch": "pm2 start worker.php --watch",
-		"queue:push": "php test/queuePush.php"
+		"queue:push": "php test/queuePush.php",
+		"runvips": "php index.php RunVips"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",
-		"phpunit/phpunit": "^7.5",
-		"phpstan/phpstan": "^0.12.3"
+		"phpunit/phpunit": "^9",
+		"phpstan/phpstan": "^0.12"
 	},
 	"repositories": [
 		{

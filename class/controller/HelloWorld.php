@@ -119,7 +119,7 @@ class HelloWorld extends AppController
 			llog($source);
 			[$width, $height] = getimagesize($source);
 //			$sourceURL = 'test/ThomasGasson/' . $file;
-			$sourceURL = $file->getThumbnail('ShowThumb?file=');
+			$sourceURL = $file->getThumbnailURL('ShowThumb?file=');
 
 			$ip = ImageParser::fromFile($source);
 			$corners = $ip->getCornerColors();

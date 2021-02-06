@@ -41,7 +41,7 @@ class MetaForSQL extends Meta
 	 * @param string $prefix 'ShowThumb?file='
 	 * @return string
 	 */
-	public function getThumbnail($prefix = '')
+	public function getThumbnailURL($prefix = 'ShowThumb?file=')
 	{
 		return $prefix . $this->id;
 	}

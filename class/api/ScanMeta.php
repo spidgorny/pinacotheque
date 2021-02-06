@@ -38,7 +38,7 @@ class ScanMeta extends ApiController
 			'row' => $file->toJson(),
 			'meta' => $meta,
 			'thumb' => $thumb,
-			'thumbUrl' => $file->getThumbnail($host . '/ShowThumb?file='),
+			'thumbUrl' => $file->getThumbnailURL($host . '/ShowThumb?file='),
 			'thumbMeta' => $file->getThumb()->getMeta(),
 		]);
 	}

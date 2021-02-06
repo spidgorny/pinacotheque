@@ -34,7 +34,7 @@ function llog(...$msg)
 		/** @noinspection ForgottenDebugOutputInspection */
 		error_log(implode(', ', $msg));
 	} else {
-		$jsonOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR;
+		$jsonOptions = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_LINE_TERMINATORS | JSON_THROW_ON_ERROR | JSON_UNESCAPED_LINE_TERMINATORS;
 		$string = json_encode($msg, $jsonOptions);
 		if (strlen($string) > 70) {
 			/** @noinspection JsonEncodingApiUsageInspection */
