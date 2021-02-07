@@ -20,6 +20,7 @@
 		"ext-sqlite3": "*",
 		"amphp/parallel-functions": "^0.1.3",
 		"bernard/bernard": "dev-master",
+		"cocur/background-process": "^0.7.0",
 		"doctrine/annotations": "^1.6",
 		"erusev/parsedown": "^1.7",
 		"filp/whoops": "^2.9",
@@ -60,7 +61,8 @@
 		"SetCorrectDateTimeNotTest": "php index.php SetCorrectDateTimeNotTest",
 		"queue:watch": "pm2 start worker.php --watch",
 		"queue:push": "php test/queuePush.php",
-		"runvips": "php index.php RunVips"
+		"runvips": "php index.php RunVips",
+		"process": "php index.php Process"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",

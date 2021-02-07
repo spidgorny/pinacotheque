@@ -45,6 +45,19 @@ class RunVips extends AppController
 			if ($file->getThumb()->exists()) {
 				continue;
 			}
+			$this->vipsOneFile($file, $files, $i);
+		}
+	}
+
+	/**
+	 * @param MetaForSQL $file
+	 * @param array $files
+	 * @param $i
+	 * @throws Exception
+	 */
+	protected function vipsOneFile(MetaForSQL $file, array $files, $i): void
+	{
+		try {
 			$timer = new Profiler();
 			$cmd = ['vipsthumbnail', $file->getFullPath(), '--size', '256x', '-o', $file->getDestination()];
 //			llog($cmd);
@@ -53,6 +66,7 @@ class RunVips extends AppController
 			$p->start();
 			$p->wait();
 			if ($p->getErrorOutput()) {
+				llog(implode(' ', $cmd));
 				throw new Exception($p->getErrorOutput());
 			}
 			$output = $p->getOutput();
@@ -60,11 +74,13 @@ class RunVips extends AppController
 			if (!$file->getThumb()->exists()) {
 				throw new Exception('vips failed to create ', $file->getDestination());
 			}
-			llog('+'.$timer->elapsed(),
+			llog('+' . $timer->elapsed(),
 //				$file->getPath(),
 				$file->getDestination(),
 				count($files) - $i,
 			);
+		} catch (Exception $e) {
+			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 		}
 	}
 
