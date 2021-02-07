@@ -67,10 +67,15 @@ function getPathToThumbsFrom($index)
 	return $thumbsPath;
 }
 
-if (php_sapi_name() !== 'cli') {
-	$whoops = new \Whoops\Run;
-	$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
-	$whoops->register();
+if (PHP_SAPI !== 'cli') {
+	$headers = apache_request_headers();
+//	llog($headers);
+	$userAgent = $headers['User-Agent'];
+	if (!str_startsWith($userAgent, 'Apache-HttpClient')) {    // PHPStorm
+		$whoops = new \Whoops\Run;
+		$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+		$whoops->register();
+	}
 }
 
 function getContainer()

@@ -1,1 +1,16 @@
-GET http://localhost:8080/ProcessApi/123
+GET http://localhost:8080/ProcessApi
+
+###
+
+POST http://localhost:8080/ProcessApi
+
+sleep 100
+
+###
+
+GET http://localhost:8080/ProcessApi/26560
+
+###
+
+DELETE http://localhost:8080/ProcessApi/28556
+

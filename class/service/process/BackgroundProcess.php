@@ -38,6 +38,7 @@ class BackgroundProcess extends \Cocur\BackgroundProcess\BackgroundProcess
 	{
 		if ($this->getOS() !== self::OS_WINDOWS) {
 			parent::run($outputFile, $append);
+			return $this->getPid();
 		}
 
 		// Windows
@@ -50,7 +51,7 @@ class BackgroundProcess extends \Cocur\BackgroundProcess\BackgroundProcess
 			0 => ["pipe", "r"],
 			1 => ["pipe", "w"],
 		];
-		$prog = proc_open("start /b " . $this->command, $descriptorspec, $pipes);
+		$prog = proc_open("start /b " . $this->command . ' > ' . $outputFile, $descriptorspec, $pipes);
 		if (!is_resource($prog)) {
 			throw new \Exception('No prog');
 		}
@@ -69,6 +70,7 @@ class BackgroundProcess extends \Cocur\BackgroundProcess\BackgroundProcess
 
 		$this->setPid($pid);
 		$this->pid = $pid;
+		return $this->pid;
 	}
 
 	public function isRunning()
@@ -117,6 +119,16 @@ class BackgroundProcess extends \Cocur\BackgroundProcess\BackgroundProcess
 			$mem *= 1024 * 1024 * 1024;
 		}
 		return floor($mem);
+	}
+
+	public function setCommand(string $cmd)
+	{
+		$this->command = $cmd;
+	}
+
+	public function getCommand()
+	{
+		return $this->command;
 	}
 
 }
