@@ -73,12 +73,17 @@ if (php_sapi_name() !== 'cli') {
 	$whoops->register();
 }
 
-$builder = new DI\ContainerBuilder();
-$builder->addDefinitions(__DIR__ . '/definitions.php');
-$builder->useAnnotations(true);
-$container = $builder->build();
+function getContainer()
+{
+	static $container;
+	if (!$container) {
+		$builder = new DI\ContainerBuilder();
+		$builder->addDefinitions(__DIR__ . '/definitions.php');
+		$builder->useAnnotations(true);
+		$container = $builder->build();
 
-//$db = $container->get(DBInterface::class);
-//$db->logToLog = true;
-
-return $container;
+		//$db = $container->get(DBInterface::class);
+		//$db->logToLog = true;
+	}
+	return $container;
+}

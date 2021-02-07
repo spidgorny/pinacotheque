@@ -2,7 +2,8 @@
 
 //print_r($_SERVER);
 
-$container = require __DIR__.'/bootstrap.php';
+require_once __DIR__.'/bootstrap.php';
+
 
 function getController()
 {
@@ -34,6 +35,7 @@ try {
 	$c = getController();
 	llog('Controller: ', $c);
 
+	$container = getContainer();
 	/** @var AppController $o */
 	$o = $container->get($c);
 	$o->setContainer($container);

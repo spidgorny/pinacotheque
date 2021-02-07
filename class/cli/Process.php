@@ -13,6 +13,34 @@ class Process extends AppController
 
 	public function __invoke()
 	{
+		$this->testFileCache();
+//		$this->testAPCU();
+//		$this->runOnce();
+	}
+
+	public function testFileCache()
+	{
+		$fc = new FileCache(null, sys_get_temp_dir());
+
+//		$rand = mt_rand();
+//		llog('rand', $rand);
+//		$fc->set('pid', [$rand, $rand]);
+
+		$pid = $fc->get('pid');
+		llog('pid', $pid);
+	}
+
+	public function testAPCU()
+	{
+		$rand = mt_rand();
+//		llog('rand', $rand);
+//		apcu_store('pid', $rand);
+		$pid = apcu_fetch('pid');
+		llog('pid', $pid);
+	}
+
+	public function runOnce()
+	{
 		$pid = $this->start();
 //		$pid = 16844;
 		$process = BackgroundProcess::createFromPID($pid);
