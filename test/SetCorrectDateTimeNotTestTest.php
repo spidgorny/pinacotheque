@@ -100,24 +100,4 @@ class SetCorrectDateTimeNotTestTest extends \PHPUnit\Framework\TestCase
 		$this->assertEquals(2322, $height);
 	}
 
-	public function test_find_missing_width()
-	{
-		$provider = new FileProvider($this->db);
-		/** @var MetaForSQL $meta */
-		foreach ($provider->getAllFiles() as $meta) {
-			$meta->injectDB($this->db);
-			$meta->loadMeta();
-			$width = $meta->getWidth();
-			$height = $meta->getHeight();
-			echo str_pad($meta->id, 10), TAB, $meta->getExt(), TAB, $width, 'x', $height;
-			if (!$width || !$height) {
-				llog($meta->streams[0]->width);
-				llog($meta);
-				break;
-			}
-			echo '.', PHP_EOL;
-		}
-		$this->assertTrue(true);
-	}
-
 }

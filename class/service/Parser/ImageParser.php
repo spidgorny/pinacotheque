@@ -10,27 +10,35 @@ class ImageParser
 
 	protected string $filePath;
 
-	/** @var Image $image */
-	protected Image $image;
+	/** @var Image|null $manager */
+	protected ?Image $manager;
 
 	public array $log = [];
 
 	public static function fromFile(string $filePath): ImageParser
 	{
-		$size = getimagesize($filePath);
+//		$size = getimagesize($filePath);
 //		debug($size);
-		if ($size && ($size[0] > 20000 || $size[1] > 20000)) {
-			throw new ImageException('Image too big ' . $size[0] . 'x' . $size[1]);
-		}
-		$manager = new ImageManager();
-		$image = $manager->make($filePath);
-		return new static($filePath, $image);
+//		if ($size && ($size[0] > 20000 || $size[1] > 20000)) {
+//			throw new ImageException('Image too big ' . $size[0] . 'x' . $size[1]);
+//		}
+		return new static($filePath);
 	}
 
-	public function __construct(string $filePath, Image $image)
+	public function __construct(string $filePath)
 	{
 		$this->filePath = $filePath;
-		$this->image = $image;
+	}
+
+	public function getManager(): Image
+	{
+		if (isset($this->manager) && !is_null($this->manager)) {
+			return $this->manager;
+		}
+		$managerFactory = new ImageManager();
+		$manager = $managerFactory->make($this->filePath);
+		$this->manager = $manager;
+		return $manager;
 	}
 
 	public function log($message): void
@@ -42,7 +50,7 @@ class ImageParser
 	{
 		$meta = $this->getMetaByIM();
 		if (!$meta) {
-			$meta = $this->image->exif();
+			$meta = $this->getManager()->exif();
 		}
 		if (!$meta) {
 			$meta = $this->getMetaFromPHP();
@@ -93,23 +101,23 @@ class ImageParser
 	{
 //		echo 'Saving thumbnail to ', $destination, PHP_EOL;
 		$start = microtime(true);
-		$this->image->resize(256, null, static function (Constraint $constraint) {
+		$this->getManager()->resize(256, null, static function (Constraint $constraint) {
 			$constraint->aspectRatio();
 		});
 
-		$this->image->save($destination);
+		$this->getManager()->save($destination);
 //		echo 'Saved in ', number_format(microtime(true) - $start, 3), PHP_EOL;
 	}
 
 	public function getCornerColors(): array
 	{
 		$colors = [];
-		$width = $this->image->width();
-		$height = $this->image->height();
-		$colors[00] = $this->image->pickColor(0, 0);
-		$colors[01] = $this->image->pickColor($width - 1, 0);
-		$colors[10] = $this->image->pickColor(0, $height - 1);
-		$colors[11] = $this->image->pickColor($width - 1, $height - 1);
+		$width = $this->getManager()->width();
+		$height = $this->getManager()->height();
+		$colors[00] = $this->getManager()->pickColor(0, 0);
+		$colors[01] = $this->getManager()->pickColor($width - 1, 0);
+		$colors[10] = $this->getManager()->pickColor(0, $height - 1);
+		$colors[11] = $this->getManager()->pickColor($width - 1, $height - 1);
 		foreach ($colors as &$color) {
 			unset($color[3]);    // alpha
 		}
@@ -128,9 +136,9 @@ class ImageParser
 	public function getQuadrantColors(): array
 	{
 		$colors = [];
-		$WWWW = $this->image->width() - 1;
+		$WWWW = $this->getManager()->width() - 1;
 		$halfW = floor($WWWW / 2);
-		$HHHH = $this->image->height() - 1;
+		$HHHH = $this->getManager()->height() - 1;
 		$halfH = floor($HHHH / 2);
 
 		$colors[00] = $this->getQuadrantColor(0, 0, $halfW, $halfH);
@@ -146,7 +154,7 @@ class ImageParser
 		$colors = [];
 		for ($y = $h1; $y <= $h2; $y++) {
 			for ($x = $w1; $x <= $w2; $x++) {
-				$color = $this->image->pickColor($x, $y);
+				$color = $this->getManager()->pickColor($x, $y);
 				$colors[] = $color;
 			}
 		}

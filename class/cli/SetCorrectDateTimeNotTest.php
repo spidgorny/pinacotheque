@@ -52,7 +52,7 @@ class SetCorrectDateTimeNotTest extends AppController
 		$file = new MetaForSQL($row);
 		$file->injectDB($this->db);
 		try {
-			$meta = $file->getMetaData();
+			$meta = $file->loadMeta();
 			$dateTime = $this->getDateTime($file->getOriginal(), $meta, $file->timestamp);
 			$speed = $this->processed++ / (microtime(true) - $this->startTime);
 			echo $this->remaining--, TAB, number_format($speed, 3), '/s', TAB, ifsetor($meta['DateTime']), ' => ', $dateTime, PHP_EOL;
@@ -62,8 +62,8 @@ class SetCorrectDateTimeNotTest extends AppController
 			];
 			if (!$file->width) {
 				$update += [
-					'width' => $this->getWidth($meta),
-					'height' => $this->getHeight($meta),
+					'width' => $file->getWidth(),
+					'height' => $file->getHeight(),
 				];
 			}
 			$file->update($update);

@@ -24,9 +24,9 @@ class MetaForSQL extends Meta
 	use DatabaseManipulation;
 
 	/**
-	 * @var Source
+	 * @var Source|null
 	 */
-	public Source $sourceInstance;
+	public ?Source $sourceInstance;
 
 	public static function getTableName(): string
 	{
@@ -77,7 +77,7 @@ class MetaForSQL extends Meta
 
 	public function getSource()
 	{
-		if ($this->sourceInstance) {
+		if (isset($this->sourceInstance) && !is_null($this->sourceInstance)) {
 			return $this->sourceInstance;
 		}
 		$source = Source::findByID($this->db, $this->source);
@@ -149,7 +149,9 @@ class MetaForSQL extends Meta
 
 	public function loadMeta()
 	{
-		$this->props += $this->getMetaData();
+		$metaData = $this->getMetaData();
+		$this->props += $metaData;
+		return $metaData;
 	}
 
 	public function getLocation()

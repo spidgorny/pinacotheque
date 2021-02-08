@@ -202,9 +202,10 @@ class Meta implements IMetaData
 	{
 		return $this->width ??
 			$this->COMPUTED->Width ??
-			$this->streams[0]->width ??
-			$this->streams[0][0]->width ??
+			$this->streams[0]['width'] ??
+			$this->streams[1]['width'] ??
 			$this->ImageWidth ??
+			$this->ExifImageWidth ??
 			null;
 	}
 
@@ -212,9 +213,10 @@ class Meta implements IMetaData
 	{
 		return $this->height ??
 			$this->COMPUTED->Height ??
-			$this->streams[0]->height ??
-			$this->streams[0][0]->height ??
+			$this->streams[0]['height'] ??
+			$this->streams[1]['height'] ??
 			$this->ImageLength ??
+			$this->ExifImageLength ??
 			null;
 	}
 

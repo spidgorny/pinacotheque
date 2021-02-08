@@ -63,7 +63,9 @@
 		"queue:watch": "pm2 start worker.php --watch",
 		"queue:push": "php test/queuePush.php",
 		"runvips": "php index.php RunVips",
-		"process": "php index.php Process"
+		"process": "php index.php Process",
+		"ScanMetaSetWidth": "php index.php ScanMetaSetWidth 94800",
+		"ffprobe": "ffprobe -v quiet -print_format json -show_format -show_streams /media/slawa/Elements/Slawa-dv7/Pictures/OnePlusMarina/Jumping\\ Night/downloading_Jumping_Night_2018-02-02T080041+0000_163339.mov"
 	},
 	"require-dev": {
 		"roave/security-advisories": "dev-master",

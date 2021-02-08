@@ -208,7 +208,7 @@ class FileProvider
 			]),
 		];
 		$res = $this->db->runSelectQuery('files', $where);	// NO ORDER FOR SPEED
-//		llog($this->db->getLastQuery().'');
+		llog($this->db->getLastQuery().'');
 		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 		$imageFiles->setResult($res);
 		return $imageFiles;
