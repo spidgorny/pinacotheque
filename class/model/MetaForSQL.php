@@ -4,9 +4,18 @@
  * Class MetaForSQL
  * @property int id
  * @property int source
+ * @property string type
  * @property string path
  * @property int timestamp
  * @property int colors
+ * @property int width
+ * @property int height
+ * @property DateTime DateTime
+ * @property string ext
+ * @property string ym
+ * @property string meta_timestamp
+ * @property string meta_error
+ * @property DateTime mtime
  */
 class MetaForSQL extends Meta
 {
@@ -17,7 +26,7 @@ class MetaForSQL extends Meta
 	/**
 	 * @var Source
 	 */
-	public $sourceInstance;
+	public Source $sourceInstance;
 
 	public static function getTableName(): string
 	{
@@ -29,6 +38,9 @@ class MetaForSQL extends Meta
 		parent::__construct($meta);
 		if ($this->colors) {
 			$this->colors = json_decode($this->colors, true, 512,  JSON_THROW_ON_ERROR);
+		}
+		if ($this->DateTime) {
+			$this->DateTime = new DateTime($this->DateTime);
 		}
 	}
 
@@ -91,7 +103,7 @@ class MetaForSQL extends Meta
 
 	public function yearMonth()
 	{
-		return date('Y-m', $this->timestamp);
+		return date('Y-m', $this->DateTime ?: $this->timestamp);
 	}
 
 	public function getOriginal()
@@ -120,7 +132,7 @@ class MetaForSQL extends Meta
 		$assoc = [];
 		foreach ($this->getMeta() as $entry) {
 			$value = $entry->value;
-			if (strlen($value) && ($value[0] === '{' || $value[0] === '[')) {
+			if ($value !== '' && ($value[0] === '{' || $value[0] === '[')) {
 				try {
 					$try = json_decode($value, $value[0] === '[', 512, JSON_THROW_ON_ERROR);
 					if ($try) {
@@ -133,6 +145,11 @@ class MetaForSQL extends Meta
 			$assoc[$entry->name] = $value;
 		}
 		return $assoc;
+	}
+
+	public function loadMeta()
+	{
+		$this->props += $this->getMetaData();
 	}
 
 	public function getLocation()

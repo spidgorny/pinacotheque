@@ -190,11 +190,27 @@ class FileProvider
 			];
 		}
 		$res = $this->db->fetchAllSelectQuery('files LEFT OUTER JOIN meta ON (meta.id_file = files.id)', $where, 'ORDER BY timestamp');
-		llog($this->db->getLastQuery().'');
+//		llog($this->db->getLastQuery().'');
 //		$content[] = new slTable($imageFiles);
 //		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 //		$imageFiles->setResult($res);
 		$imageFiles = $res;
+		return $imageFiles;
+	}
+
+	public function getAllFiles()
+	{
+		$where = [
+			'type' => 'file',
+			'ext' => new SQLOr([
+				'ext' => null,
+				'ext ' => new SQLIn($this->imageExtList)
+			]),
+		];
+		$res = $this->db->runSelectQuery('files', $where);	// NO ORDER FOR SPEED
+//		llog($this->db->getLastQuery().'');
+		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
+		$imageFiles->setResult($res);
 		return $imageFiles;
 	}
 

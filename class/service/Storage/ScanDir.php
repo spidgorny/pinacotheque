@@ -92,6 +92,10 @@ class ScanDir
 			'inserted' => $inserted,
 		]);
 
+		$sql = "UPDATE files
+		SET ext = substr(path, -4)
+		WHERE type = 'file' AND ext is null";
+		$this->db->perform($sql);
 		return $inserted;
 	}
 

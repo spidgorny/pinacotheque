@@ -172,8 +172,8 @@ class MonthTimeline
 					'id' => $meta->id,
 					//				'src' => $meta->getThumbnail($this->prefix->getURL()),
 					'src' => $meta->getOriginalURL(),
-					'w' => $meta->width(),
-					'h' => $meta->height(),
+					'w' => $meta->getWidth(),
+					'h' => $meta->getHeight(),
 					'title' => $meta->getFilename(),
 				];
 			} elseif ($meta->isVideo()) {

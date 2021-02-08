@@ -7,13 +7,13 @@ class SetCorrectDateTimeNotTest extends AppController
 	/**
 	 * @var DBInterface
 	 */
-	protected $db;
+	protected DBInterface $db;
 
-	protected $remaining;
+	protected int $remaining;
 
-	protected $processed = 0;
+	protected int $processed = 0;
 
-	protected $startTime;
+	protected float $startTime;
 
 	public function __construct(DBInterface $db)
 	{
@@ -36,11 +36,12 @@ class SetCorrectDateTimeNotTest extends AppController
 		], 'ORDER BY id');
 		$feed = new DatabaseResultIteratorAssoc($this->db);
 		$feed->perform($query);
-		$this->remaining = $feed->count();
+		$this->remaining = (int)$feed->count();
 		$this->startTime = microtime(true);
 		foreach ($feed as $row) {
 			$this->processOne($row);
 		}
+
 	}
 
 	/**
@@ -55,17 +56,24 @@ class SetCorrectDateTimeNotTest extends AppController
 			$dateTime = $this->getDateTime($file->getOriginal(), $meta, $file->timestamp);
 			$speed = $this->processed++ / (microtime(true) - $this->startTime);
 			echo $this->remaining--, TAB, number_format($speed, 3), '/s', TAB, ifsetor($meta['DateTime']), ' => ', $dateTime, PHP_EOL;
-			$file->update([
+			$update = [
 				'mtime' => new SQLNow(),
 				'DateTime' => $dateTime,
-			]);
+			];
+			if (!$file->width) {
+				$update += [
+					'width' => $this->getWidth($meta),
+					'height' => $this->getHeight($meta),
+				];
+			}
+			$file->update($update);
 		} catch (RuntimeException $e) {
 			//debug($file, $file->getOriginal());
 			//throw $e;
 		}
 	}
 
-	private function getDateTime(string $filename, array $meta, int $timestamp)
+	public function getDateTime(string $filename, array $meta, int $timestamp)
 	{
 		if (count($meta) === 0) {
 			// there is nothing to parse
@@ -90,7 +98,7 @@ class SetCorrectDateTimeNotTest extends AppController
 		}
 
 		$FileDateTime = $meta['FileDateTime'] ?? null;
-		if ($FileDateTime && count($meta) <= 15) {	// last resort for a specific limited file
+		if ($FileDateTime && count($meta) <= 15) {    // last resort for a specific limited file
 			return $this->fromDateTime($FileDateTime);
 		}
 
@@ -103,25 +111,26 @@ class SetCorrectDateTimeNotTest extends AppController
 		$ymdhis = '/(\d{4})(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/';
 		$match = preg_match($ymdhis, basename($filename), $matches);
 		if (!$isTelegram && $match && in_array($matches[1][1], [1, 2], false)) {
-			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3].' '.$matches[4].':'.$matches[5].':'.$matches[6];
+			$formatted = $matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] . ':' . $matches[6];
 			return $this->fromDateTime($formatted);
 		}
 
 		$ymd_his = '/(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})/';
 		$match = preg_match($ymd_his, basename($filename), $matches);
+		llog($match);
 		if ($match && in_array($matches[1][1], [1, 2], false)) {
 			debug($filename, $isTelegram, $match);
-			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3].' '.$matches[4].':'.$matches[5].':'.$matches[6];
+			$formatted = $matches[1] . '-' . $matches[2] . '-' . $matches[3] . ' ' . $matches[4] . ':' . $matches[5] . ':' . $matches[6];
 			return $this->fromDateTime($formatted);
 		}
 
-		$ymd = '/VID-(\d{4})(\d{2})(\d{2})-WA/';	// what's app
+		$ymd = '/VID-(\d{4})(\d{2})(\d{2})-WA/';    // what's app
 		if (preg_match($ymd, basename($filename), $matches) && in_array($matches[1][1], [1, 2], false)) {
-			$formatted = $matches[1].'-'.$matches[2].'-'.$matches[3];
+			$formatted = $matches[1] . '-' . $matches[2] . '-' . $matches[3];
 			return $this->fromDateTime($formatted);
 		}
 
-		if ($isTelegram) {	// there is no hope to find any metadata
+		if ($isTelegram) {    // there is no hope to find any metadata
 			return date(self::YMDHis, $timestamp);
 		}
 

@@ -22,7 +22,7 @@ class ReadMetaWriteDB extends AppController
 		if (!$source || !$source->id) {
 			throw new Exception('Source ' . $sourceID . ' not found');
 		}
-		debug($source);
+//		debug($source);
 
 		$provider = new FileProvider($this->db, $source);
 		$filesToScan = $provider->getUnscanned();

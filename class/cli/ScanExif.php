@@ -105,17 +105,17 @@ class ScanExif extends BaseController
 	 */
 	public function analyze(array $files)
 	{
-		$this->log('Analyzing... '.sizeof($files));
+		$this->log('Analyzing... '.count($files));
 
 		$phpBinaryFinder = new PhpExecutableFinder();
 		$php = $phpBinaryFinder->find();
 //		$this->log($php);
 
 		$pool = new PriorityPool();
-		$percent = new Percent(sizeof($files));
+		$percent = new Percent(count($files));
 //		print_r($files);
 		foreach ($files as $file) {
-			if (basename($file['path'])[0] == '.') {
+			if (basename($file['path'])[0] === '.') {
 				continue;
 			}
 			$percent->inc();

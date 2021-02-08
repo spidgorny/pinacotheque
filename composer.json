@@ -57,6 +57,7 @@
 		"nginx:start": "c:\\tools\\nginx-1.17.7\\nginx",
 		"nginx:stop": "c:\\tools\\nginx-1.17.7\\nginx -s stop",
 		"backup:db": "/usr/local/bin/mysqldump -h 192.168.1.120 -u slawa -p pina --result-file=\"/Users/depidsvy/dev/pinacotheque/{data_source}-{timestamp}-dump.sql\"",
+		"backup:pina": "mysqldump -u slawa -p pina --result-file=\"/media/nas/photo/pinacotheque/data/{data_source}-{timestamp}-dump.sql\"",
 		"mount:data": "sudo mount 192.168.1.189:/volume1/photo /media/nas/photo",
 		"SetCorrectDateTimeNotTest": "php index.php SetCorrectDateTimeNotTest",
 		"queue:watch": "pm2 start worker.php --watch",

@@ -30,11 +30,16 @@ class RunVips extends AppController
 
 	public function __invoke()
 	{
-		$source = Source::findByID($this->db, 7);
-		if (!$source) {
-			throw new Exception('No source');
+		$sourceID = (int)$_SERVER['argv'][2];
+		if (!$sourceID) {
+			throw new Exception('> php index.php RunVips <source-id>');
+		}
+		$source = Source::findByID($this->db, $sourceID);
+		if (!$source || !$source->id) {
+			throw new Exception('Source ' . $sourceID . ' not found');
 		}
 		$files = $source->getFiles(['type' => 'file']);
+		llog('count', count($files));
 
 		foreach ($files as $i => $file) {
 			if (!$file->isImage()) {

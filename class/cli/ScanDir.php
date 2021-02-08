@@ -20,7 +20,13 @@ class ScanDir extends AppController
 //        $dir = $request->importCLIparams()->get('dir');
 //        var_dump($request->getAll());
         $sourceID = $_SERVER['argv'][2];
+        if (!$sourceID) {
+        	throw new Exception('Usage: php index.php ScanDir <source-id>');
+		}
 		$source = \Source::findByID($this->db, $sourceID);
+        if (!$source) {
+        	throw new Exception('Source '.$sourceID.' not found');
+		}
 
 		$dir = $source->path;
 		echo 'dir: ', $dir, PHP_EOL;

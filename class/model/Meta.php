@@ -2,6 +2,8 @@
 
 /**
  * Class Meta - represents a single file metadata from meta.json
+ * @property int width
+ * @property int height
  * @property string _path_
  * @property string FileName
  * @property int FileDateTime
@@ -13,11 +15,12 @@
  * @property mixed DateTimeOriginal
  * @property mixed DateTime
  * @property int id
+ * @property object streams
  */
 class Meta implements IMetaData
 {
 
-	protected array $props = [];
+	public array $props = [];
 
 	/** @var string for debugging when used directly (not MetaForSQL) */
 	public string $sourcePath;
@@ -195,14 +198,24 @@ class Meta implements IMetaData
 		]);
 	}
 
-	public function width()
+	public function getWidth()
 	{
-		return ($this->COMPUTED) ? $this->COMPUTED['Width'] : null;
+		return $this->width ??
+			$this->COMPUTED->Width ??
+			$this->streams[0]->width ??
+			$this->streams[0][0]->width ??
+			$this->ImageWidth ??
+			null;
 	}
 
-	public function height()
+	public function getHeight()
 	{
-		return ($this->COMPUTED) ? $this->COMPUTED['Height'] : null;
+		return $this->height ??
+			$this->COMPUTED->Height ??
+			$this->streams[0]->height ??
+			$this->streams[0][0]->height ??
+			$this->ImageLength ??
+			null;
 	}
 
 	public function getOriginalURL()
@@ -278,7 +291,7 @@ class Meta implements IMetaData
 
 	public function isHorizontal()
 	{
-		return $this->width() > $this->height();
+		return $this->getWidth() > $this->getHeight();
 	}
 
 	public function getAll()
