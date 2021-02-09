@@ -1,5 +1,3 @@
-const path = require('path');
-
 export class Image {
 	// @ts-ignore
 	id: string;
@@ -34,41 +32,41 @@ export class Image {
 	}
 
 	get thumbURL() {
-		const url = new URL('ShowThumb', this.baseUrl);
-		url.searchParams.set('file', this.id);
+		const url = new URL("ShowThumb", this.baseUrl);
+		url.searchParams.set("file", this.id);
 		return url.toString();
 	}
 
 	get originalURL() {
-		const url = new URL('ShowOriginal', this.baseUrl);
-		url.searchParams.set('file', this.id);
+		const url = new URL("ShowOriginal", this.baseUrl);
+		url.searchParams.set("file", this.id);
 		return url.toString();
 	}
 
 	getWidth() {
-		if ('COMPUTED' in this.meta) {
+		if ("COMPUTED" in this.meta) {
 			return this.meta.COMPUTED.Width;
 		}
-		if ('streams' in this.meta/* && this.meta.streams.length*/) {
+		if ("streams" in this.meta /* && this.meta.streams.length*/) {
 			// @ts-ignore
 			return this.meta.streams[0].width;
 		}
 		if (Object.keys(this.meta).length) {
-			console.error('Find width in', this.meta);
+			console.error("Find width in", this.meta);
 		}
 		return 1024;
 	}
 
 	getHeight() {
-		if ('COMPUTED' in this.meta) {
+		if ("COMPUTED" in this.meta) {
 			return this.meta.COMPUTED.Height;
 		}
-		if ('streams' in this.meta/* && this.meta.streams.length*/) {
+		if ("streams" in this.meta /* && this.meta.streams.length*/) {
 			// @ts-ignore
 			return this.meta.streams[0].height;
 		}
 		if (Object.keys(this.meta)) {
-			console.error('Find width in', this.meta);
+			console.error("Find width in", this.meta);
 		}
 		return 768;
 	}
@@ -76,20 +74,27 @@ export class Image {
 	// convert 2019:11:17 13:18:57
 	/// @deprecated
 	getTimestamp() {
-		return new Date(this.DateTime.split(' ').map((part, index) => {
-			if (index) return part;
-			return part.replace(/:/g, '-');
-		}).join(' '));
+		return new Date(
+			this.DateTime.split(" ")
+				.map((part, index) => {
+					if (index) return part;
+					return part.replace(/:/g, "-");
+				})
+				.join(" ")
+		);
+	}
+
+	basename(str: string, sep: string = "/") {
+		return str.substr(str.lastIndexOf(sep) + 1);
 	}
 
 	get title() {
-		return path.basename(this.path);
+		return this.basename(this.path);
 	}
 
 	get date() {
 		return new Date(this.DateTime);
 	}
-
 }
 
 interface Meta {
@@ -176,6 +181,6 @@ interface COMPUTED {
 	IsColor: number;
 	ByteOrderMotorola: number;
 	ApertureFNumber: string;
-	'Thumbnail.FileType': number;
-	'Thumbnail.MimeType': string;
+	"Thumbnail.FileType": number;
+	"Thumbnail.MimeType": string;
 }

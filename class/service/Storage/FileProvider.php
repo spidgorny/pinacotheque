@@ -48,8 +48,6 @@ class FileProvider
 			'type' => 'file',
 			'ext' => new SQLIn($this->imageExtList),
 			'DateTime' => new SQLWhereNotEqual('DateTime', null),
-			'DateTime ' => new AsIsOp("> ''"),
-			'DateTime  ' => new AsIsOp("> 0"),
 		];
 		if ($this->source) {
 			$where += [
