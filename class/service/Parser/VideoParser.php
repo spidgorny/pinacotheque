@@ -5,11 +5,11 @@ use Symfony\Component\Process\Process;
 class VideoParser
 {
 
-	protected $filePath;
+	protected string $filePath;
 
-	public $log = [];
+	public array $log = [];
 
-	public static function fromFile($filePath): VideoParser
+	public static function fromFile(string $filePath): VideoParser
 	{
 		if (!$filePath) {
 			throw new InvalidArgumentException(__METHOD__ . ' called with empty $filePath');
@@ -24,17 +24,19 @@ class VideoParser
 
 	public function log($something)
 	{
-		$this->log[] = $something;
+		llog($something);
 	}
 
 	public function getMeta()
 	{
 		$json = $this->probe();
-		$creation_time = ifsetor($json->format->tags->creation_time);
-		if ($creation_time) {
-			$json->DateTime = str_replace('T', ' ', $creation_time);
+		if (count((array)$json)) {
+			$creation_time = ifsetor($json->format->tags->creation_time);
+			if ($creation_time) {
+				$json->DateTime = str_replace('T', ' ', $creation_time);
+			}
 		}
-		return $json;
+		return $json ? (array)$json : $json;
 	}
 
 	public function saveThumbnailTo($destination)

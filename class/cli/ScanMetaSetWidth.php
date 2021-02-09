@@ -17,8 +17,11 @@ class ScanMetaSetWidth extends AppController
 		llog('skip', $skip);
 
 		$provider = new FileProvider($this->db);
+		llog('querying...');
 		$iterator = $provider->getAllFiles();
+		llog('skipping...');
 		$iterator->skip($skip);
+		llog('processing...');
 
 		$timer = new Profiler();
 
@@ -28,39 +31,31 @@ class ScanMetaSetWidth extends AppController
 			if ($meta->width && $meta->height) {
 				continue;
 			}
-			$meta->injectDB($this->db);
-			if (!$meta->hasMeta()) {
-				$processor = ParserFactory::getInstance($meta);
-				$parser = $processor->getParser();
-				$metaData = $parser->getMeta();
-				$is = new ImageScanner($meta, $this->db);
-				$is->saveMetaToDB($metaData);
-			}
-			$meta->loadMeta();
 			if ($meta->meta_error) {
 				continue;
 			}
-			$width = $meta->getWidth();
-			$height = $meta->getHeight();
-//			echo str_pad($meta->id, 10), TAB, $meta->getExt(), TAB, $width, 'x', $height;
+			$meta->injectDB($this->db);
+//			if (!$meta->hasMeta()) {
+//				return $meta->ensureMeta();
+//			}
+			[$width, $height] = $meta->insertWidthHeight();
+
 			if (!$width || !$height) {
 				echo PHP_EOL;
 				llog($meta->id, $meta->getFullPath());
-				llog($meta->streams ?? null);
-				llog($meta->streams[0] ?? null);
-				llog($meta->streams[0]['width'] ?? null);
-				llog($meta->streams[0]->width ?? null);
-				llog($meta->streams[0][0]->width ?? null);
-				llog($meta->props);
-				break;
+				llog('exists', $meta->isFile());
+//				llog($meta->props);
+				llog($meta->ensureMeta());
+
+				// video may not have any meta data
+				if ($meta->isImage()) {
+					break;
+				}
 			}
-			$meta->update([
-				'width' => $width,
-				'height' => $height,
-			]);
+
 			echo '.';
 			if (!($i % 60)) {
-				echo $timer->elapsed(), PHP_EOL, $i, TAB;
+				echo TAB, $timer->elapsed(), PHP_EOL, $i, TAB;
 				$timer->restart();
 			}
 			$i++;

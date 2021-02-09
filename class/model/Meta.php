@@ -99,6 +99,7 @@ class Meta implements IMetaData
 	/**
 	 * /data/thumbs/PrefixMerged/folder/path/file.jpg
 	 * @return bool|string
+	 * @throws Exception
 	 */
 	public function getDestination()
 	{
@@ -200,24 +201,36 @@ class Meta implements IMetaData
 
 	public function getWidth()
 	{
-		return $this->width ??
-			$this->COMPUTED->Width ??
-			$this->streams[0]['width'] ??
-			$this->streams[1]['width'] ??
-			$this->ImageWidth ??
-			$this->ExifImageWidth ??
-			null;
+		try {
+			return $this->width ??
+				$this->COMPUTED->Width ??
+				$this->streams[0]['width'] ??
+				$this->streams[1]['width'] ??
+				$this->ImageWidth ??
+				$this->ExifImageWidth ??
+				$this->geometry->width ??
+				null;
+		} catch (Exception $e) {
+			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
+			return null;
+		}
 	}
 
 	public function getHeight()
 	{
+		try {
 		return $this->height ??
 			$this->COMPUTED->Height ??
 			$this->streams[0]['height'] ??
 			$this->streams[1]['height'] ??
 			$this->ImageLength ??
 			$this->ExifImageLength ??
+			$this->geometry->height ??
 			null;
+		} catch (Exception $e) {
+			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
+			return null;
+		}
 	}
 
 	public function getOriginalURL()

@@ -46,20 +46,23 @@ class ImageParser
 		$this->log[] = $message;
 	}
 
-	public function getMeta()
+	public function getMeta(): array
 	{
 		$meta = $this->getMetaByIM();
 		if (!$meta) {
-			$meta = $this->getManager()->exif();
+			$meta = (array)$this->getManager()->exif();
+			if ($meta) {
+				llog('getMetaByImageManager', count($meta));
+			}
 		}
 		if (!$meta) {
 			$meta = $this->getMetaFromPHP();
 		}
 //		llog('meta keys', array_keys($meta));
-		return $meta;
+		return (array)$meta;
 	}
 
-	public function getMetaByIM()
+	public function getMetaByIM(): array
 	{
 		try {
 //			llog(__METHOD__, $this->filePath);
@@ -75,7 +78,8 @@ class ImageParser
 			$json = $p->getOutput();
 //			llog($json);
 			$output = json_decode($json, false, 512, JSON_INVALID_UTF8_IGNORE | JSON_THROW_ON_ERROR);
-			return $output[0]->image;
+			llog(__METHOD__, array_keys((array)$output));
+			return (array)$output[0]->image;
 		} catch (Exception $e) {
 			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 		}
@@ -94,6 +98,7 @@ class ImageParser
 			unset($meta[2]);
 			unset($meta[3]);    // width="xx" height="yy"
 		}
+		llog(__METHOD__, count($meta));
 		return $meta;
 	}
 

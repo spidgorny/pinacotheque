@@ -37,7 +37,7 @@ class MetaForSQL extends Meta
 	{
 		parent::__construct($meta);
 		if ($this->colors) {
-			$this->colors = json_decode($this->colors, true, 512,  JSON_THROW_ON_ERROR);
+			$this->colors = json_decode($this->colors, true, 512, JSON_THROW_ON_ERROR);
 		}
 		if ($this->DateTime) {
 			$this->DateTime = new DateTime($this->DateTime);
@@ -177,6 +177,36 @@ class MetaForSQL extends Meta
 		$vars['source_path'] = $this->getSource()->path;
 		$vars['meta'] = $this->getMetaData();
 		return $vars;
+	}
+
+	public function ensureMeta()
+	{
+		$processor = ParserFactory::getInstance($this);
+		$parser = $processor->getParser();
+		$metaData = $parser->getMeta();
+//		llog($metaData);
+		$is = new ImageScanner($this, $this->db);
+		$is->saveMetaToDB($metaData);
+		return $metaData;
+	}
+
+	public function insertWidthHeight()
+	{
+		if ($this->width && $this->height) {
+			return [$this->width, $this->height];
+		}
+		$this->ensureMeta();
+		$this->loadMeta();
+		$width = $this->getWidth();
+		$height = $this->getHeight();
+//			echo str_pad($meta->id, 10), TAB, $meta->getExt(), TAB, $width, 'x', $height;
+		if ($width && $height) {
+			$this->update([
+				'width' => $width,
+				'height' => $height,
+			]);
+		}
+		return [$width, $height];
 	}
 
 }
