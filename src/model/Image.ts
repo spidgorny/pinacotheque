@@ -23,6 +23,8 @@ export class Image {
 	source_path: string;
 	// @ts-ignore
 	meta: Meta;
+	width?: number;
+	height?: number;
 
 	// @ts-ignore
 	baseUrl: string;
@@ -44,44 +46,17 @@ export class Image {
 	}
 
 	getWidth() {
-		if ("COMPUTED" in this.meta) {
-			return this.meta.COMPUTED.Width;
-		}
-		if ("streams" in this.meta /* && this.meta.streams.length*/) {
-			// @ts-ignore
-			return this.meta.streams[0].width;
-		}
-		if (Object.keys(this.meta).length) {
-			console.error("Find width in", this.meta);
-		}
-		return 1024;
+		return this.width || 1024;
 	}
 
 	getHeight() {
-		if ("COMPUTED" in this.meta) {
-			return this.meta.COMPUTED.Height;
-		}
-		if ("streams" in this.meta /* && this.meta.streams.length*/) {
-			// @ts-ignore
-			return this.meta.streams[0].height;
-		}
-		if (Object.keys(this.meta)) {
-			console.error("Find width in", this.meta);
-		}
-		return 768;
+		return this.height || 768;
 	}
 
 	// convert 2019:11:17 13:18:57
 	/// @deprecated
 	getTimestamp() {
-		return new Date(
-			this.DateTime.split(" ")
-				.map((part, index) => {
-					if (index) return part;
-					return part.replace(/:/g, "-");
-				})
-				.join(" ")
-		);
+		return new Date(this.DateTime);
 	}
 
 	basename(str: string, sep: string = "/") {

@@ -6,7 +6,7 @@ class Images extends AppController
 	/**
 	 * @var DBInterface
 	 */
-	protected $db;
+	protected DBInterface $db;
 
 	public function __construct(DBInterface $db)
 	{
@@ -53,7 +53,7 @@ class Images extends AppController
 	 */
 	public function getFiles(array $where): array
 	{
-		$files = MetaForSQL::findAll($this->db, $where, 'ORDER BY DateTime DESC LIMIT 10');
+		$files = MetaForSQL::findAll($this->db, $where, 'ORDER BY DateTime DESC LIMIT 50');
 		return $files;
 	}
 
