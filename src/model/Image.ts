@@ -53,8 +53,6 @@ export class Image {
 		return this.height || 768;
 	}
 
-	// convert 2019:11:17 13:18:57
-	/// @deprecated
 	getTimestamp() {
 		return new Date(this.DateTime);
 	}

@@ -5,12 +5,14 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { AppContext, context } from "../context";
 import { MyGallery } from "./my-gallery";
 import ScaleLoader from "react-spinners/ScaleLoader";
+import { PhotoProps } from "react-photo-gallery";
 
-export interface PhotoSetItem {
+export interface PhotoSetItem extends PhotoProps {
+	key?: string;
 	src: string;
 	width: number;
 	height: number;
-	image: Image;
+	image?: Image;
 }
 
 interface IGalleryInScrollProps {
@@ -36,14 +38,14 @@ export class GalleryInScroll extends React.Component<
 	};
 
 	componentDidMount() {
-		console.log(
-			this.props.photos.map(
-				(p: Image) => p.path + " [" + p.getWidth() + "x" + p.getHeight() + "]"
-			)
-		);
+		// console.log(
+		// 	this.props.photos.map(
+		// 		(p: Image) => p.path + " [" + p.getWidth() + "x" + p.getHeight() + "]"
+		// 	)
+		// );
 	}
 
-	photoItems() {
+	photoItems(): PhotoSetItem[] {
 		const photoSet = this.props.photos.map((img: Image) => {
 			// console.log(img);
 			return {

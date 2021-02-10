@@ -51,6 +51,11 @@ class ShowThumb extends AppController
 			'border' => 1,
 			'align' => 'right',
 		]);
+		$content[] = HTMLTag::img(ShowOriginal::href(['file' => $file]), [
+			'border' => 1,
+			'align' => 'right',
+			'width' => 256,
+		]);
 
 		$content[] = getDebug($meta);
 		$content[] = getDebug([

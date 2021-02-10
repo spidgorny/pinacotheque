@@ -56,6 +56,7 @@
     "react-query": "^3.6.0",
     "react-router": "^5.2.0",
     "react-spinners": "^0.10.4",
+    "react-visibility-sensor": "^5.1.1",
     "redaxios": "^0.3.0",
     "storage-wrap": "^1.0.2",
     "swiped-events": "^1.1.4",

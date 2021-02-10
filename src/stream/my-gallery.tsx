@@ -1,11 +1,57 @@
 import React from "react";
 import Gallery, { PhotoProps, RenderImageProps } from "react-photo-gallery";
-import { CustomPhotoProps, MyPhoto } from "./MyPhoto";
+import { MyPhoto } from "./MyPhoto";
 // @ts-ignore
 import IntersectionVisible from "react-intersection-visible";
 import { Image } from "../model/Image";
-import { AppContext } from "../context";
 import { PhotoSetItem } from "./GalleryInScroll";
+
+/**
+ * @deprecated temporary not used
+ * @param props
+ */
+class ImageRenderIntersection extends React.Component<
+	RenderImageProps<PhotoProps<PhotoSetItem>>
+> {
+	render() {
+		return (
+			<IntersectionVisible
+				key={this.props.photo.key}
+				// onIntersect={ e => this.onIntersect( e ) }
+				onHide={(e: any) =>
+					this.props.photo.image && this.onImageHide(e, this.props.photo.image)
+				}
+				onShow={(e: any) =>
+					this.props.photo.image && this.onImageShow(e, this.props.photo.image)
+				}
+			>
+				<MyPhoto
+					key={this.props.photo.key}
+					index={this.props.index}
+					direction={this.props.direction}
+					left={this.props.left}
+					top={this.props.top}
+					photo={this.props.photo}
+					onClick={(index: any) => {
+						console.log("click", index);
+						// this.props.openLightbox(this.props.index);
+					}}
+				/>
+			</IntersectionVisible>
+		);
+	}
+
+	private onImageShow(e: IntersectionObserverEntry, image: Image) {
+		// console.log('show', e);
+		// this.context.setState({
+		// 	[AppContext.VIEWPORT_TIMESTAMP]: image.date,
+		// });
+	}
+
+	private onImageHide(e: IntersectionObserverEntry, image: Image) {
+		// console.log('hide', e);
+	}
+}
 
 interface Props {
 	photos: PhotoSetItem[];
@@ -13,31 +59,19 @@ interface Props {
 }
 
 export class MyGallery extends React.Component<Props, any> {
-	/**
-	 * @deprecated temporary not used
-	 * @param props
-	 */
-	imageRenderer(props: RenderImageProps<PhotoProps<CustomPhotoProps>>) {
+	imageRender(props: RenderImageProps<PhotoProps<PhotoSetItem>>) {
+		console.log("imageRender", props);
 		return (
-			<IntersectionVisible
-				key={props.photo.key}
-				// onIntersect={ e => this.onIntersect( e ) }
-				onHide={(e: any) => this.onImageHide(e, props.photo.image)}
-				onShow={(e: any) => this.onImageShow(e, props.photo.image)}
-			>
-				<MyPhoto
-					key={props.photo.key}
-					margin={"2px"}
-					index={props.index}
-					photo={props.photo}
-					left={props.left}
-					top={props.top}
-					direction={"row"}
-					onClick={() => {
-						this.props.openLightbox(props.index);
-					}}
-				/>
-			</IntersectionVisible>
+			<MyPhoto
+				index={props.index}
+				photo={props.photo}
+				direction={props.direction}
+				left={props.left}
+				top={props.top}
+				onClick={() => {
+					this.props.openLightbox(props.index);
+				}}
+			/>
 		);
 	}
 
@@ -45,20 +79,16 @@ export class MyGallery extends React.Component<Props, any> {
 		// @ts-ignore
 		return (
 			<Gallery
+				direction="row"
+				columns={4}
+				targetRowHeight={256}
+				margin={5}
 				photos={this.props.photos}
-				/*								renderImage={this.imageRenderer.bind(this)}*/
+				// renderImage={this.imageRender.bind(this)}
+				renderImage={(props: RenderImageProps<any>) => (
+					<ImageRenderIntersection {...props} />
+				)}
 			/>
 		);
-	}
-
-	private onImageShow(e: IntersectionObserverEntry, image: Image) {
-		// console.log('show', e);
-		this.context.setState({
-			[AppContext.VIEWPORT_TIMESTAMP]: image.date,
-		});
-	}
-
-	private onImageHide(e: IntersectionObserverEntry, image: Image) {
-		// console.log('hide', e);
 	}
 }
