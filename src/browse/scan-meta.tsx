@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { context } from "../context";
 import { QueryObserverBaseResult, useQuery } from "react-query";
 import axios from "redaxios";
-import { FadeLoader } from "react-spinners";
 
 export interface FileToScan {
 	id: number;
@@ -15,7 +14,7 @@ export default function ScanMeta(props: {
 }) {
 	const ctx = useContext(context);
 
-	const { isLoading, isFetching, error, data, refetch } = useQuery(
+	const { isLoading, error, data, refetch } = useQuery(
 		["ScanMeta", props.file.id],
 		async () => {
 			const url = new URL(ctx.baseUrl.toString() + "ScanMeta");

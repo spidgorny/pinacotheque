@@ -16,8 +16,9 @@ class Images extends AppController
 
 	public function index()
 	{
+		$source = $this->request->getInt('source');
 		$since = $this->request->getTimestampFromString('since');
-		$where = $this->getWhere($since);
+		$where = $this->getWhere($source, $since);
 		//return new JSONResponse($where);
 		$files = $this->getFiles($where);
 		$query = $this->db->getLastQuery();
@@ -33,14 +34,18 @@ class Images extends AppController
 	}
 
 	/**
+	 * @param int|null $source
 	 * @param int $since
 	 * @return SQLWhereNotEqual[]
 	 */
-	public function getWhere(int $since): array
+	public function getWhere(?int $source, int $since): array
 	{
 		$where = [
 			'DateTime ' => new SQLWhereNotEqual('DateTime', null),
 		];
+		if ($source) {
+			$where['source'] = $source;
+		}
 		if ($since) {
 			$where['DateTime'] = new AsIsOp("<= '" . date('Y-m-d H:i:s', $since) . "'");
 		}

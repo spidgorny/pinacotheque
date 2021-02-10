@@ -1,8 +1,8 @@
 import { Source } from "../App";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { context } from "../context";
 import axios from "redaxios";
-import { BarLoader, CircleLoader } from "react-spinners";
+import { CircleLoader } from "react-spinners";
 
 interface CheckSourceState {
 	status: "ok" | "error";
@@ -18,22 +18,22 @@ export function CheckSource(props: { source: Source }) {
 	);
 	const [error, setError] = useState((null as unknown) as string);
 
-	async function fetchData() {
+	const fetchData = useCallback(async () => {
 		setState(null);
 		const urlCheck = new URL("CheckSource", ctx.baseUrl);
 		urlCheck.searchParams.set("id", props.source.id.toString());
 		try {
 			const res = await axios.get(urlCheck.toString());
-			setTimeout(() => setState(res.data), 1000);
+			setTimeout(() => setState(res.data), 0);
 		} catch (e) {
 			setError(e.message);
 		}
-	}
+	}, [ctx.baseUrl, props.source.id]);
 
 	useEffect(() => {
 		// noinspection JSIgnoredPromiseFromCall
 		fetchData();
-	}, [props.source]);
+	}, [props.source, fetchData]);
 
 	if (!state) {
 		return (

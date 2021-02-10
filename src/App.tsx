@@ -1,11 +1,11 @@
 import React from "react";
-import ImageStream from "./ImageStream";
+import ImageStream from "./stream/ImageStream";
 import { AppContext, context } from "./context";
 // @ts-ignore
 import axios from "redaxios";
 
 import ScaleLoader from "react-spinners/ScaleLoader";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "./stream/Sidebar";
 import "./test.object.assign";
 import { Header } from "./widgets/header";
 import "./app.css";
@@ -32,22 +32,31 @@ export interface IAppState {
 	status?: "ok";
 	min?: string;
 	max?: string;
-	sources?: Source[];
+	sources: Source[];
 	query?: string;
 	duration?: number;
+	sourceID?: number;
 }
 
-function StreamPage(props: { state: IAppState }) {
+function StreamPage(props: {
+	sources: Source[];
+	sourceID?: number;
+	setSource: (id?: number) => void;
+}) {
 	return (
 		<div className="flex flex-row p-2">
 			<div className="w-2/12">
-				<Sidebar />
+				<Sidebar
+					sources={props.sources}
+					sourceID={props.sourceID}
+					setSource={props.setSource}
+				/>
 			</div>
 			<div className="flex-grow">
-				{props.state === null ? (
+				{props.sources === null ? (
 					<ScaleLoader loading={true} color="#4DAF7C" />
 				) : (
-					<ImageStream />
+					<ImageStream sourceID={props.sourceID} />
 				)}
 			</div>
 		</div>
@@ -62,7 +71,10 @@ export default class App extends React.Component<IAppProps, IAppState> {
 	context: AppContext;
 	baseUrl: URL | undefined;
 
-	state: IAppState = {};
+	state: IAppState = {
+		sources: [],
+		sourceID: undefined,
+	};
 
 	componentDidMount() {
 		this.baseUrl = this.context.baseUrl;
@@ -82,6 +94,11 @@ export default class App extends React.Component<IAppProps, IAppState> {
 		this.setState(resData);
 	}
 
+	setSource(id?: number) {
+		console.log("setSource", id);
+		this.setState({ sourceID: id });
+	}
+
 	render() {
 		return (
 			<QueryClientProvider client={queryClient}>
@@ -89,7 +106,11 @@ export default class App extends React.Component<IAppProps, IAppState> {
 					<Header />
 					<Switch>
 						<Route path="/">
-							<StreamPage state={this.state} />
+							<StreamPage
+								sources={this.state.sources}
+								sourceID={this.state.sourceID}
+								setSource={this.setSource.bind(this)}
+							/>
 						</Route>
 						<Route path="/browse">
 							{this.state.sources ? (

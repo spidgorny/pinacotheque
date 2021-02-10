@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "wouter";
 
 export function Header(props: {}) {
 	return (
@@ -11,14 +12,14 @@ export function Header(props: {}) {
 			}}
 		>
 			<div className="px-2">
-				<a href="/" style={{ color: "white" }}>
+				<Link href="/" style={{ color: "white" }}>
 					stream
-				</a>
+				</Link>
 			</div>
 			<div className="px-2">
-				<a href="/browse" style={{ color: "white" }}>
+				<Link href="/browse" style={{ color: "white" }}>
 					browse
-				</a>
+				</Link>
 			</div>
 			<div className="" />
 		</div>

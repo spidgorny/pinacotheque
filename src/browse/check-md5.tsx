@@ -47,8 +47,8 @@ export default function CheckMD5(props: { source: Source }) {
 			if (result && result.value) {
 				// skip errors (status === 'err')
 				if ("file" in result.value && result.value.status === "lines") {
-					// @ts-ignore
-					setFolders((folders) => folders.concat(...result.value.file));
+					const newFile = result.value.file;
+					setFolders((folders) => folders.concat(...newFile));
 				}
 				if ("md5" in result.value) {
 					setMD5(result.value.md5 ?? "");

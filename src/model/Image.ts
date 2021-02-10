@@ -70,6 +70,10 @@ export class Image {
 	get date() {
 		return new Date(this.DateTime);
 	}
+
+	get src() {
+		return this.thumbURL;
+	}
 }
 
 interface Meta {

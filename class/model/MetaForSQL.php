@@ -177,8 +177,8 @@ class MetaForSQL extends Meta
 		$vars['source_path'] = $this->getSource()->path;
 		$vars['meta'] = $this->getMetaData();
 		$vars['DateTime'] = $this->DateTime ? $this->DateTime->format(DateTimeInterface::ATOM) : null;
-		$vars['width'] = (int)$vars['width'];
-		$vars['height'] = (int)$vars['height'];
+		$vars['width'] = (int)$this->getWidth();
+		$vars['height'] = (int)$this->getHeight();
 		return $vars;
 	}
 

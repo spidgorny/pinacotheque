@@ -5,7 +5,7 @@ import { useQuery } from "react-query";
 import axios from "redaxios";
 import ScanMeta, { FileToScan } from "./scan-meta";
 
-function Top10(props: { filesToScan: FileToScan[] }) {
+export function Top10(props: { filesToScan: FileToScan[] }) {
 	return (
 		<>
 			<hr />
