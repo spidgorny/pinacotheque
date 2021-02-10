@@ -32,7 +32,7 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		this.baseUrl = this.context.baseUrl;
 		if (this.context.lastTopTimestamp) {
 			this.setState({
-				start: this.context.lastTopTimestamp,
+				end: this.context.lastTopTimestamp,
 			});
 		}
 		this.fetchData().then();

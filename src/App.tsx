@@ -14,6 +14,7 @@ import BrowsePage from "./browse/browse-page";
 import OneSourcePage from "./browse/one-source-page";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { VisibilityTest } from "./test/visibility-test";
 
 interface IAppProps {}
 
@@ -131,6 +132,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 								/>
 							)}
 						</Route>
+						<Route path="/visibility" component={VisibilityTest} />
 					</Switch>
 				</div>
 				<ReactQueryDevtools initialIsOpen={true} />

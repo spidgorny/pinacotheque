@@ -5,6 +5,8 @@ import { MyPhoto } from "./MyPhoto";
 import IntersectionVisible from "react-intersection-visible";
 import { Image } from "../model/Image";
 import { PhotoSetItem } from "./GalleryInScroll";
+import TrackVisibility from "react-on-screen";
+const VisibilitySensor = require("react-visibility-sensor");
 
 /**
  * @deprecated temporary not used
@@ -60,7 +62,6 @@ interface Props {
 
 export class MyGallery extends React.Component<Props, any> {
 	imageRender(props: RenderImageProps<PhotoProps<PhotoSetItem>>) {
-		console.log("imageRender", props);
 		return (
 			<MyPhoto
 				index={props.index}
@@ -75,6 +76,58 @@ export class MyGallery extends React.Component<Props, any> {
 		);
 	}
 
+	imageRenderVisibilitySensor(
+		props: RenderImageProps<PhotoProps<PhotoSetItem>>
+	) {
+		return (
+			<VisibilitySensor>
+				{({ isVisible }: { isVisible: boolean }) =>
+					isVisible ? (
+						<MyPhoto
+							index={props.index}
+							photo={props.photo}
+							direction={props.direction}
+							left={props.left}
+							top={props.top}
+							onClick={() => {
+								this.props.openLightbox(props.index);
+							}}
+						/>
+					) : (
+						<div
+							style={{ width: props.photo.width, height: props.photo.height }}
+						/>
+					)
+				}
+			</VisibilitySensor>
+		);
+	}
+
+	imageRenderOnScreen(props: RenderImageProps<PhotoProps<PhotoSetItem>>) {
+		return (
+			<TrackVisibility partialVisibility={true}>
+				{({ isVisible }: { isVisible: boolean }) =>
+					isVisible ? (
+						<MyPhoto
+							index={props.index}
+							photo={props.photo}
+							direction={props.direction}
+							left={props.left}
+							top={props.top}
+							onClick={() => {
+								this.props.openLightbox(props.index);
+							}}
+						/>
+					) : (
+						<div
+							style={{ width: props.photo.width, height: props.photo.height }}
+						/>
+					)
+				}
+			</TrackVisibility>
+		);
+	}
+
 	render() {
 		// @ts-ignore
 		return (
@@ -84,10 +137,12 @@ export class MyGallery extends React.Component<Props, any> {
 				targetRowHeight={256}
 				margin={5}
 				photos={this.props.photos}
-				// renderImage={this.imageRender.bind(this)}
-				renderImage={(props: RenderImageProps<any>) => (
-					<ImageRenderIntersection {...props} />
-				)}
+				renderImage={this.imageRender.bind(this)}
+				// renderImage={this.imageRenderVisibilitySensor.bind(this)}
+				// renderImage={this.imageRenderOnScreen.bind(this)}
+				// renderImage={(props: RenderImageProps<any>) => (
+				// 	<ImageRenderIntersection {...props} />
+				// )}
 			/>
 		);
 	}

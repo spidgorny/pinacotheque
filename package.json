@@ -52,6 +52,7 @@
     "react-images": "^1.1.7",
     "react-infinite-scroll-component": "^5.1.0",
     "react-intersection-visible": "^2.1.0",
+    "react-on-screen": "^2.1.1",
     "react-photo-gallery": "^8.0.0",
     "react-query": "^3.6.0",
     "react-router": "^5.2.0",
