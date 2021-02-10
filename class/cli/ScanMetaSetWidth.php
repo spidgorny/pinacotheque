@@ -13,12 +13,21 @@ class ScanMetaSetWidth extends AppController
 
 	public function index()
 	{
-		$skip = (int)ifsetor($_SERVER['argv'][2], 0);
+		llog('argv', $_SERVER['argv']);
+		$opt = getopt('', ['skip:', 'source:']);
+		llog('opt', $opt);
+
+		$skip = (int)ifsetor($opt['skip'], 0);
 		llog('skip', $skip);
+
+		$where = [];
+		if (isset($opt['source'])) {
+			$where['source'] = $opt['source'];
+		}
 
 		$provider = new FileProvider($this->db);
 		llog('querying...');
-		$iterator = $provider->getAllFiles();
+		$iterator = $provider->getAllFiles($where);
 		llog('skipping...');
 		$iterator->skip($skip);
 		llog('processing...');
@@ -28,6 +37,7 @@ class ScanMetaSetWidth extends AppController
 		$i = $skip;
 		/** @var MetaForSQL $meta */
 		foreach ($iterator as $meta) {
+			$timer->restart();
 			if ($meta->width && $meta->height) {
 				continue;
 			}
@@ -45,7 +55,7 @@ class ScanMetaSetWidth extends AppController
 				llog($meta->id, $meta->getFullPath());
 				llog('exists', $meta->isFile());
 //				llog($meta->props);
-				llog($meta->ensureMeta());
+//				llog($meta->ensureMeta());
 
 				// video may not have any meta data
 				if ($meta->isImage()) {
@@ -53,11 +63,11 @@ class ScanMetaSetWidth extends AppController
 				}
 			}
 
-			echo '.';
-			if (!($i % 60)) {
-				echo TAB, $timer->elapsed(), PHP_EOL, $i, TAB;
-				$timer->restart();
-			}
+			echo $i, TAB, basename($meta->getPath()), '['.count($meta->getMeta()).']', TAB, $width . 'x' . $height, TAB, $timer->elapsed().' s', PHP_EOL;
+//			if (!($i % 60)) {
+//				echo TAB, $timer->elapsed(), PHP_EOL, $i, TAB;
+//				$timer->restart();
+//			}
 			$i++;
 		}
 	}

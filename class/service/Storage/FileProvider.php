@@ -196,9 +196,9 @@ class FileProvider
 		return $imageFiles;
 	}
 
-	public function getAllFiles()
+	public function getAllFiles(array $where = [])
 	{
-		$where = [
+		$where += [
 			'type' => 'file',
 			'ext' => new SQLOr([
 				'ext' => null,

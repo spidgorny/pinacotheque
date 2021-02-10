@@ -129,6 +129,15 @@ class MetaForSQL extends Meta
 
 	public function getMetaData(): array
 	{
+		if (count(array_filter($this->meta))) {
+			return $this->meta;
+		}
+		$this->meta = $this->getMetaAsAssoc();
+		return $this->meta;
+	}
+
+	public function getMetaAsAssoc(): array
+	{
 		$assoc = [];
 		foreach ($this->getMeta() as $entry) {
 			$value = $entry->value;
@@ -145,13 +154,6 @@ class MetaForSQL extends Meta
 			$assoc[$entry->name] = $value;
 		}
 		return $assoc;
-	}
-
-	public function loadMeta()
-	{
-		$metaData = $this->getMetaData();
-		$this->props += $metaData;
-		return $metaData;
 	}
 
 	public function getLocation()
@@ -184,6 +186,9 @@ class MetaForSQL extends Meta
 
 	public function ensureMeta()
 	{
+		if ($this->hasMeta()) {
+			return $this->getMeta();
+		}
 		$processor = ParserFactory::getInstance($this);
 		$parser = $processor->getParser();
 		$metaData = $parser->getMeta();
@@ -198,7 +203,7 @@ class MetaForSQL extends Meta
 		if ($this->width && $this->height) {
 			return [$this->width, $this->height];
 		}
-		$this->ensureMeta();
+//		$this->ensureMeta();
 		$this->loadMeta();
 		$width = $this->getWidth();
 		$height = $this->getHeight();

@@ -67,11 +67,11 @@ export class GalleryInScroll extends React.Component<
 					next={this.props.next}
 					hasMore={true}
 					hasChildren={false}
-					loader={
-						<h4>
-							<ScaleLoader loading={true} color="#4DAF7C" /> Loading...
-						</h4>
-					}
+					loader={() => null}
+					/*<h4 style={{ minHeight: 30 }}>*/
+					/*	<ScaleLoader loading={true} color="#4DAF7C" /> Loading...*/
+					/*</h4>*/
+					/*}*/
 					endMessage={
 						<p style={{ textAlign: "center" }}>
 							<b>Yay! You have seen it all</b>

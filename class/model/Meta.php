@@ -21,6 +21,7 @@ class Meta implements IMetaData
 {
 
 	public array $props = [];
+	public array $meta = [];
 
 	/** @var string for debugging when used directly (not MetaForSQL) */
 	public string $sourcePath;
@@ -32,7 +33,7 @@ class Meta implements IMetaData
 
 	public function __get($key)
 	{
-		return ifsetor($this->props[$key]);
+		return ifsetor($this->props[$key], ifsetor($this->meta[$key]));
 	}
 
 	public function __set($key, $val)
@@ -42,7 +43,7 @@ class Meta implements IMetaData
 
 	public function __isset($key)
 	{
-		return isset($this->props);
+		return isset($this->props) || isset($this->meta);
 	}
 
 	/**
@@ -86,8 +87,8 @@ class Meta implements IMetaData
 
 	/**
 	 * For compatibility.
-	 * @see next function getDestination()
 	 * @return object
+	 * @see next function getDestination()
 	 */
 	public function getSource()
 	{
@@ -157,11 +158,11 @@ class Meta implements IMetaData
 
 	/**
 	 * Only used in single month view
-	 * @see TimelineService->renderMonth()
 	 * @param string $prefix
 	 * @param array $attributes
 	 * @param string $linkPrefix
 	 * @return HTMLTag
+	 * @see TimelineService->renderMonth()
 	 */
 	public function toHTMLWithI($prefix = '', array $attributes = [], $linkPrefix = '')
 	{
@@ -171,7 +172,7 @@ class Meta implements IMetaData
 			'data-id' => 'md5-' . md5($this->getFilename()),
 		], '<i class="fa fa-info"></i>', true);
 
-		$spanI = '<div class="count">'.$span.'</div>';
+		$spanI = '<div class="count">' . $span . '</div>';
 
 		$ahref = $this->toHTMLClickable($prefix, $attributes, $linkPrefix, $spanI);
 		$content[] = $ahref;
@@ -199,9 +200,28 @@ class Meta implements IMetaData
 		]);
 	}
 
+	/**
+	 * @return array
+	 */
+	public function loadMeta()
+	{
+		if ($this->meta) {
+			return $this->meta;
+		}
+		$metaData = $this->getMetaData();
+		$this->meta = $metaData;
+		return $metaData;
+	}
+
+	public function getMetaData(): array
+	{
+		return [];
+	}
+
 	public function getWidth()
 	{
 		try {
+			$this->loadMeta();
 			return $this->width ??
 				$this->COMPUTED->Width ??
 				$this->streams[0]['width'] ??
@@ -219,14 +239,15 @@ class Meta implements IMetaData
 	public function getHeight()
 	{
 		try {
-		return $this->height ??
-			$this->COMPUTED->Height ??
-			$this->streams[0]['height'] ??
-			$this->streams[1]['height'] ??
-			$this->ImageLength ??
-			$this->ExifImageLength ??
-			$this->geometry->height ??
-			null;
+			$this->loadMeta();
+			return $this->height ??
+				$this->COMPUTED->Height ??
+				$this->streams[0]['height'] ??
+				$this->streams[1]['height'] ??
+				$this->ImageLength ??
+				$this->ExifImageLength ??
+				$this->geometry->height ??
+				null;
 		} catch (Exception $e) {
 			llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
 			return null;
@@ -262,9 +283,9 @@ class Meta implements IMetaData
 	public function getLocation()
 	{
 		$GPSLatitudeRef = $this->GPSLatitudeRef;
-		$GPSLatitude    = $this->GPSLatitude;
-		$GPSLongitudeRef= $this->GPSLongitudeRef;
-		$GPSLongitude   = $this->GPSLongitude;
+		$GPSLatitude = $this->GPSLatitude;
+		$GPSLongitudeRef = $this->GPSLongitudeRef;
+		$GPSLongitude = $this->GPSLongitude;
 
 		if (!$GPSLatitude) {
 			return null;
@@ -289,8 +310,8 @@ class Meta implements IMetaData
 		$lat_direction = ($GPSLatitudeRef === 'W' or $GPSLatitudeRef === 'S') ? -1 : 1;
 		$lon_direction = ($GPSLongitudeRef === 'W' or $GPSLongitudeRef === 'S') ? -1 : 1;
 
-		$latitude = $lat_direction * ($lat_degrees + ($lat_minutes / 60) + ($lat_seconds / (60*60)));
-		$longitude = $lon_direction * ($lon_degrees + ($lon_minutes / 60) + ($lon_seconds / (60*60)));
+		$latitude = $lat_direction * ($lat_degrees + ($lat_minutes / 60) + ($lat_seconds / (60 * 60)));
+		$longitude = $lon_direction * ($lon_degrees + ($lon_minutes / 60) + ($lon_seconds / (60 * 60)));
 
 		return array($latitude, $longitude);
 	}
@@ -323,7 +344,7 @@ class Meta implements IMetaData
 		//debug($dt, $dto, $key);
 		if ($key && $key[0] != '0' && str_contains($key, ':')) {
 			$parts = trimExplode(':', $key, 3);
-			return $parts[0].'-'.$parts[1];
+			return $parts[0] . '-' . $parts[1];
 		}
 		$key = @$this->FileDateTime;
 		return is_int($key)
@@ -349,7 +370,7 @@ class Meta implements IMetaData
 
 	public function __toString()
 	{
-		return '[Meta: '.json_encode($this->__debugInfo(), JSON_THROW_ON_ERROR).']';
+		return '[Meta: ' . json_encode($this->__debugInfo(), JSON_THROW_ON_ERROR) . ']';
 	}
 
 	public function isFile()

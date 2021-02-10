@@ -47,7 +47,7 @@ class ShowThumb extends AppController
 			return base64_decode($this->transparent1px);
 		}
 
-		$content[] = HTMLTag::img(ShowThumb::href(['file' => $file]), [
+		$content[] = HTMLTag::img(self::href(['file' => $file]), [
 			'border' => 1,
 			'align' => 'right',
 		]);
@@ -58,6 +58,12 @@ class ShowThumb extends AppController
 		]);
 
 		$content[] = getDebug($meta);
+		$content[] = getDebug($meta->toJson());
+		$content[] = getDebug([
+			'meta->props' => $meta->props,
+			'meta->meta' => $meta->meta,
+			'COMPUTED->Width' => $meta->COMPUTED->Width ?? null
+		]);
 		$content[] = getDebug([
 			'isImage' => $meta->isImage(),
 			'isVideo' => $meta->isVideo(),

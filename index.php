@@ -7,8 +7,12 @@ require_once __DIR__.'/bootstrap.php';
 
 function getController()
 {
-	if (php_sapi_name() === 'cli') {
+	if (PHP_SAPI === 'cli') {
 		$c = $_SERVER['argv'][1];
+		// php index.php --source 2 ScanMetaSetWidth
+		if (str_startsWith($c, '--')) {
+			$c = end($_SERVER['argv']);
+		}
 		if (!$c) {
 			throw new RuntimeException('Usage: php index.php <Controller>');
 		}
