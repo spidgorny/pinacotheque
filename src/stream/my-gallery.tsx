@@ -105,7 +105,7 @@ export class MyGallery extends React.Component<Props, any> {
 
 	imageRenderOnScreen(props: RenderImageProps<PhotoProps<PhotoSetItem>>) {
 		return (
-			<TrackVisibility partialVisibility={true}>
+			<TrackVisibility partialVisibility={true} key={props.photo.key}>
 				{({ isVisible }: { isVisible: boolean }) =>
 					isVisible ? (
 						<MyPhoto
