@@ -1,5 +1,4 @@
 import React from "react";
-import ImageStream from "./stream/ImageStream";
 import { AppContext, context } from "./context";
 // @ts-ignore
 import axios from "redaxios";
@@ -17,6 +16,7 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { VisibilityTest } from "./test/visibility-test";
 import StreamPage from "./stream/stream-page";
 import { OneImageTest } from "./test/one-image-test";
+import TimelineTest from "./test/timeline-test";
 
 interface IAppProps {}
 
@@ -111,6 +111,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 						</Route>
 						<Route path="/visibility" component={VisibilityTest} />
 						<Route path="/one-image" component={OneImageTest} />
+						<Route path="/timeline-test" component={TimelineTest} />
 					</Switch>
 				</div>
 				<ReactQueryDevtools initialIsOpen={true} />

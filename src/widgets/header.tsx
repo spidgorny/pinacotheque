@@ -30,6 +30,11 @@ export function Header(props: {}) {
 				<Link href="/one-image" style={{ color: "white" }}>
 					one-image
 				</Link>
+			</div>{" "}
+			<div className="px-2">
+				<Link href="/timeline-test" style={{ color: "white" }}>
+					timeline-test
+				</Link>
 			</div>
 		</div>
 	);

@@ -2,6 +2,8 @@ import React from "react";
 import { PhotoProps, RenderImageProps } from "react-photo-gallery";
 import moment from "moment";
 import { PhotoSetItem } from "./GalleryInScroll";
+// @ts-ignore
+import ReactHoverObserver from "react-hover-observer";
 
 interface Props {
 	index: number;
@@ -34,7 +36,6 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 			position: "relative",
 			width: this.props.photo.width,
 			height: this.props.photo.height,
-			border: "solid 1px red",
 		};
 		if (this.props.direction === "column") {
 			cont.position = "absolute";
@@ -42,73 +43,82 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 			cont.top = this.props.top;
 		}
 		return (
-			<div
-				// key={this.props.key}
-				style={cont}
-				onClick={(e) =>
-					this.props.onClick
-						? this.props.onClick(e, this.props.photo, this.props.index)
-						: null
-				}
-				ref={this.ref}
-			>
-				<img
-					src={this.props.photo.src}
-					width={this.props.photo.width}
-					height={this.props.photo.height}
-					onMouseEnter={this.showOverlay.bind(this)}
-					onMouseOut={this.hideOverlay.bind(this)}
-					alt={this.props.photo.src}
-					title={
-						this.props.photo.image?.getWidth() +
-						"x" +
-						this.props.photo.image?.getHeight()
-					}
-				/>
-				{(this.state.showOverlay || this.props.forceInfo) && (
+			<ReactHoverObserver>
+				{({ isHovering }: { isHovering: boolean }) => (
 					<div
-						style={{
-							position: "absolute",
-							top: 0,
-							width: "100%",
-							color: "white",
-						}}
+						// key={this.props.key}
+						style={{ ...cont }}
+						onClick={(e) =>
+							this.props.onClick
+								? this.props.onClick(e, this.props.photo, this.props.index)
+								: null
+						}
+						ref={this.ref}
 					>
-						<div
-							style={{
-								background: "black",
-								opacity: 0.5,
-								padding: "0.5em",
-							}}
-						>
-							<div>Name: {this.props.photo.image?.basename}</div>
-							<div>Path: {this.props.photo.image?.pathEnd}</div>
-							<div>
-								Size:{" "}
-								{this.props.photo.image?.getWidth() +
-									"x" +
-									this.props.photo.image?.getHeight()}
+						<img
+							src={this.props.photo.src}
+							width={this.props.photo.width}
+							height={this.props.photo.height}
+							// onMouseEnter={this.showOverlay.bind(this)}
+							// onMouseOut={this.hideOverlay.bind(this)}
+							alt={this.props.photo.src}
+							title={
+								this.props.photo.image?.getWidth() +
+								"x" +
+								this.props.photo.image?.getHeight()
+							}
+						/>
+						{(this.state.showOverlay || this.props.forceInfo || isHovering) && (
+							<div
+								style={{
+									position: "absolute",
+									top: 0,
+									width: "100%",
+									color: "white",
+								}}
+							>
+								<div
+									style={{
+										background: "black",
+										opacity: 0.5,
+										padding: "0.5em",
+									}}
+								>
+									<div>Name: {this.props.photo.image?.basename}</div>
+									<div>Path: {this.props.photo.image?.pathEnd}</div>
+									<div>
+										Size:{" "}
+										{this.props.photo.image?.getWidth() +
+											"x" +
+											this.props.photo.image?.getHeight()}
+									</div>
+									<div>
+										Date:{" "}
+										{moment(this.props.photo.image?.getTimestamp()).format(
+											"YYYY-MM-DD HH:mm:ss"
+										)}
+									</div>
+								</div>
 							</div>
-							<div>
-								Date:{" "}
-								{moment(this.props.photo.image?.getTimestamp()).format(
-									"YYYY-MM-DD HH:mm:ss"
-								)}
-							</div>
-						</div>
+						)}
 					</div>
 				)}
-				{this.bounds?.top} - {this.state.mouseY} - {this.bounds?.bottom}
-			</div>
+			</ReactHoverObserver>
 		);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	showOverlay() {
 		this.setState({
 			showOverlay: true,
 		});
 	}
 
+	/**
+	 * @deprecated
+	 */
 	hideOverlay(e: React.MouseEvent) {
 		this.bounds = this.ref?.current?.getBoundingClientRect();
 		this.setState({
