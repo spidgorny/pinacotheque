@@ -15,10 +15,14 @@ interface Props {
 
 interface MyPhotoState {
 	showOverlay: boolean;
+	mouseX?: number;
+	mouseY?: number;
 }
 
 export class MyPhoto extends React.Component<Props, MyPhotoState> {
 	margin = 2;
+	ref = React.createRef<HTMLDivElement>();
+	bounds?: ClientRect & { x: number; y: number };
 	state: MyPhotoState = {
 		showOverlay: false,
 	};
@@ -30,6 +34,7 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 			position: "relative",
 			width: this.props.photo.width,
 			height: this.props.photo.height,
+			border: "solid 1px red",
 		};
 		if (this.props.direction === "column") {
 			cont.position = "absolute";
@@ -45,13 +50,14 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 						? this.props.onClick(e, this.props.photo, this.props.index)
 						: null
 				}
+				ref={this.ref}
 			>
 				<img
 					src={this.props.photo.src}
 					width={this.props.photo.width}
 					height={this.props.photo.height}
 					onMouseEnter={this.showOverlay.bind(this)}
-					onMouseLeave={this.hideOverlay.bind(this)}
+					onMouseOut={this.hideOverlay.bind(this)}
 					alt={this.props.photo.src}
 					title={
 						this.props.photo.image?.getWidth() +
@@ -78,6 +84,12 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 							<div>Name: {this.props.photo.image?.basename}</div>
 							<div>Path: {this.props.photo.image?.pathEnd}</div>
 							<div>
+								Size:{" "}
+								{this.props.photo.image?.getWidth() +
+									"x" +
+									this.props.photo.image?.getHeight()}
+							</div>
+							<div>
 								Date:{" "}
 								{moment(this.props.photo.image?.getTimestamp()).format(
 									"YYYY-MM-DD HH:mm:ss"
@@ -86,6 +98,7 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 						</div>
 					</div>
 				)}
+				{this.bounds?.top} - {this.state.mouseY} - {this.bounds?.bottom}
 			</div>
 		);
 	}
@@ -96,9 +109,32 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 		});
 	}
 
-	hideOverlay() {
+	hideOverlay(e: React.MouseEvent) {
+		this.bounds = this.ref?.current?.getBoundingClientRect();
 		this.setState({
-			showOverlay: false,
+			mouseX: e.pageX,
+			mouseY: e.pageY,
 		});
+		// e.pageX += window.pageXOffset;
+		// e.pageY += window.pageYOffset;
+		// console.log(e.pageX, e.pageY, this.bounds);
+		if (this.bounds) {
+			const insideX = this.bounds.left < e.pageX && e.pageX < this.bounds.right;
+			const insideY = this.bounds.top < e.pageY && e.pageY < this.bounds.bottom;
+			console.log(
+				insideX,
+				insideY,
+				this.bounds.top,
+				"<",
+				e.pageY,
+				"<",
+				this.bounds.bottom
+			);
+			if (!insideX || !insideY) {
+				this.setState({
+					showOverlay: false,
+				});
+			}
+		}
 	}
 }
