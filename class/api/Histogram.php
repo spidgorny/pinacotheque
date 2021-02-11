@@ -19,10 +19,21 @@ class Histogram extends ApiController
 	{
 		$provider = new FileProvider($this->db);
 		$histogram = $provider->getHistogram();
+		$assoc = [];
+		$sum = 0;
+		foreach ($histogram as $row) {
+			$assoc[$row['date(DateTime)']] = $row['images'];
+			$sum += $row['images'];
+		}
+		$stats = $provider->getStats();
+		$files = $stats['files']['TABLE_ROWS'];
+
 		return new JSONResponse([
 			'status' => 'ok',
-			'query' => $this->db->getLastQuery().'',
-			'histogram' => $histogram,
+			'query' => $this->db->getLastQuery() . '',
+			'sum' => $sum,
+			'files' => $files,
+			'histogram' => $assoc,
 		]);
 	}
 

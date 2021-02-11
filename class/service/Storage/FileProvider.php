@@ -17,16 +17,16 @@ class FileProvider
 
 	protected $strftimeYM;
 	public $imageExtList = [
-			'jpeg',
-			'.jpg',
-			'.png',
-			'.gif',
-			'.mp4',
-			'.mov',
-			'.mkv',
-			'tiff',
-			'.tif',
-		];
+		'jpeg',
+		'.jpg',
+		'.png',
+		'.gif',
+		'.mp4',
+		'.mov',
+		'.mkv',
+		'tiff',
+		'.tif',
+	];
 
 	public function __construct(DBInterface $db, Source $source = null)
 	{
@@ -74,9 +74,9 @@ class FileProvider
 				'source' => $this->source->id,
 			];
 		}
-		$data = $this->db->fetchOneSelectQuery(
-			'files', $where, 'ORDER BY DateTime',
-			"DateTime, count(*) as images");
+		$data = $this->db->fetchAllSelectQuery(
+			'files', $where, 'GROUP BY date(DateTime) ORDER BY date(DateTime)',
+			"date(DateTime), count(*) as images");
 		llog($this->db->getLastQuery() . '');
 		return $data;
 	}
@@ -224,11 +224,24 @@ class FileProvider
 				'ext ' => new SQLIn($this->imageExtList)
 			]),
 		];
-		$res = $this->db->runSelectQuery('files', $where);	// NO ORDER FOR SPEED
-		llog($this->db->getLastQuery().'');
+		$res = $this->db->runSelectQuery('files', $where);    // NO ORDER FOR SPEED
+		llog($this->db->getLastQuery() . '');
 		$imageFiles = new DatabaseInstanceIterator($this->db, MetaForSQL::class);
 		$imageFiles->setResult($res);
 		return $imageFiles;
+	}
+
+	public function getStats()
+	{
+		$sql = "SELECT *
+     FROM INFORMATION_SCHEMA.TABLES 
+     WHERE TABLE_SCHEMA = 'pina'";
+		$rows = $this->db->fetchAll($sql);
+		$assoc = [];
+		foreach ($rows as $row) {
+			$assoc[$row['TABLE_NAME']] = $row;
+		}
+		return $assoc;
 	}
 
 }
