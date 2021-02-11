@@ -62,6 +62,25 @@ class FileProvider
 		return ['min' => $min, 'max' => $max];
 	}
 
+	public function getHistogram()
+	{
+		$where = [
+			'type' => 'file',
+			'ext' => new SQLIn($this->imageExtList),
+			'DateTime' => new SQLWhereNotEqual('DateTime', null),
+		];
+		if ($this->source) {
+			$where += [
+				'source' => $this->source->id,
+			];
+		}
+		$data = $this->db->fetchOneSelectQuery(
+			'files', $where, 'ORDER BY DateTime',
+			"DateTime, count(*) as images");
+		llog($this->db->getLastQuery() . '');
+		return $data;
+	}
+
 	public function getOneFilePerMonth()
 	{
 		$YM = "CASE 

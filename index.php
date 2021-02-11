@@ -47,5 +47,7 @@ try {
 	$content = MergedContent::mergeStringArrayRecursive($content);
 	echo $content;
 } catch (Exception $e) {
+	http_send_status(500);
 	llog(get_class($e), $e->getMessage(), $e->getFile(), $e->getLine());
+	require __DIR__.'/template/404.php';
 }

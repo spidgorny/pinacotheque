@@ -1,6 +1,6 @@
 <?php
 
-class Info extends AppController
+class Histogram extends ApiController
 {
 
 	/**
@@ -15,16 +15,14 @@ class Info extends AppController
 		header('Access-Control-Allow-Origin: http://localhost:3000');
 	}
 
-	public function index()
+	public function index(): JSONResponse
 	{
 		$provider = new FileProvider($this->db);
-		['min' => $min, 'max' => $max] = $provider->getMinMax();
+		$histogram = $provider->getHistogram();
 		return new JSONResponse([
 			'status' => 'ok',
 			'query' => $this->db->getLastQuery().'',
-			'min' => $min,
-			'max' => $max,
-			'sources' => Source::findAll($this->db),
+			'histogram' => $histogram,
 		]);
 	}
 
