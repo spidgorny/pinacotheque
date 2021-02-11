@@ -21,16 +21,20 @@ export class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
 	constructor(props: any, context: any) {
 		super(props, context);
-		setTimeout(this.postConstruct.bind(this), 1);
+	}
+
+	componentDidMount() {
+		this.postConstruct();
 	}
 
 	postConstruct() {
 		if (this.context) {
 			let minWidth = this.context.sidebar?.minWidth;
 			console.log("setState(minWidth)", minWidth);
-			this.setState({
-				minWidth: minWidth,
-			});
+			// this.setState({
+			// 	minWidth: minWidth,
+			// });
+			this.state.minWidth = minWidth;
 		}
 	}
 

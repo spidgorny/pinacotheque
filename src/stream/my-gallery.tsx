@@ -109,6 +109,7 @@ export class MyGallery extends React.Component<Props, any> {
 				{({ isVisible }: { isVisible: boolean }) =>
 					isVisible ? (
 						<MyPhoto
+							key={props.photo.key}
 							index={props.index}
 							photo={props.photo}
 							direction={props.direction}

@@ -3,7 +3,8 @@ import axios from "redaxios";
 import { Image } from "../model/Image";
 import moment from "moment";
 import { AppContext, context } from "../context";
-import { GalleryInScroll } from "./GalleryInScroll";
+import StreamRenderGallery from "./stream-render-gallery";
+import StreamRenderSimple from "./stream-render-simple";
 
 interface IAppProps {
 	sourceID?: number;
@@ -31,9 +32,10 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 	componentDidMount() {
 		this.baseUrl = this.context.baseUrl;
 		if (this.context.lastTopTimestamp) {
-			this.setState({
-				end: this.context.lastTopTimestamp,
-			});
+			// this.setState({
+			// 	end: this.context.lastTopTimestamp,
+			// });
+			this.state.end = this.context.lastTopTimestamp;
 		}
 		this.fetchData().then();
 	}
@@ -100,54 +102,12 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 		);
 	}
 
-	async fetchDataFromPHP() {
-		const urlImages = new URL("Images", this.baseUrl);
-		this.appendSearchParams(urlImages);
-		//console.log(urlImages);
-		const res = await axios.get(urlImages.toString(), {
-			// cors: 'no-cors',
-		});
-		// console.log(res.data);
-		const resData = JSON.parse(res.data);
-		if (resData.status !== "ok") {
-			throw new Error(resData.error);
-		}
-
-		const images: Image[] = resData.data.map((el: Image) => new Image(el));
-		this.appendImages(images);
-	}
-
 	get queryParams() {
 		const url = new URL(document.location.href);
 		return url.searchParams;
 	}
 
 	render() {
-		if (this.queryParams.has("simple")) {
-			return (
-				<div>
-					<div
-						className=""
-						style={{ background: "#33C3F0", position: "sticky" }}
-					>
-						Images: {this.state.items.length}
-					</div>
-					<div>
-						{this.state.items.map((el: Image) => (
-							<div style={{ clear: "both" }} key={el.src}>
-								<img src={el.src} style={{ float: "left" }} alt={el.src} />
-								{el.src}
-								<br />
-								{el.width}x{el.height}
-								<br />
-								{/*{JSON.stringify(el.image, null, 2)}*/}
-							</div>
-						))}
-					</div>
-				</div>
-			);
-		}
-
 		console.log(this.state.items.length);
 		return (
 			<div>
@@ -162,11 +122,19 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 				>
 					Images: {this.state.items.length}
 				</div>
-				<GalleryInScroll
-					photos={this.state.items}
-					next={this.fetchData.bind(this)}
-					refreshFunction={this.refresh.bind(this)}
-				/>
+				{this.queryParams.has("simple") ? (
+					<StreamRenderSimple
+						photos={this.state.items}
+						next={this.fetchData.bind(this)}
+						refresh={this.refresh.bind(this)}
+					/>
+				) : (
+					<StreamRenderGallery
+						photos={this.state.items}
+						next={this.fetchData.bind(this)}
+						refresh={this.refresh.bind(this)}
+					/>
+				)}
 			</div>
 		);
 	}

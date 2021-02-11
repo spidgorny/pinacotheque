@@ -15,6 +15,7 @@ import OneSourcePage from "./browse/one-source-page";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { VisibilityTest } from "./test/visibility-test";
+import StreamPage from "./stream/stream-page";
 
 interface IAppProps {}
 
@@ -37,31 +38,6 @@ export interface IAppState {
 	query?: string;
 	duration?: number;
 	sourceID?: number;
-}
-
-function StreamPage(props: {
-	sources: Source[];
-	sourceID?: number;
-	setSource: (id?: number) => void;
-}) {
-	return (
-		<div className="flex flex-row p-2">
-			<div className="w-2/12">
-				<Sidebar
-					sources={props.sources}
-					sourceID={props.sourceID}
-					setSource={props.setSource}
-				/>
-			</div>
-			<div className="flex-grow">
-				{props.sources === null ? (
-					<ScaleLoader loading={true} color="#4DAF7C" />
-				) : (
-					<ImageStream sourceID={props.sourceID} />
-				)}
-			</div>
-		</div>
-	);
 }
 
 const queryClient = new QueryClient();

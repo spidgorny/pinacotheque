@@ -26,7 +26,6 @@ export function Header(props: {}) {
 					visibility
 				</Link>
 			</div>
-			<div className="" />
 		</div>
 	);
 }
