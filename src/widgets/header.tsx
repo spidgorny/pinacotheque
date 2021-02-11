@@ -26,6 +26,11 @@ export function Header(props: {}) {
 					visibility
 				</Link>
 			</div>
+			<div className="px-2">
+				<Link href="/one-image" style={{ color: "white" }}>
+					one-image
+				</Link>
+			</div>
 		</div>
 	);
 }

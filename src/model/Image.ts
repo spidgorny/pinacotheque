@@ -1,3 +1,7 @@
+function basename(str: string, sep: string = "/") {
+	return str.substr(str.lastIndexOf(sep) + 1);
+}
+
 export class Image {
 	// @ts-ignore
 	id: string;
@@ -57,12 +61,16 @@ export class Image {
 		return new Date(this.DateTime);
 	}
 
-	basename(str: string, sep: string = "/") {
-		return str.substr(str.lastIndexOf(sep) + 1);
+	get basename() {
+		return basename(this.path);
+	}
+
+	get pathEnd() {
+		return this.path.split("/").slice(0, -1).pop();
 	}
 
 	get title() {
-		return this.basename(this.path);
+		return basename(this.path);
 	}
 
 	get date() {
@@ -71,6 +79,10 @@ export class Image {
 
 	get src() {
 		return this.thumbURL;
+	}
+
+	resize(newWidth: number) {
+		return (this.getHeight() / this.getWidth()) * newWidth;
 	}
 }
 

@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { VisibilityTest } from "./test/visibility-test";
 import StreamPage from "./stream/stream-page";
+import { OneImageTest } from "./test/one-image-test";
 
 interface IAppProps {}
 
@@ -109,6 +110,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 							)}
 						</Route>
 						<Route path="/visibility" component={VisibilityTest} />
+						<Route path="/one-image" component={OneImageTest} />
 					</Switch>
 				</div>
 				<ReactQueryDevtools initialIsOpen={true} />

@@ -5,11 +5,12 @@ import { PhotoSetItem } from "./GalleryInScroll";
 
 interface Props {
 	index: number;
-	direction: "row" | "column";
+	direction?: "row" | "column";
 	left?: number;
 	top?: number;
 	photo: PhotoProps<PhotoSetItem>;
 	onClick: (e: React.MouseEvent, photo: PhotoProps, index: number) => void;
+	forceInfo?: boolean;
 }
 
 interface MyPhotoState {
@@ -58,13 +59,13 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 						this.props.photo.image?.getHeight()
 					}
 				/>
-				{this.state.showOverlay && (
+				{(this.state.showOverlay || this.props.forceInfo) && (
 					<div
 						style={{
 							position: "absolute",
 							top: 0,
 							width: "100%",
-							textAlign: "center",
+							color: "white",
 						}}
 					>
 						<div
@@ -74,10 +75,10 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 								padding: "0.5em",
 							}}
 						>
-							<div style={{ opacity: 1 }}>
-								Path: {this.props.photo.image?.path}
-							</div>
+							<div>Name: {this.props.photo.image?.basename}</div>
+							<div>Path: {this.props.photo.image?.pathEnd}</div>
 							<div>
+								Date:{" "}
 								{moment(this.props.photo.image?.getTimestamp()).format(
 									"YYYY-MM-DD HH:mm:ss"
 								)}

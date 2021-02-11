@@ -4,7 +4,6 @@ import Carousel, { Modal, ModalGateway } from "react-images";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AppContext, context } from "../context";
 import { MyGallery } from "./my-gallery";
-import ScaleLoader from "react-spinners/ScaleLoader";
 import { PhotoProps } from "react-photo-gallery";
 
 export interface PhotoSetItem extends PhotoProps {
