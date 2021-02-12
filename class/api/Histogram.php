@@ -13,6 +13,7 @@ class Histogram extends ApiController
 		parent::__construct();
 		$this->db = $db;
 		header('Access-Control-Allow-Origin: http://localhost:3000');
+		$this->request->setCacheable(3600);
 	}
 
 	public function index(): JSONResponse

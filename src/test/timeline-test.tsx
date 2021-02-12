@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import Timeline from "../widgets/timeline";
 import moment from "moment";
+import Histogram from "../widgets/histogram";
+import { ymd } from "../functions";
 
-export default function TimelineTest(props: any) {
-	let minDate = new Date(2019, 1, 21);
-	let maxDate = new Date();
-	const [date, setDate] = useState(minDate);
-
+function generateRandomHistogram(minDate: Date, date: Date, maxDate: Date) {
 	const daily = [];
 	for (let i = 0; i < 365; i++) {
 		const running = moment(date)
@@ -23,16 +21,35 @@ export default function TimelineTest(props: any) {
 		daily.push(between ? random : 0);
 	}
 
+	return daily;
+}
+
+export default function TimelineTest(props: {}) {
+	// let minDate = new Date(2019, 1, 21);
+	// let maxDate = new Date();
+	const [date, setDate] = useState(new Date());
+
 	return (
 		<div className="container mx-auto p-2" style={{ maxWidth: "100%" }}>
-			<Timeline
-				dailyImages={daily}
-				minDate={minDate}
-				maxDate={maxDate}
-				onChange={(date: Date) => {
-					setDate(date);
+			<Histogram>
+				{(data: Record<string, number>) => {
+					const minDate = new Date(Object.keys(data)[0]);
+					const maxDate = new Date(
+						Object.keys(data)[Object.keys(data).length - 1]
+					);
+					console.log(ymd(date), data[ymd(date)]);
+					return (
+						<Timeline
+							dailyImages={Object.values(data)}
+							minDate={minDate}
+							maxDate={maxDate}
+							onChange={(date: Date) => {
+								setDate(date);
+							}}
+						/>
+					);
 				}}
-			/>
+			</Histogram>
 		</div>
 	);
 }
