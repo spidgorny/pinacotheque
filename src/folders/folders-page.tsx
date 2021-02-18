@@ -6,7 +6,9 @@ export default function FoldersPage(props: {
 	sources: Source[];
 	sourceID?: number;
 	setSource: (id?: number) => void;
+	params: any;
 }) {
+	console.log('params', props.params);
 	return <div className="flex flex-row p-2">
 		<div className="w-2/12">
 			<Sidebar

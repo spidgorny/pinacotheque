@@ -115,7 +115,8 @@ export default class App extends React.Component<IAppProps, IAppState> {
 						<Route path="/timeline-test" component={TimelineTest} />
 						<Route path="/folders" >{(params) => (<FoldersPage sources={this.state.sources}
 																															 sourceID={this.state.sourceID}
-																															 setSource={this.setSource.bind(this)}/>)}
+																															 setSource={this.setSource.bind(this)}
+						params={params}/>)}
 						</Route>
 					</Switch>
 				</div>
