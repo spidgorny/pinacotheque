@@ -17,6 +17,7 @@ import { VisibilityTest } from "./test/visibility-test";
 import StreamPage from "./stream/stream-page";
 import { OneImageTest } from "./test/one-image-test";
 import TimelineTest from "./test/timeline-test";
+import FoldersPage from "./folders/folders-page";
 
 interface IAppProps {}
 
@@ -112,6 +113,10 @@ export default class App extends React.Component<IAppProps, IAppState> {
 						<Route path="/visibility" component={VisibilityTest} />
 						<Route path="/one-image" component={OneImageTest} />
 						<Route path="/timeline-test" component={TimelineTest} />
+						<Route path="/folders" >{(params) => (<FoldersPage sources={this.state.sources}
+																															 sourceID={this.state.sourceID}
+																															 setSource={this.setSource.bind(this)}/>)}
+						</Route>
 					</Switch>
 				</div>
 				<ReactQueryDevtools initialIsOpen={true} />

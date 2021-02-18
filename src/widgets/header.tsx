@@ -17,6 +17,11 @@ export function Header(props: {}) {
 				</Link>
 			</div>
 			<div className="px-2">
+				<Link href="/folders" style={{ color: "white" }}>
+					folders
+				</Link>
+			</div>
+			<div className="px-2">
 				<Link href="/browse" style={{ color: "white" }}>
 					browse
 				</Link>
