@@ -2,7 +2,10 @@ import { Image } from "../model/Image";
 import Carousel, { Modal, ModalGateway } from "react-images";
 // @ts-ignore
 import { FooterCaption } from "react-images/lib/components/Footer";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { PropsWithChildren, useState } from "react";
+import { ShortcutHandler } from "./shortcut-handler";
+import "reactjs-popup/dist/index.css";
+import { useLocation } from "wouter";
 
 // function FooterCaption(props: any) {
 // 	console.log(props);
@@ -15,6 +18,8 @@ export function ImageLightbox(props: {
 	currentIndex: number;
 	images: Image[];
 }) {
+	const [, setLocation] = useLocation();
+
 	const convertImageToCarousel = (x: Image) => ({
 		// ...x,
 		caption: x.title,
@@ -38,40 +43,29 @@ export function ImageLightbox(props: {
 				) : null}
 			</ModalGateway>
 			<ShortcutHandler
-				keyToPress="t"
+				keyToPress={"Enter"}
 				handler={() => {
-					const img = props.images[props.currentIndex];
-					console.log(img);
+					let img = props.images[props.currentIndex];
+					setLocation("/image/" + img.id);
 				}}
 			/>
 		</div>
 	);
 }
 
-export function ShortcutHandler(props: {
-	keyToPress: string;
-	handler: () => void;
-}) {
-	const escFunction = useCallback(
-		(event: KeyboardEvent) => {
-			let eventKey = event.key?.toLowerCase();
-			let propsKey = props.keyToPress?.toLowerCase();
-			if (eventKey === propsKey && event.altKey) {
-				console.log("Alt-" + props.keyToPress);
-				props.handler();
-			}
-		},
-		[props.keyToPress, props.handler]
+export function ShortcutToggle(
+	props: PropsWithChildren<{ keyToPress: string }>
+) {
+	const [onOff, setOnOff] = useState(false);
+
+	const handle = () => {
+		setOnOff(!onOff);
+	};
+
+	return (
+		<div>
+			<ShortcutHandler keyToPress={props.keyToPress} handler={handle} />
+			{onOff && props.children}
+		</div>
 	);
-
-	useEffect(() => {
-		console.log("keydown init", props.keyToPress);
-		document.addEventListener("keydown", escFunction, false);
-		return () => {
-			console.log("keydown remove", props.keyToPress);
-			document.removeEventListener("keydown", escFunction, false);
-		};
-	}, [props.keyToPress, props.handler, escFunction]);
-
-	return <></>;
 }

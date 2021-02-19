@@ -5,6 +5,7 @@ import { PhotoSetItem } from "./gallery-in-scroll";
 // @ts-ignore
 import ReactHoverObserver from "react-hover-observer";
 import { Image } from "../model/Image";
+import { ImageThumb } from "./image-thumb";
 
 interface Props {
 	index: number;
@@ -101,21 +102,7 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 							}
 							ref={this.ref}
 						>
-							<img
-								src={
-									this.props.photo.image?.isDir()
-										? "https://camo.githubusercontent.com/8fc860423cb8edf1e787428fba028d39626cbee558f079361a958fe83ce363d1/68747470733a2f2f776963672e6769746875622e696f2f656e74726965732d6170692f6c6f676f2d666f6c6465722e737667"
-										: this.props.photo.src
-								}
-								width={this.props.photo.width ?? 256}
-								height={this.props.photo.height}
-								alt={this.props.photo.src}
-								title={
-									this.props.photo.image?.getWidth() +
-									"x" +
-									this.props.photo.image?.getHeight()
-								}
-							/>
+							<ImageThumb photo={this.props.photo} />
 							{(this.props.forceInfo || isHovering) && (
 								<PhotoOverlay photo={this.props.photo} />
 							)}

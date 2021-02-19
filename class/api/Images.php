@@ -12,6 +12,7 @@ class Images extends AppController
 	{
 		parent::__construct();
 		$this->db = $db;
+		header('Access-Control-Allow-Origin: http://localhost:3000');
 	}
 
 	public function index()
@@ -24,7 +25,6 @@ class Images extends AppController
 		$query = $this->db->getLastQuery();
 //		return count($files);
 		$files = new ArrayPlus($files);
-		header('Access-Control-Allow-Origin: http://localhost:3000');
 		return new JSONResponse([
 			'status' => 'ok',
 			'since' => $since,

@@ -16,6 +16,7 @@ import StreamPage from "./stream/stream-page";
 import { OneImageTest } from "./test/one-image-test";
 import TimelineTest from "./test/timeline-test";
 import FoldersPage from "./folders/folders-page";
+import SingleImage from "./single/single-image";
 
 interface IAppProps {}
 
@@ -120,6 +121,9 @@ export default class App extends React.Component<IAppProps, IAppState> {
 									slug={decodeURIComponent(params.slug)}
 								/>
 							)}
+						</Route>
+						<Route path="/image/:id">
+							{(params) => <SingleImage id={params.id} />}
 						</Route>
 					</Switch>
 				</div>

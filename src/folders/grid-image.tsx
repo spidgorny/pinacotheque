@@ -4,6 +4,15 @@ import { PhotoProps } from "react-photo-gallery";
 import { InView } from "react-intersection-observer";
 import { MyPhoto } from "../stream/my-photo";
 
+export function getPhotoFromImage(img: Image) {
+	return {
+		width: img.getThumbWidth(),
+		height: img.getThumbHeight(),
+		src: img.src,
+		image: img,
+	};
+}
+
 export function GridImage(props: {
 	img: Image;
 	index: number;
@@ -27,12 +36,7 @@ export function GridImage(props: {
 			<div style={{ border: "solid 1px silver", width: 256, height: 256 }}>
 				<MyPhoto
 					index={props.index}
-					photo={{
-						width: props.img.getThumbWidth(),
-						height: props.img.getThumbHeight(),
-						src: props.img.src,
-						image: props.img,
-					}}
+					photo={getPhotoFromImage(props.img)}
 					forceInfo={props.img.isDir()}
 					onClick={props.onClick}
 				/>
