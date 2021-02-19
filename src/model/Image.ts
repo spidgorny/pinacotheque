@@ -4,7 +4,7 @@ function basename(str: string, sep: string = "/") {
 
 export class Image {
 	// @ts-ignore
-	id: string;
+	id: number;
 	// @ts-ignore
 	source: string;
 	// @ts-ignore
@@ -39,22 +39,22 @@ export class Image {
 
 	get thumbURL() {
 		const url = new URL("ShowThumb", this.baseUrl);
-		url.searchParams.set("file", this.id);
+		url.searchParams.set("file", this.id.toString());
 		return url.toString();
 	}
 
 	get originalURL() {
 		const url = new URL("ShowOriginal", this.baseUrl);
-		url.searchParams.set("file", this.id);
+		url.searchParams.set("file", this.id.toString());
 		return url.toString();
 	}
 
 	getWidth() {
-		return this.width || 1024;
+		return this.type === "dir" ? 256 : this.width || 1024;
 	}
 
 	getHeight() {
-		return this.height || 768;
+		return this.type === "dir" ? 256 : this.height || 768;
 	}
 
 	getTimestamp() {
@@ -81,8 +81,33 @@ export class Image {
 		return this.thumbURL;
 	}
 
+	/// returns new height
 	resize(newWidth: number) {
 		return (this.getHeight() / this.getWidth()) * newWidth;
+	}
+
+	isDir() {
+		return this.type === "dir";
+	}
+
+	isFile() {
+		return this.type === "file";
+	}
+
+	get aspect() {
+		return this.getWidth() / this.getHeight();
+	}
+
+	getThumbWidth() {
+		return this.aspect < 1 ? this.resizeWidth(255) : 255;
+	}
+
+	resizeWidth(newHeight: number) {
+		return this.aspect * newHeight;
+	}
+
+	getThumbHeight() {
+		return this.aspect < 1 ? 255 : this.resize(255);
 	}
 }
 

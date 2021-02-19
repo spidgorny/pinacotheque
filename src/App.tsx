@@ -2,9 +2,7 @@ import React from "react";
 import { AppContext, context } from "./context";
 // @ts-ignore
 import axios from "redaxios";
-
 import ScaleLoader from "react-spinners/ScaleLoader";
-import { Sidebar } from "./stream/Sidebar";
 import "./test.object.assign";
 import { Header } from "./widgets/header";
 import "./app.css";
@@ -113,10 +111,15 @@ export default class App extends React.Component<IAppProps, IAppState> {
 						<Route path="/visibility" component={VisibilityTest} />
 						<Route path="/one-image" component={OneImageTest} />
 						<Route path="/timeline-test" component={TimelineTest} />
-						<Route path="/folders" >{(params) => (<FoldersPage sources={this.state.sources}
-																															 sourceID={this.state.sourceID}
-																															 setSource={this.setSource.bind(this)}
-						params={params}/>)}
+						<Route path="/folders/:slug*">
+							{(params) => (
+								<FoldersPage
+									sources={this.state.sources}
+									sourceID={this.state.sourceID}
+									setSource={this.setSource.bind(this)}
+									params={params}
+								/>
+							)}
 						</Route>
 					</Switch>
 				</div>

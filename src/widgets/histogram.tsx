@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useQuery } from "react-query";
 import axios from "redaxios";
 import { useContext } from "react";
@@ -13,7 +13,6 @@ export default function Histogram(props: {
 		isLoading,
 		error,
 		data,
-		refetch,
 	}: {
 		isLoading: boolean;
 		error: Error | null;

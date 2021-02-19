@@ -10,7 +10,7 @@
 <!-- This example requires Tailwind CSS v2.0+ -->
 <div class="relative bg-white overflow-hidden">
 	<div class="max-w-7xl mx-auto">
-		<div class=" z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+		<div class=" z-10 pb-8 bg-white sm:pb-16 md:pb-20 lg:w-full lg:pb-28 xl:pb-32">
 			<div class=" top-0 inset-x-0 p-2 transition transform origin-top-right md:hidden">
 				<div class="rounded-lg shadow-md bg-white ring-1 ring-black ring-opacity-5 overflow-hidden">
 					<div class="px-5 pt-4 flex items-center justify-between">
@@ -55,8 +55,12 @@
 					<p class="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
 						<?= $e->getMessage() ?>
 					</p>
-					<div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+					<div class="mt-5 sm:mt-8 lg:justify-start">
+						<pre><?= $e->getFile() . ' : ' . $e->getLine() ?></pre><br />
 						<pre><?= $e->getTraceAsString() ?></pre>
+					</div>
+					<div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+						<pre><?= implode(PHP_EOL, $llogHistory) ?></pre>
 					</div>
 				</div>
 			</main>

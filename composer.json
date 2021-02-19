@@ -10,7 +10,8 @@
 		"sort-packages": true,
 		"platform": {
 			"php": "7.4"
-		}
+		},
+		"platform-check": false
 	},
 	"require": {
 		"ext-fileinfo": "*",

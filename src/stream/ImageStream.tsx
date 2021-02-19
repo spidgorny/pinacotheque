@@ -35,6 +35,7 @@ export default class ImageStream extends React.Component<IAppProps, IAppState> {
 			// this.setState({
 			// 	end: this.context.lastTopTimestamp,
 			// });
+			// eslint-disable-next-line
 			this.state.end = this.context.lastTopTimestamp;
 		}
 		this.fetchData().then();

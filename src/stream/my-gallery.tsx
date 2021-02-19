@@ -12,7 +12,7 @@ const VisibilitySensor = require("react-visibility-sensor");
  * @deprecated temporary not used
  * @param props
  */
-class ImageRenderIntersection extends React.Component<
+export class ImageRenderIntersection extends React.Component<
 	RenderImageProps<PhotoProps<PhotoSetItem>>
 > {
 	render() {

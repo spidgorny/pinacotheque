@@ -175,7 +175,7 @@ class MetaForSQL extends Meta
 	public function toJson()
 	{
 		$vars = $this->props;
-		$vars['thumb'] = $this->getDestination();
+		$vars['thumb'] = $this->isFile() ? $this->getDestination() : null;
 		$vars['source_path'] = $this->getSource()->path;
 		$vars['meta'] = $this->getMetaData();
 		$vars['DateTime'] = $this->DateTime ? $this->DateTime->format(DateTimeInterface::ATOM) : null;
@@ -215,6 +215,11 @@ class MetaForSQL extends Meta
 			]);
 		}
 		return [$width, $height];
+	}
+
+	public function isDir()
+	{
+		return $this->type === 'dir';
 	}
 
 }

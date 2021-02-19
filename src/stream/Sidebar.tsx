@@ -19,10 +19,6 @@ export class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 
 	state: ISidebarState = {};
 
-	constructor(props: any, context: any) {
-		super(props, context);
-	}
-
 	componentDidMount() {
 		this.postConstruct();
 	}
@@ -34,6 +30,7 @@ export class Sidebar extends React.Component<ISidebarProps, ISidebarState> {
 			// this.setState({
 			// 	minWidth: minWidth,
 			// });
+			// eslint-disable-next-line
 			this.state.minWidth = minWidth;
 		}
 	}

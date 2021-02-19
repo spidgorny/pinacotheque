@@ -1,6 +1,6 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { useState } from "react";
 // @ts-ignore
-import { Sparklines, SparklinesBars } from "react-sparklines";
+import { Sparklines } from "react-sparklines";
 import ClickableSparklineBars from "./clickable-sparkline-bars";
 import { ymd } from "../functions";
 import moment from "moment";

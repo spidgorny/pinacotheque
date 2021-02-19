@@ -4,7 +4,11 @@ import moment from "moment";
 import Histogram from "../widgets/histogram";
 import { ymd } from "../functions";
 
-function generateRandomHistogram(minDate: Date, date: Date, maxDate: Date) {
+export function generateRandomHistogram(
+	minDate: Date,
+	date: Date,
+	maxDate: Date
+) {
 	const daily = [];
 	for (let i = 0; i < 365; i++) {
 		const running = moment(date)
