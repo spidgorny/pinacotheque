@@ -32,7 +32,8 @@ class Folder extends AppController
 		try {
 			$files = MetaForSQL::findAll($this->db, $where, $orderBy);
 			$query = $this->db->getLastQuery();
-	//		return count($files);
+			$countQuery = new SQLCountQuery($query, $this->db);
+			$rows = $countQuery->getCount();
 			$files = new ArrayPlus($files);
 			$files->filter(/**
 			 * @param MetaForSQL $el
@@ -46,8 +47,10 @@ class Folder extends AppController
 				'offset' => $offset,
 				'folder' => $folder ? $folder->toJson() : null,
 				'query' => $query . '',
+				'rows' => $rows,
+				'countQuery' => $countQuery->countQuery,
 				'data' => array_values($files->toJson()),
-				'nextOffset' => $offset + $this->pageSize,
+				'nextOffset' => ($offset + $this->pageSize) < $rows ? $offset + $this->pageSize : null,
 			]);
 		} catch (Exception $e) {
 			$query = $this->db->getSelectQuery(MetaForSQL::getTableName(), $where, $orderBy);

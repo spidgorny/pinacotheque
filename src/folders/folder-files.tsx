@@ -62,6 +62,8 @@ interface FolderResponse {
 	offset: number;
 	folder: Record<keyof Image, any>;
 	query: string;
+	rows: number;
+	countQuery: string;
 	data: Record<keyof Image, any>[];
 	nextOffset: number;
 	duration: number;
@@ -77,13 +79,15 @@ function FolderFiles(props: { source: number; path: string[] }) {
 	const [, setLocation] = useLocation();
 	let {
 		isLoading,
+		isFetching,
 		error,
 		data,
 		fetchNextPage,
+		isFetchingNextPage,
 	}: UseInfiniteQueryResult<QueryPage, string> = useInfiniteQuery(
 		["Folder", props.source, props.path],
 		async (context: QueryFunctionContext<QueryKey, number>) => {
-			console.log(context);
+			console.log(context.pageParam);
 			const url = new URL(ctx.baseUrl.toString() + "Folder");
 			url.searchParams.set("source", props.source.toString());
 			url.searchParams.set("path", props.path.join("/"));
@@ -91,7 +95,7 @@ function FolderFiles(props: { source: number; path: string[] }) {
 				"offset",
 				context.pageParam ? context.pageParam.toString() : "0"
 			);
-			// console.log(url.toString());
+			console.log(url.toString());
 			const res = await axios.get(url.toString());
 			if (res.data.folder) {
 				setFolder(new Image(res.data.folder));
@@ -107,7 +111,10 @@ function FolderFiles(props: { source: number; path: string[] }) {
 		},
 		{
 			// initialData: [],
-			getNextPageParam: (lastPage, pages) => lastPage.nextOffset,
+			getNextPageParam: (lastPage, pages) => {
+				console.log("getNextPageParam", lastPage.nextOffset);
+				return lastPage.nextOffset !== null ? lastPage.nextOffset : undefined;
+			},
 		}
 	);
 
@@ -139,21 +146,24 @@ function FolderFiles(props: { source: number; path: string[] }) {
 			let remainder = index - data?.pages.length * pageSize;
 			if (index > pageSize * 0.5 && isVisible) {
 				console.log(index, "is visible");
-				fetchNextPage();
+				if (loadedImages() < data.pages[0].rows && !isFetchingNextPage) {
+					fetchNextPage();
+				}
 			}
 		}
 	};
 
-	// console.log(data);
 	return (
 		<div className="w-full">
 			<FoldersHeader
 				source={props.source}
 				path={props.path}
 				isLoading={isLoading}
+				isFetching={isFetchingNextPage}
 				error={error}
 				pages={data?.pages.length ?? 0}
 				dataLength={loadedImages()}
+				rows={data?.pages[0].rows ?? 0}
 			/>
 			{isLoading ? <BarLoader loading={true} /> : null}
 			{isLoading ? <GridLoader loading={true} /> : null}

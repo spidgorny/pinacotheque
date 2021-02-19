@@ -5,12 +5,17 @@ export function FoldersHeader(props: {
 	source: number;
 	path: string[];
 	isLoading: boolean;
+	isFetching: boolean;
 	error: null | string;
 	pages: number;
 	dataLength: number;
+	rows: number;
 }) {
 	return (
-		<div className="flex flex-row justify-between">
+		<div
+			className="flex flex-row justify-between bg-blue-300 p-1"
+			style={{ position: "sticky", top: 0, zIndex: 100 }}
+		>
 			<div>
 				Source:{" "}
 				<Link
@@ -44,11 +49,16 @@ export function FoldersHeader(props: {
 			<div className={props.isLoading ? "" : "text-gray-300 text-opacity-50"}>
 				isLoading
 			</div>
+			<div className={props.isFetching ? "" : "text-gray-300 text-opacity-50"}>
+				isFetching
+			</div>
 			<div className={props.error ? "" : "text-gray-300 text-opacity-50"}>
 				isError
 			</div>
 			<div>Pages: {props.pages}</div>
-			<div>Photos: {props.dataLength}</div>
+			<div>
+				Photos: {props.dataLength}/{props.rows}
+			</div>
 		</div>
 	);
 }
