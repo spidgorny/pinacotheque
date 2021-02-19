@@ -110,16 +110,16 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 		if (data && isVisible) {
 			let pageSize = data.pages[0].images.length;
 			let minus25 = loadedImages() - pageSize * 0.5;
-			console.log(
-				"index",
-				index,
-				"pageSize",
-				pageSize,
-				"loadedImages",
-				loadedImages(),
-				"minus25",
-				minus25
-			);
+			// console.log(
+			// 	"index",
+			// 	index,
+			// 	"pageSize",
+			// 	pageSize,
+			// 	"loadedImages",
+			// 	loadedImages(),
+			// 	"minus25",
+			// 	minus25
+			// );
 			if (index > minus25) {
 				let rows = data.pages[0].rows;
 				console.log(index, "is visible", "rows: ", rows);
