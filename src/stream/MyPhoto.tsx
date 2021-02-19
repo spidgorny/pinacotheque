@@ -27,6 +27,40 @@ interface MyPhotoState {
 	mouseY?: number;
 }
 
+function PhotoOverlay(props: { photo: PhotoProps<PhotoSetItem> }) {
+	return (
+		<div
+			style={{
+				position: "absolute",
+				top: 0,
+				width: "100%",
+				color: "white",
+			}}
+		>
+			<div
+				style={{
+					background: "black",
+					opacity: 0.5,
+					padding: "0.5em",
+				}}
+			>
+				<div>Name: {props.photo.image?.basename}</div>
+				<div>Path: {props.photo.image?.pathEnd}</div>
+				<div>
+					Size:{" "}
+					{props.photo.image?.getWidth() + "x" + props.photo.image?.getHeight()}
+				</div>
+				<div>
+					Date:{" "}
+					{moment(props.photo.image?.getTimestamp()).format(
+						"YYYY-MM-DD HH:mm:ss"
+					)}
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export class MyPhoto extends React.Component<Props, MyPhotoState> {
 	margin = 2;
 	ref = React.createRef<HTMLDivElement>();
@@ -75,8 +109,6 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 								}
 								width={this.props.photo.width ?? 256}
 								height={this.props.photo.height}
-								// onMouseEnter={this.showOverlay.bind(this)}
-								// onMouseOut={this.hideOverlay.bind(this)}
 								alt={this.props.photo.src}
 								title={
 									this.props.photo.image?.getWidth() +
@@ -85,37 +117,7 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 								}
 							/>
 							{(this.props.forceInfo || isHovering) && (
-								<div
-									style={{
-										position: "absolute",
-										top: 0,
-										width: "100%",
-										color: "white",
-									}}
-								>
-									<div
-										style={{
-											background: "black",
-											opacity: 0.5,
-											padding: "0.5em",
-										}}
-									>
-										<div>Name: {this.props.photo.image?.basename}</div>
-										<div>Path: {this.props.photo.image?.pathEnd}</div>
-										<div>
-											Size:{" "}
-											{this.props.photo.image?.getWidth() +
-												"x" +
-												this.props.photo.image?.getHeight()}
-										</div>
-										<div>
-											Date:{" "}
-											{moment(this.props.photo.image?.getTimestamp()).format(
-												"YYYY-MM-DD HH:mm:ss"
-											)}
-										</div>
-									</div>
-								</div>
+								<PhotoOverlay photo={this.props.photo} />
 							)}
 						</div>
 					);

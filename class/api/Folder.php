@@ -25,9 +25,9 @@ class Folder extends AppController
 			'path' => $path,
 		]);
 
+		$where = $this->getWhere($source, $path);
+		$orderBy = 'ORDER BY type, path LIMIT 50 OFFSET ' . (int)$x;
 		try {
-			$where = $this->getWhere($source, $path);
-			$orderBy = 'ORDER BY type, path LIMIT 50 OFFSET ' . (int)$x;
 			$files = MetaForSQL::findAll($this->db, $where, $orderBy);
 			$query = $this->db->getLastQuery();
 	//		return count($files);
@@ -68,6 +68,11 @@ class Folder extends AppController
 		if ($path) {
 			$like = new SQLLike($path);
 			$like->wrap = '|/%';
+			$where['path'] = $like;
+		} else {
+			$like = new SQLLike($path);
+			$like->like = 'NOT LIKE';
+			$like->wrap = '|%/%';
 			$where['path'] = $like;
 		}
 		$notLike = new SQLLike($path);

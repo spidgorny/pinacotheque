@@ -15,7 +15,7 @@ import { VisibilityTest } from "./test/visibility-test";
 import StreamPage from "./stream/stream-page";
 import { OneImageTest } from "./test/one-image-test";
 import TimelineTest from "./test/timeline-test";
-import FoldersPage from "./folders/folders-page";
+import FoldersPage from "./folders/folder-files";
 
 interface IAppProps {}
 
@@ -117,7 +117,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 									sources={this.state.sources}
 									sourceID={this.state.sourceID}
 									setSource={this.setSource.bind(this)}
-									params={params}
+									slug={decodeURIComponent(params.slug)}
 								/>
 							)}
 						</Route>
