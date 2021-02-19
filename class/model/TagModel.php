@@ -6,10 +6,10 @@ class TagModel extends POPOBase
 	use DatabaseMixin;
 	use DatabaseManipulation;
 
-	public $id;
-	public $id_file;
-	public $tag;
-	public $tstamp;
+	public int $id;
+	public int $id_file;
+	public string $tag;
+	public DateTime $tstamp;
 
 	public static function getTableName()
 	{
@@ -19,6 +19,10 @@ class TagModel extends POPOBase
 	public function __construct($set)
 	{
 		parent::__construct($set);
+		if ($this->tstamp) {
+			die($this->tstamp);
+			$this->tstamp = new DateTime($this->tstamp);
+		}
 	}
 
 }

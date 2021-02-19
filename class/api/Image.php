@@ -19,6 +19,10 @@ class Image extends AppController
 		$file = MetaForSQL::findOne($this->db, [
 			'id' => $id,
 		]);
+		if ($file) {
+			$file->loadMeta();
+			$file->loadTags();
+		}
 		return new JSONResponse([
 			'status' => 'ok',
 			'file' => $file,

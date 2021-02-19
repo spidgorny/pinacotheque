@@ -25,10 +25,16 @@ function LowSrcImg(
 	return (
 		<div style={{ position: "relative", width: "100%" }}>
 			<div style={{ position: "absolute", top: 0, left: 0, width: "100%" }}>
-				<img {...props} src={props.lowsrc} width="100%" height="auto" />
+				<img
+					{...props}
+					src={props.lowsrc}
+					width="100%"
+					height="auto"
+					alt="thumbnail"
+				/>
 			</div>
 			<div style={{ position: "relative", top: 0, left: 0, width: "100%" }}>
-				<img {...props} width="100%" height="auto" />
+				<img {...props} width="100%" height="auto" alt="original image" />
 			</div>
 		</div>
 	);

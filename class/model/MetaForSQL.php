@@ -27,6 +27,10 @@ class MetaForSQL extends Meta
 	 * @var Source|null
 	 */
 	public ?Source $sourceInstance;
+	/**
+	 * @var array
+	 */
+	protected $tags = [];
 
 	public static function getTableName(): string
 	{
@@ -221,6 +225,19 @@ class MetaForSQL extends Meta
 	public function isDir()
 	{
 		return $this->type === 'dir';
+	}
+
+	public function loadTags()
+	{
+		if ($this->tags) {
+			return $this->tags;
+		}
+		$rows = TagModel::findAll($this->db, ['id_file' => $this->id]);
+		$tags = array_map(static function (array $row) {
+			return $row['tag'];
+		}, $rows);
+		$this->tags = $tags;
+		return $tags;
 	}
 
 }
