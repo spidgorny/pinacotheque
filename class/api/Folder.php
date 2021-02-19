@@ -8,6 +8,8 @@ class Folder extends AppController
 	 */
 	protected DBInterface $db;
 
+	protected int $pageSize = 50;
+
 	public function __construct(DBInterface $db)
 	{
 		parent::__construct();
@@ -19,14 +21,14 @@ class Folder extends AppController
 	{
 		$source = $this->request->getInt('source');
 		$path = $this->request->get('path', '');
-		$x = $this->request->getInt('offset', 0);
+		$offset = $this->request->getInt('offset', 0);
 
 		$folder = MetaForSQL::findOne($this->db, [
 			'path' => $path,
 		]);
 
 		$where = $this->getWhere($source, $path);
-		$orderBy = 'ORDER BY type, path LIMIT 50 OFFSET ' . (int)$x;
+		$orderBy = 'ORDER BY type, path LIMIT '.$this->pageSize.' OFFSET ' . (int)$offset;
 		try {
 			$files = MetaForSQL::findAll($this->db, $where, $orderBy);
 			$query = $this->db->getLastQuery();
@@ -41,9 +43,11 @@ class Folder extends AppController
 			return new JSONResponse([
 				'status' => 'ok',
 				'path' => $path,
+				'offset' => $offset,
 				'folder' => $folder ? $folder->toJson() : null,
 				'query' => $query . '',
 				'data' => array_values($files->toJson()),
+				'nextOffset' => $offset + $this->pageSize,
 			]);
 		} catch (Exception $e) {
 			$query = $this->db->getSelectQuery(MetaForSQL::getTableName(), $where, $orderBy);

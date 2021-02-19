@@ -6,6 +6,7 @@ export function FoldersHeader(props: {
 	path: string[];
 	isLoading: boolean;
 	error: null | string;
+	pages: number;
 	dataLength: number;
 }) {
 	return (
@@ -46,6 +47,7 @@ export function FoldersHeader(props: {
 			<div className={props.error ? "" : "text-gray-300 text-opacity-50"}>
 				isError
 			</div>
+			<div>Pages: {props.pages}</div>
 			<div>Photos: {props.dataLength}</div>
 		</div>
 	);
