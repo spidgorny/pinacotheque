@@ -1,60 +1,20 @@
-import { Sidebar } from "../stream/Sidebar";
 import React, { useContext, useState } from "react";
-import { Source } from "../App";
 import { useLocation } from "wouter";
 import {
 	QueryFunctionContext,
 	useInfiniteQuery,
 	UseInfiniteQueryResult,
-	useQuery,
 } from "react-query";
 import axios from "redaxios";
 import { context } from "../context";
 import { Image } from "../model/Image";
 import { BarLoader, GridLoader } from "react-spinners";
-import { UseQueryResult } from "react-query/types/react/types";
 import { PhotoProps } from "react-photo-gallery";
 import { FoldersHeader } from "./folders-header";
 import { GridImage } from "./grid-image";
 import { QueryKey } from "react-query/types/core/types";
-
-export default function FoldersPage(props: {
-	sources: Source[];
-	sourceID?: number;
-	setSource: (id?: number) => void;
-	slug: string;
-}) {
-	const [, setLocation] = useLocation();
-
-	const setSource = (x?: number) => {
-		if (!x) {
-			setLocation("/folders");
-			return;
-		}
-		setLocation("/folders/" + x.toString());
-	};
-
-	let path = props.slug.split("/") as string[];
-	let sourceID = path.shift();
-	let source = sourceID ? parseInt(sourceID) : undefined;
-	console.log(sourceID, source, path);
-	return (
-		<div className="flex flex-row p-2">
-			<div className="w-2/12">
-				<Sidebar
-					sources={props.sources}
-					sourceID={source}
-					setSource={setSource}
-				/>
-			</div>
-			{source ? (
-				<FolderFiles source={source} path={path} />
-			) : (
-				<div>Select Source (on the left)</div>
-			)}
-		</div>
-	);
-}
+import { AxiosError } from "../tailwind";
+import { ImageLightbox } from "../stream/image-lightbox";
 
 interface FolderResponse {
 	status: string;
@@ -73,10 +33,11 @@ interface QueryPage extends FolderResponse {
 	images: Image[];
 }
 
-function FolderFiles(props: { source: number; path: string[] }) {
+export function FolderFiles(props: { source: number; path: string[] }) {
 	const ctx = useContext(context);
 	const [folder, setFolder] = useState((undefined as unknown) as Image);
 	const [, setLocation] = useLocation();
+	const [lightbox, setLightbox] = useState(undefined as number | undefined);
 	let {
 		isLoading,
 		isFetching,
@@ -84,10 +45,10 @@ function FolderFiles(props: { source: number; path: string[] }) {
 		data,
 		fetchNextPage,
 		isFetchingNextPage,
-	}: UseInfiniteQueryResult<QueryPage, string> = useInfiniteQuery(
+	}: UseInfiniteQueryResult<QueryPage, Response> = useInfiniteQuery(
 		["Folder", props.source, props.path],
 		async (context: QueryFunctionContext<QueryKey, number>) => {
-			console.log(context.pageParam);
+			console.log("useInfiniteQuery", context.pageParam);
 			const url = new URL(ctx.baseUrl.toString() + "Folder");
 			url.searchParams.set("source", props.source.toString());
 			url.searchParams.set("path", props.path.join("/"));
@@ -112,16 +73,21 @@ function FolderFiles(props: { source: number; path: string[] }) {
 		{
 			// initialData: [],
 			getNextPageParam: (lastPage, pages) => {
-				console.log("getNextPageParam", lastPage.nextOffset);
+				// console.log("getNextPageParam", lastPage.nextOffset);
 				return lastPage.nextOffset !== null ? lastPage.nextOffset : undefined;
 			},
 		}
 	);
 
-	const getDeeper = (photo: Image) => {
+	const getDeeper = (index: number, photo?: Image) => {
+		if (!photo) {
+			return;
+		}
 		console.log(photo.basename);
 		if (photo.isDir()) {
 			setLocation(getLoc(photo.basename));
+		} else {
+			setLightbox(index);
 		}
 	};
 
@@ -141,16 +107,42 @@ function FolderFiles(props: { source: number; path: string[] }) {
 	};
 
 	const setVisible = (img: Image, isVisible: boolean, index: number) => {
-		if (data) {
+		if (data && isVisible) {
 			let pageSize = data.pages[0].images.length;
-			let remainder = index - data?.pages.length * pageSize;
-			if (index > pageSize * 0.5 && isVisible) {
-				console.log(index, "is visible");
-				if (loadedImages() < data.pages[0].rows && !isFetchingNextPage) {
+			let minus25 = loadedImages() - pageSize * 0.5;
+			console.log(
+				"index",
+				index,
+				"pageSize",
+				pageSize,
+				"loadedImages",
+				loadedImages(),
+				"minus25",
+				minus25
+			);
+			if (index > minus25) {
+				let rows = data.pages[0].rows;
+				console.log(index, "is visible", "rows: ", rows);
+				if (loadedImages() < rows && !isFetchingNextPage) {
 					fetchNextPage();
 				}
 			}
 		}
+	};
+
+	const allImages = () => {
+		if (!data) {
+			return [];
+		}
+		const flatList = data.pages.reduce(
+			(acc: Image[], page: QueryPage, indexPage: number) => [
+				...acc,
+				...page.images.map((img: Image, index: number) => img),
+			],
+			[]
+		);
+		// console.log('pages', data.pages.length, 'flatList', flatList.length);
+		return flatList;
 	};
 
 	return (
@@ -167,7 +159,7 @@ function FolderFiles(props: { source: number; path: string[] }) {
 			/>
 			{isLoading ? <BarLoader loading={true} /> : null}
 			{isLoading ? <GridLoader loading={true} /> : null}
-			{error ? <div className="error">{error.toString()}</div> : null}
+			<AxiosError error={error} />
 			<div className="flex flex-row p-2 flex-grow flex-wrap">
 				{data &&
 					data.pages.map((page, indexPage: number) => (
@@ -183,22 +175,26 @@ function FolderFiles(props: { source: number; path: string[] }) {
 											index: number,
 											image?: Image
 										) => {
-											if (image) {
-												getDeeper(image);
-											}
+											getDeeper(index, image);
 										}}
 										setVisible={(
 											img: Image,
 											isVisible: boolean,
 											index: number
 										) => setVisible(img, isVisible, index)}
-										index={indexPage + index}
+										index={indexPage * page.images.length + index}
 									/>
 								);
 							})}
 						</React.Fragment>
 					))}
 			</div>
+			<ImageLightbox
+				currentIndex={lightbox ?? 0}
+				images={allImages()}
+				onClose={() => setLightbox(undefined)}
+				viewerIsOpen={typeof lightbox !== "undefined"}
+			/>
 		</div>
 	);
 }

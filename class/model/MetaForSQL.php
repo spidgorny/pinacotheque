@@ -178,7 +178,8 @@ class MetaForSQL extends Meta
 		$vars['thumb'] = $this->isFile() ? $this->getDestination() : null;
 		$vars['source_path'] = $this->getSource()->path;
 		$vars['meta'] = $this->getMetaData();
-		$vars['DateTime'] = $this->DateTime ? $this->DateTime->format(DateTimeInterface::ATOM) : null;
+		$vars['DateTime'] = $this->DateTime instanceof DateTime
+			? $this->DateTime->format(DateTimeInterface::ATOM) : $this->DateTime;
 		$vars['width'] = (int)$this->getWidth();
 		$vars['height'] = (int)$this->getHeight();
 		return $vars;

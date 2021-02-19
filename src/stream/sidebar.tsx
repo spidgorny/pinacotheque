@@ -1,6 +1,6 @@
 import React, { FormEvent } from "react";
 import { AppContext, context } from "../context";
-import { Source } from "../App";
+import { Source } from "../app";
 
 interface ISidebarProps {
 	sources: Source[];

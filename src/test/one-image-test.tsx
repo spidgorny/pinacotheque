@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "wouter";
-import { MyPhoto } from "../stream/MyPhoto";
+import { MyPhoto } from "../stream/my-photo";
 import { Image } from "../model/Image";
 
 export class OneImageTest extends React.Component<RouteComponentProps<{}>, {}> {

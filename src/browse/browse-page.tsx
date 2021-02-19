@@ -1,6 +1,6 @@
 import React from "react";
-import { Source } from "../App";
-import { IoReload } from "react-icons/all";
+import { Source } from "../app";
+import { IoReload } from "react-icons/io5";
 import { CheckSource } from "./check-source";
 
 export default function BrowsePage(props: {

@@ -15,7 +15,7 @@ import { VisibilityTest } from "./test/visibility-test";
 import StreamPage from "./stream/stream-page";
 import { OneImageTest } from "./test/one-image-test";
 import TimelineTest from "./test/timeline-test";
-import FoldersPage from "./folders/folder-files";
+import FoldersPage from "./folders/folders-page";
 
 interface IAppProps {}
 

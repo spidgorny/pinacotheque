@@ -1,4 +1,4 @@
-import { GalleryInScroll } from "./GalleryInScroll";
+import { GalleryInScroll } from "./gallery-in-scroll";
 import React from "react";
 import { Image } from "../model/Image";
 

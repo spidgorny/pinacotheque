@@ -1,4 +1,4 @@
-import { Source } from "../App";
+import { Source } from "../app";
 import React, { useContext, useEffect, useState } from "react";
 import { context } from "../context";
 // @ts-ignore

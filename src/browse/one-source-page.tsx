@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Source } from "../App";
+import { Source } from "../app";
 import { IoReload, MdDoNotDisturbOn } from "react-icons/all";
 import { CheckSource } from "./check-source";
 import { AppContext, context } from "../context";

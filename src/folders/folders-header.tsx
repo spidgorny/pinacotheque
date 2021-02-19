@@ -6,7 +6,7 @@ export function FoldersHeader(props: {
 	path: string[];
 	isLoading: boolean;
 	isFetching: boolean;
-	error: null | string;
+	error: null | Response;
 	pages: number;
 	dataLength: number;
 	rows: number;
@@ -29,7 +29,7 @@ export function FoldersHeader(props: {
 				Path:{" "}
 				{props.path.map((el: string, index: number) => {
 					return (
-						<>
+						<React.Fragment key={index}>
 							{"/"}
 							<Link
 								className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
@@ -42,7 +42,7 @@ export function FoldersHeader(props: {
 							>
 								{decodeURIComponent(el)}
 							</Link>
-						</>
+						</React.Fragment>
 					);
 				})}
 			</div>

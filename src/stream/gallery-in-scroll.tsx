@@ -1,10 +1,10 @@
 import { Image } from "../model/Image";
 import React from "react";
-import Carousel, { Modal, ModalGateway } from "react-images";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AppContext, context } from "../context";
 import { MyGallery } from "./my-gallery";
 import { PhotoProps } from "react-photo-gallery";
+import { ImageLightbox } from "./image-lightbox";
 
 export interface PhotoSetItem extends PhotoProps {
 	key?: string;
@@ -94,23 +94,12 @@ export class GalleryInScroll extends React.Component<
 					/>
 				</InfiniteScroll>
 
-				<ModalGateway>
-					{this.state.viewerIsOpen ? (
-						<Modal onClose={this.closeLightbox.bind(this)}>
-							<Carousel
-								currentIndex={this.state.currentImage}
-								views={this.props.photos.map((x: Image) => ({
-									...x,
-									source: {
-										thumbnail: x.thumbURL,
-										regular: x.originalURL,
-									},
-									caption: x.title,
-								}))}
-							/>
-						</Modal>
-					) : null}
-				</ModalGateway>
+				<ImageLightbox
+					viewerIsOpen={this.state.viewerIsOpen}
+					onClose={this.closeLightbox.bind(this)}
+					currentIndex={this.state.currentImage}
+					images={this.props.photos}
+				/>
 			</div>
 		);
 	}

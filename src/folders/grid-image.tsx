@@ -2,7 +2,7 @@ import { Image } from "../model/Image";
 import React from "react";
 import { PhotoProps } from "react-photo-gallery";
 import { InView } from "react-intersection-observer";
-import { MyPhoto } from "../stream/MyPhoto";
+import { MyPhoto } from "../stream/my-photo";
 
 export function GridImage(props: {
 	img: Image;
@@ -26,7 +26,7 @@ export function GridImage(props: {
 		>
 			<div style={{ border: "solid 1px silver", width: 256, height: 256 }}>
 				<MyPhoto
-					index={props.img.id}
+					index={props.index}
 					photo={{
 						width: props.img.getThumbWidth(),
 						height: props.img.getThumbHeight(),

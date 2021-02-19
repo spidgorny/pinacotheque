@@ -1,8 +1,8 @@
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "./sidebar";
 import ScaleLoader from "react-spinners/ScaleLoader";
-import ImageStream from "./ImageStream";
+import ImageStream from "./image-stream";
 import React from "react";
-import { Source } from "../App";
+import { Source } from "../app";
 
 export default function StreamPage(props: {
 	sources: Source[];

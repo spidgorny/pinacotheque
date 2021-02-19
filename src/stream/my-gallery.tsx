@@ -1,10 +1,10 @@
 import React from "react";
 import Gallery, { PhotoProps, RenderImageProps } from "react-photo-gallery";
-import { MyPhoto } from "./MyPhoto";
+import { MyPhoto } from "./my-photo";
 // @ts-ignore
 import IntersectionVisible from "react-intersection-visible";
 import { Image } from "../model/Image";
-import { PhotoSetItem } from "./GalleryInScroll";
+import { PhotoSetItem } from "./gallery-in-scroll";
 import TrackVisibility from "react-on-screen";
 const VisibilitySensor = require("react-visibility-sensor");
 

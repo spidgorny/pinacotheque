@@ -1,4 +1,4 @@
-import { Source } from "../App";
+import { Source } from "../app";
 import { useQuery } from "react-query";
 import axios from "redaxios";
 import { useContext } from "react";

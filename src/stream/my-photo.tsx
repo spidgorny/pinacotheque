@@ -1,7 +1,7 @@
 import React from "react";
 import { PhotoProps } from "react-photo-gallery";
 import moment from "moment";
-import { PhotoSetItem } from "./GalleryInScroll";
+import { PhotoSetItem } from "./gallery-in-scroll";
 // @ts-ignore
 import ReactHoverObserver from "react-hover-observer";
 import { Image } from "../model/Image";
