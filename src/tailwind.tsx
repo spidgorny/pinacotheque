@@ -25,3 +25,6 @@ export const buttonStyle =
 
 export const badge =
 	"mr-2 bg-blue-600 text-white p-2 rounded leading-none items-center";
+
+export const searchStyle =
+	"w-full px-3 py-1 border-1 border-gray-200 rounded-xl hover:border-gray-300 focus:outline-none focus:border-blue-500 transition-colors text-black";
