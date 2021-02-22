@@ -64,6 +64,7 @@ export class MyGallery extends React.Component<Props, any> {
 	imageRender(props: RenderImageProps<PhotoProps<PhotoSetItem>>) {
 		return (
 			<MyPhoto
+				key={props.photo.key}
 				index={props.index}
 				photo={props.photo}
 				direction={props.direction}
@@ -84,6 +85,7 @@ export class MyGallery extends React.Component<Props, any> {
 				{({ isVisible }: { isVisible: boolean }) =>
 					isVisible ? (
 						<MyPhoto
+							key={props.photo.key}
 							index={props.index}
 							photo={props.photo}
 							direction={props.direction}

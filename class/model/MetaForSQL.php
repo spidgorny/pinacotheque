@@ -186,6 +186,7 @@ class MetaForSQL extends Meta
 			? $this->DateTime->format(DateTimeInterface::ATOM) : $this->DateTime;
 		$vars['width'] = (int)$this->getWidth();
 		$vars['height'] = (int)$this->getHeight();
+		$vars['tags'] = (array)$this->loadTags();
 		return $vars;
 	}
 
@@ -233,8 +234,8 @@ class MetaForSQL extends Meta
 			return $this->tags;
 		}
 		$rows = TagModel::findAll($this->db, ['id_file' => $this->id]);
-		$tags = array_map(static function (array $row) {
-			return $row['tag'];
+		$tags = array_map(static function (TagModel $row) {
+			return $row->tag;
 		}, $rows);
 		$this->tags = $tags;
 		return $tags;

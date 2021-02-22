@@ -88,7 +88,7 @@ export class MyPhoto extends React.Component<Props, MyPhotoState> {
 				{({ isHovering }: { isHovering: boolean }) => {
 					return (
 						<div
-							// key={this.props.key}
+							key={this.props.photo.key}
 							style={{ ...cont }}
 							onClick={(e) =>
 								this.props.onClick

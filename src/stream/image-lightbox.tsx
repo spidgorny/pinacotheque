@@ -54,12 +54,15 @@ export function ImageLightbox(props: {
 }
 
 export function ShortcutToggle(
-	props: PropsWithChildren<{ keyToPress: string }>
+	props: PropsWithChildren<{ keyToPress: string; onVisible?: () => void }>
 ) {
 	const [onOff, setOnOff] = useState(false);
 
 	const handle = () => {
 		setOnOff(!onOff);
+		if (props.onVisible) {
+			props.onVisible();
+		}
 	};
 
 	return (

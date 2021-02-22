@@ -25,7 +25,7 @@ class Image extends AppController
 		}
 		return new JSONResponse([
 			'status' => 'ok',
-			'file' => $file,
+			'file' => $file->toJson(),
 		]);
 	}
 

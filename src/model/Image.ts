@@ -31,6 +31,9 @@ export class Image {
 	height?: number;
 
 	// @ts-ignore
+	tags: string[];
+
+	// @ts-ignore
 	baseUrl: string;
 
 	constructor(props: any) {

@@ -19,10 +19,6 @@ class TagModel extends POPOBase
 	public function __construct($set)
 	{
 		parent::__construct($set);
-		if ($this->tstamp) {
-			die($this->tstamp);
-			$this->tstamp = new DateTime($this->tstamp);
-		}
 	}
 
 }

@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@craco/craco": "^6.1.1",
-    "@rockpack/compiler": "^2.0.0-rc.6",
+    "@rockpack/compiler": "^2.0.0-rc.8",
     "@types/leaflet": "^1.5.23",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",

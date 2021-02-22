@@ -11,19 +11,29 @@ class Tags extends AppController
 		parent::__construct();
 		$this->db = $db;
 		header('Access-Control-Allow-Origin: http://localhost:3000');
+		header('Access-Control-Allow-Headers: content-type');
 	}
 
 	public function index()
 	{
-		$id = $this->request->getIntRequired('id');
-		$file = MetaForSQL::findOne($this->db, [
-			'id' => $id,
-		]);
+		$file = null;
+		$id = $this->request->getInt('id');
+		if ($id) {
+			$file = MetaForSQL::findOne($this->db, [
+				'id' => $id,
+			]);
+		}
+		sleep(5);
 		$method = $this->request->getMethod();
 		return $this->$method($file);
 	}
 
-	public function GET(MetaForSQL $file)
+	public function OPTIONS(): JSONResponse
+	{
+		return new JSONResponse(['status' => 'ok']);
+	}
+
+	public function GET(MetaForSQL $file): JSONResponse
 	{
 		$tags = $file->loadTags();
 		return new JSONResponse([
@@ -32,7 +42,7 @@ class Tags extends AppController
 		]);
 	}
 
-	public function POST(MetaForSQL $file)
+	public function POST(MetaForSQL $file): JSONResponse
 	{
 		$oldTags = $file->loadTags();
 		$newTags = $this->request->getJsonPost();
