@@ -241,4 +241,45 @@ class MetaForSQL extends Meta
 		return $tags;
 	}
 
+	public function basename()
+	{
+		return basename($this->path);
+	}
+
+	public function dirname()
+	{
+		return dirname($this->path);
+	}
+
+	public function getFolder()
+	{
+		if ($this->isTypeDir()) {
+			$folder = new \Pinacotheque\Model\Folder($this->props);
+			$folder->injectDB($this->db);
+			$folder->meta = $this->meta;
+			$folder->tags = $this->tags;
+			assert($folder->path);
+			return $folder;
+		}
+
+		// else: type = file => search for folder of that file
+		$folder = \Pinacotheque\Model\Folder::findOne($this->db, [
+			'source' => $this->source,
+			'path' => $this->dirname(),
+			'type' => 'dir',
+		]);
+
+		return $folder;
+	}
+
+	public function isTypeFile()
+	{
+		return $this->type === 'file';
+	}
+
+	public function isTypeDir()
+	{
+		return $this->type === 'dir';
+	}
+
 }

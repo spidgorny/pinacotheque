@@ -22,3 +22,6 @@ export function AxiosError(props: { error?: Response | null }) {
 
 export const buttonStyle =
 	"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
+
+export const badge =
+	"mr-2 bg-blue-600 text-white p-2 rounded leading-none items-center";

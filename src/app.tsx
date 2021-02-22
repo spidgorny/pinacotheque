@@ -70,6 +70,7 @@ export default class App extends React.Component<IAppProps, IAppState> {
 		}
 		// console.log(resData);
 		this.setState(resData);
+		this.context.setSources(resData.sources);
 	}
 
 	setSource(id?: number) {

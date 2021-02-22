@@ -23,29 +23,30 @@ class Folder extends AppController
 		$path = $this->request->get('path', '');
 		$offset = $this->request->getInt('offset', 0);
 
-		$folder = MetaForSQL::findOne($this->db, [
-			'path' => $path,
-		]);
-
-		$where = $this->getWhere($source, $path);
-		$orderBy = 'ORDER BY type, path LIMIT '.$this->pageSize.' OFFSET ' . (int)$offset;
 		try {
-			$files = MetaForSQL::findAll($this->db, $where, $orderBy);
-			$query = $this->db->getLastQuery();
-			$countQuery = new SQLCountQuery($query, $this->db);
+			$file = MetaForSQL::findOne($this->db, [
+				'source' => $source,
+				'path' => $path,
+			]);
+			if (!$file) {
+				throw new Error('No db entry for [' . $path .']');
+			}
+			$folder = $file->getFolder();
+			if (!$folder) {
+				throw new Exception('No way to convert this file to folder');
+			}
+			$files = $folder->getFiles($this->pageSize, $offset);
+			$query = $folder->getQuery();
+			$countQuery = $folder->getCountQuery();
 			$rows = $countQuery->getCount();
-			$files = new ArrayPlus($files);
-			$files->filter(/**
-			 * @param MetaForSQL $el
-			 * @return bool
-			 */ static function (MetaForSQL $el) {
-				return $el->isDir() || $el->isImage() || $el->isVideo();
-			});
 			return new JSONResponse([
 				'status' => 'ok',
 				'path' => $path,
 				'offset' => $offset,
+				'file' => $file->toJson(),
 				'folder' => $folder ? $folder->toJson() : null,
+				'isTypeFile' => $folder->isTypeFile(),
+				'isTypeDir' => $folder->isTypeDir(),
 				'query' => $query . '',
 				'rows' => $rows,
 				'countQuery' => $countQuery->countQuery,
@@ -53,40 +54,13 @@ class Folder extends AppController
 				'nextOffset' => ($offset + $this->pageSize) < $rows ? $offset + $this->pageSize : null,
 			]);
 		} catch (Exception $e) {
-			$query = $this->db->getSelectQuery(MetaForSQL::getTableName(), $where, $orderBy);
-			llog('queryParams', $query->getParameters());
-			throw new Exception($e->getMessage() . ' ['.$query.']');
+//			$where = $folder->getWhere();
+//			$orderBy = $folder->getOrderBy();
+//			$query = $this->db->getSelectQuery(MetaForSQL::getTableName(), $where, $orderBy);
+//			llog('queryParams', $query->getParameters());
+//			throw new Exception($e->getMessage() . ' ['.$query.']');
+			throw $e;
 		}
-	}
-
-	/**
-	 * Search for files inside a single folder
-	 * without subfolders
-	 * @param int|null $source
-	 * @param string $path
-	 * @return SQLWhereNotEqual[]
-	 */
-	public function getWhere(?int $source, string $path): array
-	{
-		$where = [];
-		if ($source) {
-			$where['source'] = $source;
-		}
-		if ($path) {
-			$like = new SQLLike($path);
-			$like->wrap = '|/%';
-			$where['path'] = $like;
-		} else {
-			$like = new SQLLike($path);
-			$like->like = 'NOT LIKE';
-			$like->wrap = '|%/%';
-			$where['path'] = $like;
-		}
-		$notLike = new SQLLike($path);
-		$notLike->like = 'NOT LIKE';
-		$notLike->wrap = '|/%/%';
-		$where['path '] = $notLike;
-		return $where;
 	}
 
 }

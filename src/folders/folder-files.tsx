@@ -15,6 +15,7 @@ import { GridImage } from "./grid-image";
 import { QueryKey } from "react-query/types/core/types";
 import { AxiosError } from "../tailwind";
 import { ImageLightbox } from "../stream/image-lightbox";
+import { ShortcutHandler } from "../stream/shortcut-handler";
 
 interface FolderResponse {
 	status: string;
@@ -145,6 +146,13 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 		return flatList;
 	};
 
+	const upFolder = () => {
+		if (!data) {
+			return;
+		}
+		setLocation("/folders/" + props.source + "/" + folder.dirname);
+	};
+
 	return (
 		<div className="w-full">
 			<FoldersHeader
@@ -194,6 +202,11 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 				images={allImages()}
 				onClose={() => setLightbox(undefined)}
 				viewerIsOpen={typeof lightbox !== "undefined"}
+			/>
+			<ShortcutHandler
+				keyToPress="ArrowUp"
+				modifier="ctrlKey"
+				handler={upFolder}
 			/>
 		</div>
 	);

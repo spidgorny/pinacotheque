@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import { Source } from "./app";
 
 export class AppContext {
 	public baseUrl = new URL(process.env.REACT_APP_API!);
@@ -7,6 +8,7 @@ export class AppContext {
 	};
 	public static readonly VIEWPORT_TIMESTAMP: string = "viewportTimestamp";
 	lastTopTimestamp?: Date;
+	sources?: Source[];
 
 	constructor() {
 		const lastTopTimestamp = this.getStorage(AppContext.VIEWPORT_TIMESTAMP);
@@ -32,6 +34,10 @@ export class AppContext {
 		for (let key of Object.keys(props)) {
 			this.setStorage(key, props[key]);
 		}
+	}
+
+	setSources(sources: Source[]) {
+		this.sources = sources;
 	}
 }
 

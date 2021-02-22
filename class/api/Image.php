@@ -19,13 +19,19 @@ class Image extends AppController
 		$file = MetaForSQL::findOne($this->db, [
 			'id' => $id,
 		]);
+		$files = [];
 		if ($file) {
-			$file->loadMeta();
-			$file->loadTags();
+			$folder = $file->getFolder();
+			$files = $folder->getFiles(999999)->getData();
 		}
 		return new JSONResponse([
 			'status' => 'ok',
 			'file' => $file->toJson(),
+			'rows' => count($files),
+			'folder' => array_map(static function ($el) {
+				return $el->id;
+			}, $files),
+			'query' => $folder ? $folder->getQuery().'' : null,
 		]);
 	}
 

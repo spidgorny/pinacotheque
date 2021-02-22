@@ -23,7 +23,6 @@ class Tags extends AppController
 				'id' => $id,
 			]);
 		}
-		sleep(5);
 		$method = $this->request->getMethod();
 		return $this->$method($file);
 	}

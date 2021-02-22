@@ -1,6 +1,4 @@
-function basename(str: string, sep: string = "/") {
-	return str.substr(str.lastIndexOf(sep) + 1);
-}
+import { basename, dirname } from "../functions";
 
 export class Image {
 	// @ts-ignore
@@ -38,6 +36,8 @@ export class Image {
 
 	constructor(props: any) {
 		Object.assign(this, props);
+		// @ts-ignore
+		this.id = parseInt(this.id.toString());
 	}
 
 	get thumbURL() {
@@ -66,6 +66,10 @@ export class Image {
 
 	get basename() {
 		return basename(this.path);
+	}
+
+	get dirname() {
+		return dirname(this.path);
 	}
 
 	get pathEnd() {

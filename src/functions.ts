@@ -7,3 +7,11 @@ export function ymd(date: Date) {
 		date.getDate().toString().padStart(2, "0")
 	);
 }
+
+export function basename(str: string, sep: string = "/") {
+	return str.substr(str.lastIndexOf(sep) + 1);
+}
+
+export function dirname(str: string, sep: string = "/") {
+	return str.substr(0, str.lastIndexOf(sep));
+}

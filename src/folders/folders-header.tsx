@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import React from "react";
+import React, { useContext } from "react";
+import { context } from "../context";
 
 export function FoldersHeader(props: {
 	source: number;
@@ -11,13 +12,25 @@ export function FoldersHeader(props: {
 	dataLength: number;
 	rows: number;
 }) {
+	const ctx = useContext(context);
+	const copyPath = async () => {
+		// const result = navigator.permissions.query({ name: "clipboard-write" });
+		// if (result.state == "granted" || result.state == "prompt") {
+		// }
+		let source = ctx.sources
+			? ctx.sources.find((el) => el.id === props.source)
+			: undefined;
+		console.log(source, props.path.join("\\"));
+		let path = source?.path + props.path.join("\\");
+		await navigator.clipboard.writeText(path);
+	};
+
 	return (
 		<div
 			className="flex flex-row justify-between bg-blue-300 p-1"
 			style={{ position: "sticky", top: 0, zIndex: 100 }}
 		>
 			<div>
-				Source:{" "}
 				<Link
 					className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
 					to={"/folders/" + props.source}
@@ -45,6 +58,9 @@ export function FoldersHeader(props: {
 						</React.Fragment>
 					);
 				})}
+			</div>
+			<div>
+				<button onClick={copyPath}>[Copy]</button>
 			</div>
 			<div className={props.isLoading ? "" : "text-gray-300 text-opacity-50"}>
 				isLoading
