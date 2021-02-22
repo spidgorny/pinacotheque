@@ -17,7 +17,7 @@
  * @property int id
  * @property object streams
  */
-class Meta implements IMetaData
+class Meta extends POPOBase implements IMetaData
 {
 
 	public array $props = [];
@@ -28,6 +28,7 @@ class Meta implements IMetaData
 
 	public function __construct(array $meta)
 	{
+		parent::__construct([]);
 		$this->props = $meta;
 	}
 

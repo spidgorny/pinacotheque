@@ -3,7 +3,6 @@
 class Tags extends AppController
 {
 
-	/** @var DBInterface */
 	protected DBInterface $db;
 
 	public function __construct(DBInterface $db)

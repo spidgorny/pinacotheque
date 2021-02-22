@@ -19,7 +19,7 @@ export default function SingleImage(props: { id: string }) {
 	const [, setLocation] = useLocation();
 
 	let fetchImage = async () => {
-		const url = new URL(ctx.baseUrl.toString() + "Image");
+		const url = new URL("Image", ctx.baseUrl);
 		url.searchParams.set("id", props.id);
 		// console.log(url.toString());
 		const res = await axios.get(url.toString());

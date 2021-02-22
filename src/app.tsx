@@ -17,6 +17,7 @@ import { OneImageTest } from "./test/one-image-test";
 import TimelineTest from "./test/timeline-test";
 import FoldersPage from "./folders/folders-page";
 import SingleImage from "./single/single-image";
+import SearchPage from "./search/search-page";
 
 interface IAppProps {}
 
@@ -125,6 +126,9 @@ export default class App extends React.Component<IAppProps, IAppState> {
 						</Route>
 						<Route path="/image/:id">
 							{(params) => <SingleImage id={params.id} />}
+						</Route>
+						<Route path="/search/:term">
+							{(params) => <SearchPage term={params.term} />}
 						</Route>
 					</Switch>
 				</div>

@@ -107,30 +107,6 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 		);
 	};
 
-	const setVisible = (img: Image, isVisible: boolean, index: number) => {
-		if (data && isVisible) {
-			let pageSize = data.pages[0].images.length;
-			let minus25 = loadedImages() - pageSize * 0.5;
-			// console.log(
-			// 	"index",
-			// 	index,
-			// 	"pageSize",
-			// 	pageSize,
-			// 	"loadedImages",
-			// 	loadedImages(),
-			// 	"minus25",
-			// 	minus25
-			// );
-			if (index > minus25) {
-				let rows = data.pages[0].rows;
-				console.log(index, "is visible", "rows: ", rows);
-				if (loadedImages() < rows && !isFetchingNextPage) {
-					fetchNextPage();
-				}
-			}
-		}
-	};
-
 	const allImages = () => {
 		if (!data) {
 			return [];
@@ -168,35 +144,15 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 			{isLoading ? <BarLoader loading={true} /> : null}
 			{isLoading ? <GridLoader loading={true} /> : null}
 			<AxiosError error={error} />
-			<div className="flex flex-row p-2 flex-grow flex-wrap">
-				{data &&
-					data.pages.map((page, indexPage: number) => (
-						<React.Fragment key={indexPage}>
-							{page.images.map((img: Image, index: number) => {
-								return (
-									<GridImage
-										key={img.id}
-										img={img}
-										onClick={(
-											e: React.MouseEvent,
-											photo: PhotoProps,
-											index: number,
-											image?: Image
-										) => {
-											getDeeper(index, image);
-										}}
-										setVisible={(
-											img: Image,
-											isVisible: boolean,
-											index: number
-										) => setVisible(img, isVisible, index)}
-										index={indexPage * page.images.length + index}
-									/>
-								);
-							})}
-						</React.Fragment>
-					))}
-			</div>
+			{data && (
+				<ImageGrid
+					images={allImages()}
+					total={data.pages[0].rows}
+					fetchNextPage={fetchNextPage}
+					isFetchingNextPage={isFetchingNextPage}
+					onClick={(a, b, index, image) => getDeeper(index, image)}
+				/>
+			)}
 			<ImageLightbox
 				currentIndex={lightbox ?? 0}
 				images={allImages()}
@@ -208,6 +164,62 @@ export function FolderFiles(props: { source: number; path: string[] }) {
 				modifier="ctrlKey"
 				handler={upFolder}
 			/>
+		</div>
+	);
+}
+
+export function ImageGrid(props: {
+	images: Image[];
+	total: number;
+	fetchNextPage: () => void;
+	isFetchingNextPage: boolean;
+	onClick: (
+		e: React.MouseEvent,
+		photo: PhotoProps,
+		index: number,
+		image?: Image
+	) => void;
+}) {
+	const setVisible = (img: Image, isVisible: boolean, index: number) => {
+		if (props.images && isVisible) {
+			let pageSize = 50; //data.pages[0].images.length;
+			let loadedImages = props.images.length;
+			let minus25 = loadedImages - pageSize * 0.5;
+			// console.log(
+			// 	"index",
+			// 	index,
+			// 	"pageSize",
+			// 	pageSize,
+			// 	"loadedImages",
+			// 	loadedImages(),
+			// 	"minus25",
+			// 	minus25
+			// );
+			if (index > minus25) {
+				let rows = props.total;
+				console.log(index, "is visible", "rows: ", rows);
+				if (loadedImages < rows && !props.isFetchingNextPage) {
+					props.fetchNextPage();
+				}
+			}
+		}
+	};
+
+	return (
+		<div className="flex flex-row p-2 flex-grow flex-wrap">
+			{props.images.map((img: Image, index: number) => {
+				return (
+					<GridImage
+						key={img.id}
+						img={img}
+						onClick={props.onClick}
+						setVisible={(img: Image, isVisible: boolean, index: number) =>
+							setVisible(img, isVisible, index)
+						}
+						index={index}
+					/>
+				);
+			})}
 		</div>
 	);
 }

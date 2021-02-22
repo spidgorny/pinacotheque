@@ -4,6 +4,9 @@ export const alertError =
 	"bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative";
 
 export function AxiosError(props: { error?: Response | null }) {
+	if (props.error) {
+		console.error(props.error);
+	}
 	return (
 		<>
 			{props.error ? (
