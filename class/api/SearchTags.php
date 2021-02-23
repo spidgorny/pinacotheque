@@ -1,6 +1,6 @@
 <?php
 
-class Search extends AppController
+class SearchTags extends AppController
 {
 
 	protected DBInterface $db;

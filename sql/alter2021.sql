@@ -10,3 +10,4 @@ alter table files
 alter table files
     add height int null;
 
+create fulltext index idx_file_path on files (path);

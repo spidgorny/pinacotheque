@@ -33,7 +33,7 @@ export function GridImage(props: {
 				props.setVisible(props.img, inView, props.index)
 			}
 		>
-			<div style={{ border: "solid 1px silver", width: 256, height: 256 }}>
+			<div style={{ border: "solid 1px silver", width: 256 }}>
 				<MyPhoto
 					index={props.index}
 					photo={getPhotoFromImage(props.img)}
