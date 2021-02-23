@@ -11,6 +11,7 @@ import { BigImage } from "../stream/big-image";
 import { ShortcutHandler } from "../stream/shortcut-handler";
 import { TagForm } from "./tag-form";
 import { useLocation } from "wouter";
+import isObject from "../functions";
 
 export default function SingleImage(props: { id: string }) {
 	const ctx = useContext(context);
@@ -45,8 +46,8 @@ export default function SingleImage(props: { id: string }) {
 		{
 			onSuccess: async () => {
 				const nextID = adjacentImage(+1);
-				// console.log("useEffect", nextID);
-				if (nextID) {
+				console.log("useEffect", nextID, props.id);
+				if (nextID !== props.id) {
 					await queryClient.prefetchQuery(["Image", nextID], fetchImage);
 					const nextImage = await queryClient.fetchQuery(
 						["Image", nextID],
@@ -76,10 +77,11 @@ export default function SingleImage(props: { id: string }) {
 		}
 	};
 
-	const adjacentImage = (plusMinus: number): Image | undefined => {
-		const index = surround.findIndex((el) => el === props.id);
-		console.log("prevImage", index);
-		return surround[index + plusMinus];
+	const adjacentImage = (plusMinus: number): string => {
+		const index = getImageFromPropsID();
+		let adjacent = surround[index + plusMinus];
+		console.log("adjacent to", index, "is", adjacent);
+		return adjacent;
 	};
 
 	const prevImage = () => {
@@ -103,12 +105,16 @@ export default function SingleImage(props: { id: string }) {
 		setLocation("/folders/" + data.source + "/" + data.dirname);
 	};
 
-	const index = surround.findIndex((el) => el === props.id);
+	const getImageFromPropsID = () => {
+		const surr = isObject(surround) ? Object.values(surround) : surround;
+		const index = surr.findIndex((el) => el === props.id);
+		return index;
+	};
 
 	return (
 		<div>
 			<div>
-				{index} / {surround.length} [id={props.id}]
+				{getImageFromPropsID()} / {surround.length} [id={props.id}]
 			</div>
 			{isLoading ? <GridLoader loading={true} /> : null}
 			<AxiosError error={error} />

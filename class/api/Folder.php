@@ -29,7 +29,14 @@ class Folder extends AppController
 				'path' => $path,
 			]);
 			if (!$file) {
-				throw new Error('No db entry for [' . $path .']');
+//				throw new Error('No db entry for [' . $path .']');
+				$file = new MetaForSQL([
+					'id' => -1,
+					'source' => $source,
+					'path' => '',
+					'type' => 'dir',
+				]);
+				$file->injectDB($this->db);
 			}
 			$folder = $file->getFolder();
 			if (!$folder) {

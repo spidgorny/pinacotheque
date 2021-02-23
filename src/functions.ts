@@ -15,3 +15,8 @@ export function basename(str: string, sep: string = "/") {
 export function dirname(str: string, sep: string = "/") {
 	return str.substr(0, str.lastIndexOf(sep));
 }
+
+export default function isObject(obj: any) {
+	const type = typeof obj;
+	return type === "function" || (type === "object" && !!obj);
+}

@@ -6,7 +6,7 @@ import ScaleLoader from "react-spinners/ScaleLoader";
 import "./test.object.assign";
 import { Header } from "./widgets/header";
 import "./app.css";
-import { Route, Switch } from "wouter";
+import { Route, Router, Switch } from "wouter";
 import BrowsePage from "./browse/browse-page";
 import OneSourcePage from "./browse/one-source-page";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -82,56 +82,62 @@ export default class App extends React.Component<IAppProps, IAppState> {
 	render() {
 		return (
 			<QueryClientProvider client={queryClient}>
-				<div className="container" style={{ width: "100%", maxWidth: "100%" }}>
-					<Header />
-					<Switch>
-						<Route path="/">
-							<StreamPage
-								sources={this.state.sources}
-								sourceID={this.state.sourceID}
-								setSource={this.setSource.bind(this)}
-							/>
-						</Route>
-						<Route path="/browse">
-							{this.state.sources ? (
-								<BrowsePage
-									sources={this.state.sources || []}
-									reloadSources={this.fetchRange.bind(this)}
-								/>
-							) : (
-								<ScaleLoader />
-							)}
-						</Route>
-						<Route path="/browse/:slug">
-							{(params) => (
-								<OneSourcePage
-									name={params.slug}
-									sources={this.state.sources || []}
-									reloadSources={this.fetchRange.bind(this)}
-								/>
-							)}
-						</Route>
-						<Route path="/visibility" component={VisibilityTest} />
-						<Route path="/one-image" component={OneImageTest} />
-						<Route path="/timeline-test" component={TimelineTest} />
-						<Route path="/folders/:slug*">
-							{(params) => (
-								<FoldersPage
+				<Router base="/build">
+					<div
+						className="container"
+						style={{ width: "100%", maxWidth: "100%" }}
+					>
+						<Header />
+						<Switch>
+							<Route path="/">
+								<StreamPage
 									sources={this.state.sources}
 									sourceID={this.state.sourceID}
 									setSource={this.setSource.bind(this)}
-									slug={decodeURIComponent(params.slug)}
 								/>
-							)}
-						</Route>
-						<Route path="/image/:id">
-							{(params) => <SingleImage id={params.id} />}
-						</Route>
-						<Route path="/search/:term">
-							{(params) => <SearchPage term={params.term} />}
-						</Route>
-					</Switch>
-				</div>
+							</Route>
+							<Route path="/browse">
+								{this.state.sources ? (
+									<BrowsePage
+										sources={this.state.sources || []}
+										reloadSources={this.fetchRange.bind(this)}
+									/>
+								) : (
+									<ScaleLoader />
+								)}
+							</Route>
+							<Route path="/browse/:slug">
+								{(params) => (
+									<OneSourcePage
+										name={params.slug}
+										sources={this.state.sources || []}
+										reloadSources={this.fetchRange.bind(this)}
+									/>
+								)}
+							</Route>
+							<Route path="/visibility" component={VisibilityTest} />
+							<Route path="/one-image" component={OneImageTest} />
+							<Route path="/timeline-test" component={TimelineTest} />
+							<Route path="/folders/:slug*">
+								{(params) => (
+									<FoldersPage
+										sources={this.state.sources}
+										sourceID={this.state.sourceID}
+										setSource={this.setSource.bind(this)}
+										slug={decodeURIComponent(params.slug)}
+									/>
+								)}
+							</Route>
+							<Route path="/image/:id">
+								{(params) => <SingleImage id={params.id} />}
+							</Route>
+							<Route path="/search/:term">
+								{(params) => <SearchPage term={params.term} />}
+							</Route>
+							<Route>404 Not Found</Route>
+						</Switch>
+					</div>
+				</Router>
 				<ReactQueryDevtools initialIsOpen={true} />
 			</QueryClientProvider>
 		);

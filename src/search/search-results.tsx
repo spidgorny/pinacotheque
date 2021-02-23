@@ -5,13 +5,17 @@ import { Image } from "../model/Image";
 import { SearchResult } from "./search-page";
 import { BounceLoader } from "react-spinners";
 import { AxiosError } from "../tailwind";
-import { ImageGrid } from "../folders/folder-files";
 import { context } from "../context";
 import { ImageLightbox } from "../stream/image-lightbox";
+import { ImageGrid } from "../folders/image-grid";
+import { ShortcutHandler } from "../stream/shortcut-handler";
+import { useLocation } from "wouter";
 
 export default function SearchResults(props: { term: string; url: string }) {
 	const ctx = useContext(context);
 	const [lightbox, setLightbox] = useState(undefined as number | undefined);
+	const [, setLocation] = useLocation();
+
 	let tagSearch: UseQueryResult<SearchResult, Response> = useQuery(
 		[new URL(props.url).pathname, props.term],
 		async () => {
@@ -36,6 +40,13 @@ export default function SearchResults(props: { term: string; url: string }) {
 
 	const fetchNextPage = () => {};
 
+	const upFolder = () => {
+		if (tagSearch.data && lightbox) {
+			const img = allImages(tagSearch.data)[lightbox];
+			setLocation("/folders/" + img.source + "/" + img.dirname);
+		}
+	};
+
 	return (
 		<div>
 			<hr />
@@ -51,21 +62,28 @@ export default function SearchResults(props: { term: string; url: string }) {
 			)}
 			<AxiosError error={tagSearch.error} />
 			{tagSearch.data && (
-				<ImageGrid
-					images={allImages(tagSearch.data)}
-					total={tagSearch.data.files.length}
-					fetchNextPage={fetchNextPage}
-					isFetchingNextPage={false}
-					onClick={(a, b, index, image) => getDeeper(index, image)}
-				/>
-			)}
-			{tagSearch.data && (
-				<ImageLightbox
-					currentIndex={lightbox ?? 0}
-					images={allImages(tagSearch.data)}
-					onClose={() => setLightbox(undefined)}
-					viewerIsOpen={typeof lightbox !== "undefined"}
-				/>
+				<div>
+					<ImageGrid
+						images={allImages(tagSearch.data)}
+						total={tagSearch.data.files.length}
+						fetchNextPage={fetchNextPage}
+						isFetchingNextPage={false}
+						onClick={(a, b, index, image) => getDeeper(index, image)}
+					/>
+
+					<ImageLightbox
+						currentIndex={lightbox ?? 0}
+						images={allImages(tagSearch.data)}
+						onClose={() => setLightbox(undefined)}
+						viewerIsOpen={typeof lightbox !== "undefined"}
+					/>
+
+					<ShortcutHandler
+						keyToPress="ArrowUp"
+						modifier="ctrlKey"
+						handler={upFolder}
+					/>
+				</div>
 			)}
 		</div>
 	);
