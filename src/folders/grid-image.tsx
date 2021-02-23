@@ -40,6 +40,7 @@ export function GridImage(props: {
 					forceInfo={props.img.isDir()}
 					onClick={props.onClick}
 				/>
+				{props.img.path}
 			</div>
 		</InView>
 	);

@@ -7,7 +7,7 @@ import { BounceLoader } from "react-spinners";
 import { AxiosError } from "../tailwind";
 import { ImageGrid } from "../folders/folder-files";
 import { context } from "../context";
-import * as url from "url";
+import { ImageLightbox } from "../stream/image-lightbox";
 
 export default function SearchResults(props: { term: string; url: string }) {
 	const ctx = useContext(context);
@@ -21,6 +21,7 @@ export default function SearchResults(props: { term: string; url: string }) {
 	);
 
 	const getDeeper = (index: number, image?: Image) => {
+		console.log("getDeeper", index);
 		setLightbox(index);
 	};
 
@@ -38,7 +39,16 @@ export default function SearchResults(props: { term: string; url: string }) {
 	return (
 		<div>
 			<hr />
-			{tagSearch.isLoading && <BounceLoader />}
+			{tagSearch.isLoading && (
+				<div>
+					<BounceLoader />
+				</div>
+			)}
+			{tagSearch.isFetching && (
+				<div>
+					<BounceLoader />
+				</div>
+			)}
 			<AxiosError error={tagSearch.error} />
 			{tagSearch.data && (
 				<ImageGrid
@@ -47,6 +57,14 @@ export default function SearchResults(props: { term: string; url: string }) {
 					fetchNextPage={fetchNextPage}
 					isFetchingNextPage={false}
 					onClick={(a, b, index, image) => getDeeper(index, image)}
+				/>
+			)}
+			{tagSearch.data && (
+				<ImageLightbox
+					currentIndex={lightbox ?? 0}
+					images={allImages(tagSearch.data)}
+					onClose={() => setLightbox(undefined)}
+					viewerIsOpen={typeof lightbox !== "undefined"}
 				/>
 			)}
 		</div>

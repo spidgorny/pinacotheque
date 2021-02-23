@@ -18,14 +18,14 @@ class SearchPath extends AppController
 		$term = $this->request->getString('term');
 //		$like = new SQLLike($term);
 //		$like->wrap = '%|%';
-		$like = new AsIs('MATCH (path) AGAINST (' . $this->db->quoteSQL($term).')');
-		$files = MetaForSQL::findAll($this->db, ['path' => $like], 'LIMIT 100');
+		$like = new AsIsOp('MATCH (path) AGAINST (' . $this->db->quoteSQL($term).' IN NATURAL LANGUAGE MODE)');
+		$files = MetaForSQL::findAll($this->db, [$like], 'ORDER BY '.$like.' DESC LIMIT 100');
 		$xFiles = ArrayPlus::create($files);
 		return new JSONResponse([
 			'status' => 'ok',
 			'term' => $term,
-			'files' => $xFiles->toJson(),
 			'query' => $this->db->lastQuery.'',
+			'files' => $xFiles->toJson(),
 		]);
 	}
 
