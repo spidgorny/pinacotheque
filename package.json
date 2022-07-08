@@ -41,7 +41,7 @@
     "ioredis": "^4.22.0",
     "leaflet": "^1.7.1",
     "leaflet.markercluster": "^1.4.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "moment-duration-format": "^2.3.2",
     "mysql2": "^2.2.5",
     "photoswipe": "^4.1.3",
