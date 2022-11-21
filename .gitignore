@@ -16,3 +16,5 @@ redis/snapshot.json
 tsout/
 dist/
 build/
+data-local/
+test/tmp
